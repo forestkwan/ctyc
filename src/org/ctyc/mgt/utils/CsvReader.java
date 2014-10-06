@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
+import org.ctyc.mgt.model.Sex;
 import org.ctyc.mgt.model.summercamp.Participant;
 
 public class CsvReader {
@@ -34,6 +36,21 @@ public class CsvReader {
 				
 				Participant participant = new Participant();
 				participant.setName(tokens[1]);
+				
+				if (StringUtils.isNotBlank(tokens[2])){
+					Sex sex = (StringUtils.equals(tokens[2], "¨k")) ? Sex.MALE : Sex.FEMALE;
+					participant.setSex(sex);
+				}
+				
+				if (StringUtils.isNotBlank(tokens[5])){
+					participant.setSundaySchoolClass(tokens[5]);
+				}
+				
+				if (StringUtils.isNotBlank(tokens[6])){
+					boolean isGroupMentor = (StringUtils.equals(tokens[6], "Y")) ? true : false;
+					participant.setGroupMentor(isGroupMentor);
+					participant.setMentor(isGroupMentor);
+				}
 
 			}
 
