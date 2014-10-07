@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
@@ -53,14 +54,61 @@ public class DineAssignmentManager {
 		
 		for (DineTimeSlot dineTimeSlot : ALL_DINE_TIME_SLOT){
 			
-			Collection<DineTableGroup> dineTableGroupList = new ArrayList<DineTableGroup>();
+			Stack<Participant> unassignedParticipants = new Stack<Participant>();
+			unassignedParticipants.addAll(participants);
+			
+			Collection<DineTableGroup> dineTableGroupList = this.createEmptyTableGroupList();
+			
+			for (DineTableGroup dineTableGroup : dineTableGroupList){
+					
+				if (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
+					Participant unassignedParticipant = unassignedParticipants.pop();
+					dineTableGroup.getParticipants().add(unassignedParticipant);
+				}else {
+					continue;
+				}
+			}
+				
 			
 			dineAssignmentPlan.put(dineTimeSlot, dineTableGroupList);
 		}
 	}
-	
+
 	public void doAssignment(){
 		
 		this.initAssignment();
+	}
+	
+	private Collection<DineTableGroup> createEmptyTableGroupList(){
+		if (CollectionUtils.isEmpty(this.participants)){
+			return new ArrayList<DineTableGroup>();
+		}
+		
+		if (this.tableCapacity <= 0){
+			System.out.println("No table capacity");
+			return new ArrayList<DineTableGroup>();
+		}
+		
+		int numberOfTable = this.participants.size() / this.tableCapacity;
+		if ((this.participants.size() % this.tableCapacity) > 0){
+			numberOfTable++;
+		}
+		
+		Collection<DineTableGroup> emptyTableGroupList = new ArrayList<DineTableGroup>();
+		for (int i=0; i< numberOfTable; i++){
+			DineTableGroup dineTableGroup = new DineTableGroup();
+			dineTableGroup.setTableNumber(i + 1);
+			emptyTableGroupList.add(dineTableGroup);
+		}
+		
+		return emptyTableGroupList;
+	}
+	
+	private boolean isTableFull(DineTableGroup dineTableGroup) {
+		
+		if (dineTableGroup.getParticipants().size() >= this.tableCapacity){
+			return true;
+		}
+		return false;
 	}
 }

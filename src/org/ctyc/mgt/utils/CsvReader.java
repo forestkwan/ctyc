@@ -52,6 +52,7 @@ public class CsvReader {
 					participant.setMentor(isGroupMentor);
 				}
 
+				participants.add(participant);
 			}
 
 		} catch (FileNotFoundException e) {
