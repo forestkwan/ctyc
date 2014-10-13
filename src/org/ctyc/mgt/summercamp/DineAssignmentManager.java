@@ -2,25 +2,41 @@ package org.ctyc.mgt.summercamp;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Random;
 import java.util.Stack;
 
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
+import org.ctyc.mgt.utils.ParticipantCollectionUtils;
 import org.springframework.util.CollectionUtils;
 
 public class DineAssignmentManager {
 	
+	// Static constant
 	private static Collection<DineTimeSlot> ALL_DINE_TIME_SLOT = createAllDineTimeSlot();
+	
+	// Dine Assignment Object
+	private DineAssignmentPlan plan;
+	private DineAssignmentEvaluator evaluator;
+	
+	// Input Object
 	private Collection<Participant> participants;
 	private int tableCapacity;
-	private Map<DineTimeSlot, Collection<DineTableGroup>> dineAssignmentPlan = new HashMap<DineTimeSlot, Collection<DineTableGroup>>();
+	
+	// Private calculation object
+	private Random randomObj;
 	
 	public DineAssignmentManager(Collection<Participant> participants, int tableCapacity){
 		this.participants = participants;
 		this.tableCapacity = tableCapacity;
+		this.plan = new DineAssignmentPlan();
+		this.randomObj = new Random();
+	}
+	
+	public DineAssignmentManager(Collection<Participant> participants, int tableCapacity, int seed){
+		this(participants, tableCapacity);
+		this.randomObj = new Random(seed);
 	}
 	
 	private static Collection<DineTimeSlot> createAllDineTimeSlot(){
@@ -46,8 +62,8 @@ public class DineAssignmentManager {
 		return allDineTimeSlot;
 	}
 	
-	public Map<DineTimeSlot, Collection<DineTableGroup>> getAssignmentPlan(){
-		return this.dineAssignmentPlan;
+	public DineAssignmentPlan getAssignmentPlan(){
+		return this.plan;
 	}
 	
 	private void initAssignment(){
@@ -60,23 +76,25 @@ public class DineAssignmentManager {
 			Collection<DineTableGroup> dineTableGroupList = this.createEmptyTableGroupList();
 			
 			for (DineTableGroup dineTableGroup : dineTableGroupList){
-					
-				if (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
-					Participant unassignedParticipant = unassignedParticipants.pop();
+				
+				while (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
+//					Participant unassignedParticipant = unassignedParticipants.pop();
+					Participant unassignedParticipant = ParticipantCollectionUtils.popRandomParticipant(unassignedParticipants, randomObj);
 					dineTableGroup.getParticipants().add(unassignedParticipant);
-				}else {
-					continue;
 				}
 			}
-				
 			
-			dineAssignmentPlan.put(dineTimeSlot, dineTableGroupList);
+			this.plan.getPlan().put(dineTimeSlot, dineTableGroupList);
 		}
 	}
 
 	public void doAssignment(){
 		
 		this.initAssignment();
+	}
+	
+	public void doEvaluation(){
+		this.evaluator.evaluate(this.plan);
 	}
 	
 	private Collection<DineTableGroup> createEmptyTableGroupList(){

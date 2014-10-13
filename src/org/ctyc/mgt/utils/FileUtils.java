@@ -72,10 +72,11 @@ public class FileUtils {
 		try {
 			PrintWriter printWriter = new PrintWriter(filePath, ENCODING);
 			
-			printWriter.printf("Day %d, %s\n", dineTimeSlot.getNumberOfDay(), dineTimeSlot.getTimeOfDay().toString());
+			printWriter.printf("Day %d, %s", dineTimeSlot.getNumberOfDay(), dineTimeSlot.getTimeOfDay().toString());
+			printWriter.println();
 			for (DineTableGroup dineTableGroup : dineTableGroups){
 				
-				printWriter.printf("Table%d: ", dineTableGroup.getTableNumber());
+				printWriter.printf("Table%d (%d¤H): ", dineTableGroup.getTableNumber(), dineTableGroup.getParticipants().size());
 				
 				for (Participant Participant : dineTableGroup.getParticipants()){
 					printWriter.printf("%s\t", Participant.getName());

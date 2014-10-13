@@ -35,6 +35,7 @@ public class CsvReader {
 				String[] tokens = line.split(separator);
 				
 				Participant participant = new Participant();
+				participant.setId(tokens[0]);
 				participant.setName(tokens[1]);
 				
 				if (StringUtils.isNotBlank(tokens[2])){

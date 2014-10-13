@@ -9,6 +9,7 @@ import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.DineAssignmentManager;
+import org.ctyc.mgt.summercamp.DineAssignmentPlan;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 
@@ -28,11 +29,11 @@ public class DineAssignmentTester extends TestCase {
 		FileUtils.writeObjectToFile(campSite, "c:\\CTYCSave\\CampSite.ser");
 		
 		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv();
-		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campAParticipants, 8);
+		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campAParticipants, 8, 100);
 		dineAssignmentManager.doAssignment();
-		Map<DineTimeSlot, Collection<DineTableGroup>> dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
+		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 		
-		for (Entry<DineTimeSlot, Collection<DineTableGroup>> entrySet : dineAssignmentPlan.entrySet()){
+		for (Entry<DineTimeSlot, Collection<DineTableGroup>> entrySet : dineAssignmentPlan.getPlan().entrySet()){
 			DineTimeSlot dineTimeSlot = entrySet.getKey();
 			Collection<DineTableGroup> dineTableGroups = entrySet.getValue();
 			
