@@ -1,23 +1,30 @@
 package org.ctyc.mgt.summercamp;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
-import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 
 public class DineAssignmentPlan {
 	
-	private Map<DineTimeSlot, Collection<DineTableGroup>> plan;
+	private double cost;
+	private Collection<DineTableGroup> plan;
 	
 	public DineAssignmentPlan(){
-		
+		cost = 0;
 	}
 	
-	public Map<DineTimeSlot, Collection<DineTableGroup>> getPlan(){
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+
+	public Collection<DineTableGroup> getPlan(){
 		if (this.plan == null){
-			this.plan = new HashMap<DineTimeSlot, Collection<DineTableGroup>>();
+			this.plan = new ArrayList<DineTableGroup>();
 		}
 		return this.plan;
 	}

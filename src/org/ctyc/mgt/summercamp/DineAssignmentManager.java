@@ -68,24 +68,20 @@ public class DineAssignmentManager {
 	
 	private void initAssignment(){
 		
-		for (DineTimeSlot dineTimeSlot : ALL_DINE_TIME_SLOT){
+		Stack<Participant> unassignedParticipants = new Stack<Participant>();
+		unassignedParticipants.addAll(participants);
+		
+		Collection<DineTableGroup> dineTableGroupList = this.createEmptyTableGroupList();
+		
+		for (DineTableGroup dineTableGroup : dineTableGroupList){
 			
-			Stack<Participant> unassignedParticipants = new Stack<Participant>();
-			unassignedParticipants.addAll(participants);
-			
-			Collection<DineTableGroup> dineTableGroupList = this.createEmptyTableGroupList();
-			
-			for (DineTableGroup dineTableGroup : dineTableGroupList){
-				
-				while (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
-//					Participant unassignedParticipant = unassignedParticipants.pop();
-					Participant unassignedParticipant = ParticipantCollectionUtils.popRandomParticipant(unassignedParticipants, randomObj);
-					dineTableGroup.getParticipants().add(unassignedParticipant);
-				}
+			while (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
+				Participant unassignedParticipant = ParticipantCollectionUtils.popRandomParticipant(unassignedParticipants, randomObj);
+				dineTableGroup.getParticipants().add(unassignedParticipant);
 			}
-			
-			this.plan.getPlan().put(dineTimeSlot, dineTableGroupList);
 		}
+		
+		this.plan.getPlan().addAll(dineTableGroupList);
 	}
 
 	public void doAssignment(){

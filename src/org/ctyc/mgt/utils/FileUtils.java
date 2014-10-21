@@ -8,12 +8,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
+import org.ctyc.mgt.summercamp.DineAssignmentPlan;
 import org.springframework.util.CollectionUtils;
 
 public class FileUtils {
@@ -59,9 +59,9 @@ public class FileUtils {
 		}
 	}
 	
-	public static void writeDineAssignmentPlan(DineTimeSlot dineTimeSlot, Collection<DineTableGroup> dineTableGroups, String filePath){
+	public static void writeDineAssignmentPlan(DineTimeSlot dineTimeSlot, DineAssignmentPlan dineAssignmentPlan, String filePath){
 		
-		if (dineTimeSlot == null || CollectionUtils.isEmpty(dineTableGroups)){
+		if (dineTimeSlot == null || CollectionUtils.isEmpty(dineAssignmentPlan.getPlan())){
 			System.out.println("Dine assignment plan is empty. No file is outputed");
 		}
 		
@@ -74,7 +74,7 @@ public class FileUtils {
 			
 			printWriter.printf("Day %d, %s", dineTimeSlot.getNumberOfDay(), dineTimeSlot.getTimeOfDay().toString());
 			printWriter.println();
-			for (DineTableGroup dineTableGroup : dineTableGroups){
+			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getPlan()){
 				
 				printWriter.printf("Table%d (%d¤H): ", dineTableGroup.getTableNumber(), dineTableGroup.getParticipants().size());
 				
@@ -84,6 +84,8 @@ public class FileUtils {
 				
 				printWriter.println();
 			}
+			
+			printWriter.printf("Total Cost = %f", dineAssignmentPlan.getCost());
 			
 			printWriter.close();
 		} catch (FileNotFoundException e) {
