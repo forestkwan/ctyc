@@ -1,5 +1,6 @@
 package org.ctyc.mgt.test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import junit.framework.TestCase;
@@ -9,6 +10,8 @@ import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.DineAssignmentManager;
 import org.ctyc.mgt.summercamp.DineAssignmentPlan;
+import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.GenderBalanceCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 
@@ -27,7 +30,12 @@ public class DineAssignmentTester extends TestCase {
 		
 		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv();
 		
-		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campAParticipants, 8, 100);
+		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
+		costFunctions.add(new GenderBalanceCostFunction(1, 1));
+		
+		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
+		
+		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campAParticipants, 8, costFunctions, constraintFunctions, 101);
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();

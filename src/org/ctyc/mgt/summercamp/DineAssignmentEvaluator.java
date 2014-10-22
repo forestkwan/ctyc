@@ -27,6 +27,7 @@ public class DineAssignmentEvaluator {
 	public void evaluate(DineAssignmentPlan plan){
 
 		double cost = 0;
+		plan.setCost(0);
 		
 		for (AbstractCostFunction costFunction : this.costFunctions){
 			cost = costFunction.doCompute(plan);

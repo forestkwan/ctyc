@@ -8,6 +8,7 @@ import java.util.Stack;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
+import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.utils.ParticipantCollectionUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -27,15 +28,29 @@ public class DineAssignmentManager {
 	// Private calculation object
 	private Random randomObj;
 	
-	public DineAssignmentManager(Collection<Participant> participants, int tableCapacity){
+	public DineAssignmentManager(
+			Collection<Participant> participants,
+			int tableCapacity,
+			Collection<AbstractCostFunction> costFunctions,
+			Collection<AbstractCostFunction> constraintFunctions){
+		
 		this.participants = participants;
 		this.tableCapacity = tableCapacity;
 		this.plan = new DineAssignmentPlan();
 		this.randomObj = new Random();
+		
+		this.evaluator = new DineAssignmentEvaluator(costFunctions, constraintFunctions);
+		
 	}
 	
-	public DineAssignmentManager(Collection<Participant> participants, int tableCapacity, int seed){
-		this(participants, tableCapacity);
+	public DineAssignmentManager(
+			Collection<Participant> participants,
+			int tableCapacity,
+			Collection<AbstractCostFunction> costFunctions,
+			Collection<AbstractCostFunction> constraintFunctions,
+			int seed){
+		
+		this(participants, tableCapacity, costFunctions, constraintFunctions);
 		this.randomObj = new Random(seed);
 	}
 	
@@ -87,6 +102,15 @@ public class DineAssignmentManager {
 	public void doAssignment(){
 		
 		this.initAssignment();
+		
+		for (int i=0; i<100; i++){
+			this.reAssignment();
+			this.doEvaluation();
+		}
+	}
+	
+	private void reAssignment(){
+		
 	}
 	
 	public void doEvaluation(){

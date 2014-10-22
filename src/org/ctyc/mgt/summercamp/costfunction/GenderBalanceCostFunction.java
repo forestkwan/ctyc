@@ -9,8 +9,9 @@ import org.springframework.util.CollectionUtils;
 
 public class GenderBalanceCostFunction extends AbstractCostFunction {
 
-	public GenderBalanceCostFunction(String name, int priority, float weight) {
-		super(name, priority, weight);
+	public GenderBalanceCostFunction(int priority, float weight) {
+		super(priority, weight);
+		this.name = "男女比例平衡";
 	}
 
 	@Override
