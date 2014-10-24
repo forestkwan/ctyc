@@ -3,6 +3,7 @@ package org.ctyc.mgt.summercamp;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.springframework.util.CollectionUtils;
 
@@ -24,19 +25,30 @@ public class DineAssignmentEvaluator {
 		}
 	}
 
-	public void evaluate(DineAssignmentPlan plan){
-
-		double cost = 0;
-		plan.setCost(0);
+	public void evaluatePlan(DineAssignmentPlan plan){
+		
+		if (CollectionUtils.isEmpty(plan.getPlan())){
+			return;
+		}
+		
+		double totalCost = 0;
+		for (DineTableGroup dineTableGroup : plan.getPlan()){
+			evaluateTable(dineTableGroup);
+			totalCost += dineTableGroup.getCost();
+		}
+		
+		plan.setCost(totalCost);
+	}
+	
+	public void evaluateTable(DineTableGroup dineTableGroup){
 		
 		for (AbstractCostFunction costFunction : this.costFunctions){
-			cost = costFunction.doCompute(plan);
-			plan.setCost(plan.getCost() + cost);
+			costFunction.evaluateTableCost(dineTableGroup);
 		}
 		
 		for (AbstractCostFunction constraintFunction : this.constraintFunctions){
-			cost = constraintFunction.doCompute(plan);
-			plan.setCost(plan.getCost() + cost);
+			constraintFunction.evaluateTableCost(dineTableGroup);
 		}
+		
 	}
 }

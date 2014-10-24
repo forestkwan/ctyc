@@ -76,7 +76,10 @@ public class FileUtils {
 			printWriter.println();
 			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getPlan()){
 				
-				printWriter.printf("Table%d (%d¤H): ", dineTableGroup.getTableNumber(), dineTableGroup.getParticipants().size());
+				printWriter.printf("Table%d [%d¤H][Cost=%.2f]: ",
+						dineTableGroup.getTableNumber(),
+						dineTableGroup.getParticipants().size(),
+						dineTableGroup.getCost());
 				
 				for (Participant Participant : dineTableGroup.getParticipants()){
 					printWriter.printf("%s\t", Participant.getName());
@@ -85,7 +88,7 @@ public class FileUtils {
 				printWriter.println();
 			}
 			
-			printWriter.printf("Total Cost = %f", dineAssignmentPlan.getCost());
+			printWriter.printf("Total Cost = %.2f", dineAssignmentPlan.getCost());
 			
 			printWriter.close();
 		} catch (FileNotFoundException e) {

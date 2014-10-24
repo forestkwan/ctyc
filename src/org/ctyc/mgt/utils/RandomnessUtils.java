@@ -4,10 +4,31 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.Stack;
 
+import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.springframework.util.CollectionUtils;
 
-public class ParticipantCollectionUtils {
+public class RandomnessUtils {
+	
+	public static DineTableGroup pickRandomDineTableGroup(Collection<DineTableGroup> dineTableGroups, Random randomObj){
+		
+		if (CollectionUtils.isEmpty(dineTableGroups) || randomObj == null){
+			return null;
+		}
+		
+		DineTableGroup target = null;
+		int targetIndex = randomObj.nextInt(dineTableGroups.size());
+		int index = 0;
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			if (index == targetIndex){
+				target = dineTableGroup;
+				break;
+			}
+			
+			index++;
+		}
+		return target;
+	}
 	
 	public static Participant pickRandomParticipant(Collection<Participant> participants, Random randomObj){
 		

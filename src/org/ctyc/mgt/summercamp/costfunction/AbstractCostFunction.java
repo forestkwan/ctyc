@@ -1,14 +1,17 @@
 package org.ctyc.mgt.summercamp.costfunction;
 
+import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.summercamp.DineAssignmentPlan;
+import org.springframework.util.CollectionUtils;
 
 public abstract class AbstractCostFunction {
 	
+	public static short MAX_COST = 100;
 	protected String name = "";
 	protected int priority;	// Value from 1 to 10. 1 is the highest priority
-	protected float weight;	// Value from 0 to 1
+	protected double weight;	// Value from 0 to 1
 	
-	public AbstractCostFunction(int priority, float weight) {
+	public AbstractCostFunction(int priority, double weight) {
 		super();
 		this.priority = priority;
 		this.weight = weight;
@@ -26,13 +29,13 @@ public abstract class AbstractCostFunction {
 		this.priority = priority;
 	}
 
-	public float getWeight() {
+	public double getWeight() {
 		return weight;
 	}
 
-	public void setWeight(float weight) {
+	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 	
-	abstract public double doCompute(DineAssignmentPlan dineAssignmentPlan);
+	public abstract void evaluateTableCost(DineTableGroup dineTableGroup);
 }

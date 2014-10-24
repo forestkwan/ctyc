@@ -3,42 +3,36 @@ package org.ctyc.mgt.summercamp.costfunction;
 import org.ctyc.mgt.model.Sex;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.Participant;
-import org.ctyc.mgt.summercamp.DineAssignmentPlan;
-import org.springframework.util.CollectionUtils;
 
 
 public class GenderBalanceCostFunction extends AbstractCostFunction {
 
-	public GenderBalanceCostFunction(int priority, float weight) {
+	public GenderBalanceCostFunction(int priority, double weight) {
 		super(priority, weight);
 		this.name = "男女比例平衡";
 	}
 
 	@Override
-	public double doCompute(DineAssignmentPlan dineAssignmentPlan) {
+	public void evaluateTableCost(DineTableGroup dineTableGroup) {
 		
-		if (CollectionUtils.isEmpty(dineAssignmentPlan.getPlan())){
-			return 0;
-		}
+		int numberOfMale = 0;
+		int numberOfFemale = 0;
 		
-		double cost = 0;
-		int diff = 0;
-		for (DineTableGroup dineTableGroup : dineAssignmentPlan.getPlan()){
-			
-			int numberOfMale = 0;
-			int numberOfFemale = 0;
-			
-			for (Participant participant : dineTableGroup.getParticipants()){
-				if (participant.getSex() == Sex.MALE){
-					numberOfMale ++;
-				}else {
-					numberOfFemale++;
-				}
+		for (Participant participant : dineTableGroup.getParticipants()){
+			if (participant.getSex() == Sex.MALE){
+				numberOfMale ++;
+			}else {
+				numberOfFemale++;
 			}
-			diff = Math.abs(numberOfFemale - numberOfMale);
-			cost += diff;
 		}
-		return cost;
+		double diff = Math.abs(numberOfFemale - numberOfMale);
+		double size = dineTableGroup.getParticipants().size();
+		double factor = diff / size;
+		
+		
+		double cost = MAX_COST * factor * weight;
+		
+		dineTableGroup.setCost(cost);
 	}
 
 }
