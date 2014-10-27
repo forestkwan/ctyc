@@ -13,7 +13,7 @@ public class GenderBalanceCostFunction extends AbstractCostFunction {
 	}
 
 	@Override
-	public void evaluateTableCost(DineTableGroup dineTableGroup) {
+	public double evaluateTableCost(DineTableGroup dineTableGroup) {
 		
 		int numberOfMale = 0;
 		int numberOfFemale = 0;
@@ -31,8 +31,7 @@ public class GenderBalanceCostFunction extends AbstractCostFunction {
 		
 		
 		double cost = MAX_COST * factor * weight;
-		
-		dineTableGroup.setCost(cost);
+		return cost;
 	}
 
 }

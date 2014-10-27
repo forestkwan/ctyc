@@ -11,6 +11,7 @@ import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.DineAssignmentManager;
 import org.ctyc.mgt.summercamp.DineAssignmentPlan;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.MentorInTableCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.GenderBalanceCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
@@ -34,6 +35,7 @@ public class DineAssignmentTester extends TestCase {
 		costFunctions.add(new GenderBalanceCostFunction(1, 1));
 		
 		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
+		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 		
 		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campAParticipants, 8, costFunctions, constraintFunctions, 101);
 		

@@ -111,8 +111,9 @@ public class DineAssignmentManager {
 		System.out.println("-->Start re-assignment");
 		this.doPlanEvaluation();
 		
-		for (int i=0; i<100; i++){
+		for (int i=0; i<10000; i++){
 			this.reAssignment();
+			System.out.printf("-->Total cost after %d Iteration: %f\n", i, this.plan.getCost());
 		}
 		
 		long endTime = new Date().getTime();
@@ -124,17 +125,17 @@ public class DineAssignmentManager {
 		if (this.plan == null || this.plan.getPlan() == null || this.plan.getPlan().size() < 2){
 			return;
 		}
-		
+
 		DineTableGroup dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
 		DineTableGroup dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
-		
-		double originCost1 = dineTableGroup1.getCost();
-		double originCost2 = dineTableGroup2.getCost();
 		
 		while (dineTableGroup1 == dineTableGroup2){
 			dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
 			dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
 		}
+		
+		double originCost1 = dineTableGroup1.getCost();
+		double originCost2 = dineTableGroup2.getCost();
 		
 		Participant participant1 = RandomnessUtils.pickRandomParticipant(dineTableGroup1.getParticipants(), randomObj);
 		Participant participant2 = RandomnessUtils.pickRandomParticipant(dineTableGroup2.getParticipants(), randomObj);
@@ -147,7 +148,7 @@ public class DineAssignmentManager {
 		double newCost2 = dineTableGroup2.getCost();
 		
 		double delta = (newCost1 + newCost2) - (originCost1 + originCost2);
-		
+
 		if (delta < 0){
 			/* The change make positive contribution to the assignment,
 			 * keep the change */
@@ -156,8 +157,9 @@ public class DineAssignmentManager {
 			/* The change make negative contribution to the assignment,
 			 * roll back the change */
 			this.swapTable(dineTableGroup1, dineTableGroup2, participant2, participant1);
+			this.evaluator.evaluateTable(dineTableGroup1);
+			this.evaluator.evaluateTable(dineTableGroup2);
 		}
-
 	}
 	
 	private void swapTable(

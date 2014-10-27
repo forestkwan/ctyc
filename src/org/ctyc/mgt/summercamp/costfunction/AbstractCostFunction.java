@@ -6,6 +6,7 @@ import org.springframework.util.CollectionUtils;
 
 public abstract class AbstractCostFunction {
 	
+	public static int PENALTY_COST = 10000;
 	public static short MAX_COST = 100;
 	protected String name = "";
 	protected int priority;	// Value from 1 to 10. 1 is the highest priority
@@ -37,5 +38,5 @@ public abstract class AbstractCostFunction {
 		this.weight = weight;
 	}
 	
-	public abstract void evaluateTableCost(DineTableGroup dineTableGroup);
+	public abstract double evaluateTableCost(DineTableGroup dineTableGroup);
 }

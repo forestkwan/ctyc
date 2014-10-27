@@ -42,13 +42,17 @@ public class DineAssignmentEvaluator {
 	
 	public void evaluateTable(DineTableGroup dineTableGroup){
 		
+		double cost = 0;
+		
 		for (AbstractCostFunction costFunction : this.costFunctions){
-			costFunction.evaluateTableCost(dineTableGroup);
+			cost += costFunction.evaluateTableCost(dineTableGroup);
 		}
 		
 		for (AbstractCostFunction constraintFunction : this.constraintFunctions){
-			constraintFunction.evaluateTableCost(dineTableGroup);
+			cost += constraintFunction.evaluateTableCost(dineTableGroup);
 		}
+		
+		dineTableGroup.setCost(cost);
 		
 	}
 }
