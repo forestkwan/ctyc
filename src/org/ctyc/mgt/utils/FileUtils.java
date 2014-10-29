@@ -81,8 +81,8 @@ public class FileUtils {
 						dineTableGroup.getParticipants().size(),
 						dineTableGroup.getCost());
 				
-				for (Participant Participant : dineTableGroup.getParticipants()){
-					printWriter.printf("%s\t", Participant.getName());
+				for (Participant participant : dineTableGroup.getParticipants()){
+					printWriter.printf("%s(%d)\t", participant.getName(), participant.getGroupNumber());
 				}
 				
 				printWriter.println();

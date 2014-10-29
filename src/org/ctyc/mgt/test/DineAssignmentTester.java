@@ -13,6 +13,7 @@ import org.ctyc.mgt.summercamp.DineAssignmentPlan;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.MentorInTableCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.GenderBalanceCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.SameGroupCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 
@@ -33,6 +34,7 @@ public class DineAssignmentTester extends TestCase {
 		
 		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
 		costFunctions.add(new GenderBalanceCostFunction(1, 1));
+		costFunctions.add(new SameGroupCostFunction(1, 1));
 		
 		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
 		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
@@ -41,15 +43,6 @@ public class DineAssignmentTester extends TestCase {
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
-		
-//		for (Entry<DineTimeSlot, Collection<DineTableGroup>> entrySet : dineAssignmentPlan.getPlan().entrySet()){
-//			DineTimeSlot dineTimeSlot = entrySet.getKey();
-//			Collection<DineTableGroup> dineTableGroups = entrySet.getValue();
-//			
-//			String filename = "Day" + dineTimeSlot.getNumberOfDay() + dineTimeSlot.getTimeOfDay().toString() + ".txt";
-//			
-//			FileUtils.writeDineAssignmentPlan(dineTimeSlot, dineTableGroups, "C:\\CTYCSave\\" + filename);
-//		}
 		
 		DineTimeSlot dineTimeSlot = new DineTimeSlot(1, DineTimeSlot.TimeOfDay.NIGHT);
 		String filename = "Day" + dineTimeSlot.getNumberOfDay() + dineTimeSlot.getTimeOfDay().toString() + ".txt";
