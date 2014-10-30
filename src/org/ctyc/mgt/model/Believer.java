@@ -1,8 +1,6 @@
 package org.ctyc.mgt.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class Believer implements Serializable {
 
@@ -48,7 +46,7 @@ public class Believer implements Serializable {
 	private Sex sex;
 	private int yearOfBirth;
 	private String sundaySchoolClass;
-	private Collection<Believer> relatives;
+	private FamilyGroup familyGroup;
 
 	private boolean isMentor;
 	
@@ -95,11 +93,12 @@ public class Believer implements Serializable {
 		this.sundaySchoolClass = sundaySchoolClass;
 	}
 
-	public Collection<Believer> getRelatives() {
-		if (this.relatives == null){
-			this.relatives = new ArrayList<Believer>();
-		}
-		return relatives;
+	public FamilyGroup getFamilyGroup() {
+		return familyGroup;
+	}
+	
+	public void setFamilyGroup(FamilyGroup familyGroup){
+		this.familyGroup = familyGroup;
 	}
 
 	public boolean isMentor() {

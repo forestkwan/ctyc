@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.Sex;
 import org.ctyc.mgt.model.summercamp.Participant;
 
@@ -25,6 +28,8 @@ public class CsvReader {
 
 			bufferedReader = new BufferedReader(new FileReader(csvFileToRead));
 			int count = 0;
+			Map<String, FamilyGroup> familyGroupMap = new HashMap<String, FamilyGroup>();
+			
 			while ((line = bufferedReader.readLine()) != null) {
 
 				count++;
@@ -55,6 +60,23 @@ public class CsvReader {
 
 				if (StringUtils.isNotBlank(tokens[7])){
 					participant.setGroupNumber(convertToGroupNumber(tokens[7]));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[13])){
+					
+					FamilyGroup familyGroup = familyGroupMap.get(tokens[13]);
+					
+					if (familyGroup == null){
+						familyGroup = new FamilyGroup(tokens[13]);
+						familyGroup.getBelievers().add(participant);
+						familyGroupMap.put(tokens[13], familyGroup);
+						
+						participant.setFamilyGroup(familyGroup);
+					}else {
+						familyGroup.getBelievers().add(participant);
+						participant.setFamilyGroup(familyGroup);
+					}
+					
 				}
 				
 				participants.add(participant);
