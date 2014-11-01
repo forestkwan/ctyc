@@ -1,8 +1,8 @@
 package org.ctyc.mgt.model.summercamp;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 public class DineTableGroup implements Serializable{
 
@@ -19,7 +19,7 @@ public class DineTableGroup implements Serializable{
 	}
 	public Collection<Participant> getParticipants() {
 		if (this.participants == null){
-			this.participants = new HashSet<Participant>();
+			this.participants = new ArrayList<Participant>();
 		}
 		return participants;
 	}

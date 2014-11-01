@@ -3,6 +3,7 @@ package org.ctyc.mgt.summercamp.costfunction;
 import org.ctyc.mgt.model.Sex;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.Participant;
+import org.springframework.util.CollectionUtils;
 
 
 public class GenderBalanceCostFunction extends AbstractCostFunction {
@@ -14,6 +15,10 @@ public class GenderBalanceCostFunction extends AbstractCostFunction {
 
 	@Override
 	public double evaluateTableCost(DineTableGroup dineTableGroup) {
+		
+		if (dineTableGroup == null || CollectionUtils.isEmpty(dineTableGroup.getParticipants())){
+			return 0;
+		}
 		
 		int numberOfMale = 0;
 		int numberOfFemale = 0;

@@ -3,9 +3,15 @@ package org.ctyc.mgt.summercamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Stack;
 
+import org.ctyc.mgt.model.Believer;
+import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
@@ -84,20 +90,112 @@ public class DineAssignmentManager {
 	
 	private void initAssignment(){
 		
-		Stack<Participant> unassignedParticipants = new Stack<Participant>();
-		unassignedParticipants.addAll(participants);
+//		Stack<Participant> unassignedParticipants = new Stack<Participant>();
+//		unassignedParticipants.addAll(participants);
+//		
+//		Collection<DineTableGroup> dineTableGroupList = this.createEmptyTableGroupList();
+//		
+//		for (DineTableGroup dineTableGroup : dineTableGroupList){
+//			
+//			while (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
+//				Participant unassignedParticipant = RandomnessUtils.popRandomParticipant(unassignedParticipants, this.randomObj);
+//				dineTableGroup.getParticipants().add(unassignedParticipant);
+//			}
+//		}
+//		
+//		this.plan.getPlan().addAll(dineTableGroupList);
 		
-		Collection<DineTableGroup> dineTableGroupList = this.createEmptyTableGroupList();
+		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
+		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
 		
-		for (DineTableGroup dineTableGroup : dineTableGroupList){
+		assignFamilyGroupToTable(participants, assignedParticipants, dineTableGroups);
+		assignGroupMentorToTable(participants, assignedParticipants, dineTableGroups);
+		
+		this.plan.getPlan().addAll(dineTableGroups);
+	}
+
+	private void assignFamilyGroupToTable(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		Map<String, FamilyGroup> familyGroupMap = new HashMap<String, FamilyGroup>();
+		for (Participant participant : participants){
 			
-			while (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
-				Participant unassignedParticipant = RandomnessUtils.popRandomParticipant(unassignedParticipants, this.randomObj);
-				dineTableGroup.getParticipants().add(unassignedParticipant);
+			if (participant.getFamilyGroup() == null){
+				continue;
+			}
+			
+			familyGroupMap.put(participant.getFamilyGroup().getFamilyId(), participant.getFamilyGroup());
+		}
+		
+		for (Entry<String, FamilyGroup> entry : familyGroupMap.entrySet()){
+			FamilyGroup familyGroup = entry.getValue();
+			
+			boolean hasEnoughCapacity = false;
+			DineTableGroup tempTableGroup = null;
+			
+			int noOfIteration = 0;
+			while (hasEnoughCapacity == false){
+				
+				noOfIteration++;
+				
+				tempTableGroup = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
+				
+				/* Try not to assign the family group to a table with another family group 
+				 * Unless there is a significant try */
+				if (tempTableGroup.getParticipants().size() > 0 && noOfIteration < 100){
+					continue;
+				}
+				
+				int emptySeat = this.tableCapacity - tempTableGroup.getParticipants().size();
+				
+				if (familyGroup.getBelievers().size() > emptySeat){
+					continue;
+				}
+				
+				hasEnoughCapacity = true;
+			}
+			
+			for (Believer believer : familyGroup.getBelievers()){
+				tempTableGroup.getParticipants().add((Participant)believer);
+				assignedParticipants.add((Participant)believer);
+			}
+		}		
+	}
+	
+	private void assignGroupMentorToTable(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		Stack<Participant> groupMentors = new Stack<Participant>();
+		for (Participant participant : participants){
+			if (participant.isGroupMentor() && !assignedParticipants.contains(participant)){
+				groupMentors.add(participant);
 			}
 		}
 		
-		this.plan.getPlan().addAll(dineTableGroupList);
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			if (dineTableGroup.getParticipants().size() >= this.tableCapacity){
+				continue;
+			}
+			
+			Participant groupMentor = RandomnessUtils.popRandomParticipant(groupMentors, this.randomObj);
+			groupMentor = RandomnessUtils.popRandomParticipant(groupMentors, this.randomObj);
+			
+			dineTableGroup.getParticipants().add(groupMentor);
+			assignedParticipants.add(groupMentor);
+		}
+		
 	}
 
 	public void doAssignment(){
@@ -129,16 +227,18 @@ public class DineAssignmentManager {
 		DineTableGroup dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
 		DineTableGroup dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
 		
-		while (dineTableGroup1 == dineTableGroup2){
+		Participant participant1 = null;
+		Participant participant2 = null;
+		while (dineTableGroup1 == dineTableGroup2 || participant1 == null || participant2 == null){
 			dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
 			dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
+			
+			participant1 = RandomnessUtils.pickRandomParticipant(dineTableGroup1.getParticipants(), randomObj);
+			participant2 = RandomnessUtils.pickRandomParticipant(dineTableGroup2.getParticipants(), randomObj);
 		}
 		
 		double originCost1 = dineTableGroup1.getCost();
 		double originCost2 = dineTableGroup2.getCost();
-		
-		Participant participant1 = RandomnessUtils.pickRandomParticipant(dineTableGroup1.getParticipants(), randomObj);
-		Participant participant2 = RandomnessUtils.pickRandomParticipant(dineTableGroup2.getParticipants(), randomObj);
 		
 		this.swapTable(dineTableGroup1, dineTableGroup2, participant1, participant2);
 		
