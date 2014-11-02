@@ -8,10 +8,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Stack;
 
 import org.ctyc.mgt.model.Believer;
 import org.ctyc.mgt.model.FamilyGroup;
+import org.ctyc.mgt.model.Gender;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
@@ -110,6 +110,7 @@ public class DineAssignmentManager {
 		
 		assignFamilyGroupToTable(participants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(participants, assignedParticipants, dineTableGroups);
+		assignParticipantToTable(participants, assignedParticipants, dineTableGroups);
 		
 		this.plan.getPlan().addAll(dineTableGroups);
 	}
@@ -177,25 +178,42 @@ public class DineAssignmentManager {
 			return;
 		}
 		
-		Stack<Participant> groupMentors = new Stack<Participant>();
+		Collection<Participant> groupMentors = new ArrayList<Participant>();
 		for (Participant participant : participants){
 			if (participant.isGroupMentor() && !assignedParticipants.contains(participant)){
 				groupMentors.add(participant);
 			}
 		}
 		
-		for (DineTableGroup dineTableGroup : dineTableGroups){
-			if (dineTableGroup.getParticipants().size() >= this.tableCapacity){
-				continue;
-			}
-			
-			Participant groupMentor = RandomnessUtils.popRandomParticipant(groupMentors, this.randomObj);
-			groupMentor = RandomnessUtils.popRandomParticipant(groupMentors, this.randomObj);
-			
-			dineTableGroup.getParticipants().add(groupMentor);
+		for (Participant groupMentor : groupMentors){
+			DineTableGroup minimumMentorDineTable = this.randomlyPickMinimumGroupMentorTable(dineTableGroups);
+			minimumMentorDineTable.getParticipants().add(groupMentor);
 			assignedParticipants.add(groupMentor);
 		}
 		
+	}
+	
+	private void assignParticipantToTable(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		Collection<Participant> unassignedParticipants = new ArrayList<Participant>();
+		for (Participant participant : participants){
+			if (!assignedParticipants.contains(participant)){
+				unassignedParticipants.add(participant);
+			}
+		}
+		
+		for (Participant unassignedParticipant : unassignedParticipants){
+			DineTableGroup dineTable = this.randomlyPickTableWithGenderBalance(dineTableGroups, unassignedParticipant.getGender());
+			dineTable.getParticipants().add(unassignedParticipant);
+			assignedParticipants.add(unassignedParticipant);
+		}
 	}
 
 	public void doAssignment(){
@@ -311,5 +329,85 @@ public class DineAssignmentManager {
 			return true;
 		}
 		return false;
+	}
+	
+	private DineTableGroup randomlyPickMinimumGroupMentorTable(Collection<DineTableGroup> dineTableGroups){
+		if (CollectionUtils.isEmpty(dineTableGroups)){
+			return null;
+		}
+		
+		Integer minimum = Integer.MAX_VALUE;
+		Map<Integer, Collection<DineTableGroup>> mentorNoAndDineTableGroupMap = new HashMap<Integer, Collection<DineTableGroup>>();
+		
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			
+			if (dineTableGroup.getNoOfGroupMentor() < minimum){
+				minimum = dineTableGroup.getNoOfGroupMentor();
+			}
+			
+			if (mentorNoAndDineTableGroupMap.get(dineTableGroup.getNoOfGroupMentor()) == null){
+				Collection<DineTableGroup> tempDineTableGroups = new ArrayList<DineTableGroup>();
+				tempDineTableGroups.add(dineTableGroup);
+				mentorNoAndDineTableGroupMap.put(dineTableGroup.getNoOfGroupMentor(), tempDineTableGroups);
+			}else {
+				Collection<DineTableGroup> tempDineTableGroups = mentorNoAndDineTableGroupMap.get(dineTableGroup.getNoOfGroupMentor());
+				tempDineTableGroups.add(dineTableGroup);
+			}
+		}
+		
+		Collection<DineTableGroup> minimumMentorDineTableGroups = mentorNoAndDineTableGroupMap.get(minimum);
+		return RandomnessUtils.pickRandomDineTableGroup(minimumMentorDineTableGroups, this.randomObj);
+	}
+	
+	private DineTableGroup randomlyPickTableWithGenderBalance(Collection<DineTableGroup> dineTableGroups, Gender gender) {
+		
+		/*
+		 * If gender is male, try to pick a table with more female to balance the gender 
+		 * If gender is female, try to pick a table with more male to balance the gender */
+		
+		Collection<DineTableGroup> genderBalancedTables = new ArrayList<DineTableGroup>();
+		Collection<DineTableGroup> maleDominatedTables = new ArrayList<DineTableGroup>();
+		Collection<DineTableGroup> femaleDominatedTables = new ArrayList<DineTableGroup>();
+		
+		boolean isAllTableFull = true;
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			
+			if (this.isTableFull(dineTableGroup)){
+				continue;
+			}
+			
+			isAllTableFull = false;
+			
+			int tableCurrentGenderBalance = dineTableGroup.getNetGenderBalance();
+			
+			if (tableCurrentGenderBalance == 0){
+				genderBalancedTables.add(dineTableGroup);
+			}else if (tableCurrentGenderBalance > 0){
+				maleDominatedTables.add(dineTableGroup);
+			}else if (tableCurrentGenderBalance < 0){
+				femaleDominatedTables.add(dineTableGroup);
+			}
+			
+		}
+		
+		if (gender == Gender.MALE){
+			if (!CollectionUtils.isEmpty(femaleDominatedTables)){
+				return RandomnessUtils.pickRandomDineTableGroup(femaleDominatedTables, this.randomObj);
+			}else if (!CollectionUtils.isEmpty(genderBalancedTables)){
+				return RandomnessUtils.pickRandomDineTableGroup(genderBalancedTables, this.randomObj);
+			}else if (!CollectionUtils.isEmpty(maleDominatedTables)){
+				return RandomnessUtils.pickRandomDineTableGroup(maleDominatedTables, this.randomObj);
+			}
+		}else {
+			if (!CollectionUtils.isEmpty(maleDominatedTables)){
+				return RandomnessUtils.pickRandomDineTableGroup(maleDominatedTables, this.randomObj);
+			}else if (!CollectionUtils.isEmpty(genderBalancedTables)){
+				return RandomnessUtils.pickRandomDineTableGroup(genderBalancedTables, this.randomObj);
+			}else if (!CollectionUtils.isEmpty(femaleDominatedTables)){
+				return RandomnessUtils.pickRandomDineTableGroup(femaleDominatedTables, this.randomObj);
+			}
+		}
+		
+		return null;
 	}
 }

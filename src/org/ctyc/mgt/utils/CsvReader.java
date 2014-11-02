@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.FamilyGroup;
-import org.ctyc.mgt.model.Sex;
+import org.ctyc.mgt.model.Gender;
 import org.ctyc.mgt.model.summercamp.Participant;
 
 public class CsvReader {
@@ -44,8 +44,8 @@ public class CsvReader {
 				participant.setName(tokens[1]);
 				
 				if (StringUtils.isNotBlank(tokens[2])){
-					Sex sex = (StringUtils.equals(tokens[2], "¨k")) ? Sex.MALE : Sex.FEMALE;
-					participant.setSex(sex);
+					Gender sex = (StringUtils.equals(tokens[2], "¨k")) ? Gender.MALE : Gender.FEMALE;
+					participant.setGender(sex);
 				}
 				
 				if (StringUtils.isNotBlank(tokens[5])){

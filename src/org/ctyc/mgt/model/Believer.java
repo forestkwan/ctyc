@@ -43,7 +43,7 @@ public class Believer implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String name;
-	private Sex sex;
+	private Gender gender;
 	private int yearOfBirth;
 	private String sundaySchoolClass;
 	private FamilyGroup familyGroup;
@@ -69,12 +69,12 @@ public class Believer implements Serializable {
 		this.name = name;
 	}
 
-	public Sex getSex() {
-		return sex;
+	public Gender getGender() {
+		return gender;
 	}
 
-	public void setSex(Sex sex) {
-		this.sex = sex;
+	public void setGender(Gender gender) {
+		this.gender = gender;
 	}
 
 	public int getYearOfBirth() {

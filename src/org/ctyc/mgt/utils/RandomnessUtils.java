@@ -2,7 +2,6 @@ package org.ctyc.mgt.utils;
 
 import java.util.Collection;
 import java.util.Random;
-import java.util.Stack;
 
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.Participant;
@@ -50,24 +49,4 @@ public class RandomnessUtils {
 		
 		return null;
 	}
-	
-	public static Participant popRandomParticipant(Stack<Participant> participants, Random randomObj){
-		
-		if (CollectionUtils.isEmpty(participants) || randomObj == null){
-			return null;
-		}
-
-		int item = randomObj.nextInt(participants.size());
-
-		for(int i=0; i<participants.size(); i++)
-		{
-			if (i != item){
-				continue;
-			}
-			return participants.remove(i);
-		}
-		
-		return null;
-	}
-
 }

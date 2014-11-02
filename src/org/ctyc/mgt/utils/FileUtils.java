@@ -76,10 +76,11 @@ public class FileUtils {
 			printWriter.println();
 			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getPlan()){
 				
-				printWriter.printf("Table%d [%d¤H][Cost=%.2f]: ",
+				printWriter.printf("Table%d [%d¤H][Cost=%.2f][Mentor Number=%d]: ",
 						dineTableGroup.getTableNumber(),
 						dineTableGroup.getParticipants().size(),
-						dineTableGroup.getCost());
+						dineTableGroup.getCost(),
+						dineTableGroup.getNoOfGroupMentor());
 				
 				for (Participant participant : dineTableGroup.getParticipants()){
 					String familyId = (participant.getFamilyGroup() != null) ? participant.getFamilyGroup().getFamilyId() : "";

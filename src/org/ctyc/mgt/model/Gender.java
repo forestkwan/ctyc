@@ -1,5 +1,5 @@
 package org.ctyc.mgt.model;
 
-public enum Sex {
+public enum Gender {
 	 MALE, FEMALE;
 }
