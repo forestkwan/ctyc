@@ -38,7 +38,7 @@ public class FamilyGroupCostFunction extends AbstractCostFunction {
 			
 			for (Believer believer : familyGroup.getBelievers()){
 				if (!isExistInTable(dineTableGroup, believer)){
-					return PENALTY_COST;
+					return PENALTY_COST * weight;
 				}
 			}
 			

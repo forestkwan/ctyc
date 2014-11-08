@@ -40,7 +40,7 @@ public class SameGroupCostFunction extends AbstractCostFunction {
 		
 		double penaltyCost = ((double)noSundayClassmateCount / (double)dineTableGroup.getParticipants().size()) * MAX_COST;
 
-		return penaltyCost;
+		return penaltyCost * weight;
 	}
 
 }

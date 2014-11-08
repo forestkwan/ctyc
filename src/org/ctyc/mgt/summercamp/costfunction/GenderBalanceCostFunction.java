@@ -22,7 +22,7 @@ public class GenderBalanceCostFunction extends AbstractCostFunction {
 		double factor = netGenderBalance / size;
 		
 		double cost = MAX_COST * factor * weight;
-		return cost;
+		return cost * weight;
 	}
 
 }

@@ -24,7 +24,7 @@ public class MentorInTableCostFunction extends AbstractCostFunction {
 			}
 		}
 
-		return PENALTY_COST;
+		return PENALTY_COST * weight;
 	}
 
 }
