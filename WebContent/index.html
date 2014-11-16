@@ -1,47 +1,93 @@
 <!DOCTYPE html>
-<html>
-<head><title>Test Web App for Tomcat 7 or Other Servlet 3.0 Container</title>
-<link rel="stylesheet"
-      href="./css/styles.css"
-      type="text/css"/>
-</head>
-<body>
-<table class="title">
-  <tr><th>Test Web App for Tomcat 7</th></tr>
-</table>
-<p/>
-<fieldset>
-<legend>Testing Simple Pages</legend>
-<ul>
-  <li><a href="hello.html">hello.html</a> Simple HTML page.</li>
-  <li><a href="hello.jsp">hello.jsp</a> Simple JSP page.</li>
-</ul>
-</fieldset>
-<p/>
-<fieldset>
-<legend>Testing Simple Servlets</legend>
-<ul>
-  <li><a href="hello">hello</a> The HelloWorld servlet that
-      generates plain text.</li>
-  <li><a href="test">test</a> The TestServlet that generates 
-      HTML, accessed via the URL given in the @WebServlet 
-      annotation in the Java source code.</li>
-  <li><a href="test2">test2</a> The TestServlet, accessed via
-      the URL given in the web.xml file.</li>
-  <li><a href="test-with-utils">test-with-utils</a> TestServlet2, 
-      which internally uses ServletUtilities.</li>
-</ul>
-</fieldset>
-<p/>
+<html lang="en" ng-app="org.ctyc.mgt">
 
- 
-<br/><br/><br/><br/><br/><br/>
-<font size="-3">All code from the
-<a href="http://courses.coreservlets.com/Course-Materials/">
-coreservlets.com J2EE tutorials (servlets, JSP, Struts, JSF 1, JSF 2, PrimeFaces, Ajax [with jQuery], GWT 2, Spring, Hibernate, JPA,
-SOAP-based and RESTful Web Services, Hadoop, &amp; Java 7 programming)</a>. There are also live instructor-led
-<a href="http://courses.coreservlets.com/">training courses on
-the same J2EE topics (servlets, JSP, Struts, JSF 1, JSF 2, PrimeFaces, Ajax [with jQuery], GWT 0, Spring, Hibernate, JPA,
-SOAP-based and RESTful Web Services, Hadoop, &amp; Java 7 programming)</a>.
-</font>
-</body></html>
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>CTYC Management System</title>
+
+<!-- Bootstrap Core CSS -->
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom Fonts -->
+<link href="font-awesome-4.1.0/css/font-awesome.css" rel="stylesheet"
+	type="text/css">
+<!-- Custom CSS -->
+<link href="css/ctyc-style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<div id="wrapper">
+
+		<!-- Navigation -->
+		<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.html">CTYC Management System</a>
+			</div>
+			<!-- /.navbar-header -->
+
+			<ul class="nav navbar-top-links navbar-right">
+				<!-- /.dropdown -->
+				<li class="dropdown"><a class="dropdown-toggle"	data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
+						<i class="fa fa-caret-down"></i>
+				</a>
+					<ul class="dropdown-menu dropdown-user">
+						<li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a></li>
+						<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
+						<li class="divider"></li>
+						<li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i>Logout</a></li>
+					</ul> <!-- /.dropdown-user --></li>
+				<!-- /.dropdown -->
+			</ul>
+			<!-- /.navbar-top-links -->
+
+			<div class="navbar-default sidebar" role="navigation">
+				<div class="sidebar-nav navbar-collapse">
+					<ul class="nav" id="side-menu">
+						<li>
+							<a href="#"><i class="fa fa-users fa-fw"></i>夏令會<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li><a href="#/DineAssignment"><i class="fa fa-cutlery fa-fw"></i>膳食分檯</a></li>
+							</ul> <!-- /.nav-second-level -->
+						</li>
+					</ul>
+				</div>
+				<!-- /.sidebar-collapse -->
+			</div>
+			<!-- /.navbar-static-side -->
+		</nav>
+
+		<div id="page-wrapper">
+			<div ng-view></div>
+		</div>
+		<!-- /#page-wrapper -->
+
+	</div>
+	<!-- /#wrapper -->
+
+	<!-- jQuery -->
+	<script src="jquery/jquery-2.1.1.min.js"></script>
+	<script src="angular/angular.min.js"></script>
+	<script src="angular/angular-route.min.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="bootstrap/js/bootstrap.min.js"></script>
+
+	<!-- Custom Theme JavaScript -->
+	<script src="js/ctyc-mgt.js"></script>
+
+</body>
+
+</html>
