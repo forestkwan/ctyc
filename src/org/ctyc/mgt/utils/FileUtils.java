@@ -84,7 +84,7 @@ public class FileUtils {
 				
 				for (Participant participant : dineTableGroup.getParticipants()){
 					String familyId = (participant.getFamilyGroup() != null) ? participant.getFamilyGroup().getFamilyId() : "";
-					printWriter.printf("%s(%d)[%s]\t", participant.getName(), participant.getGroupNumber(), familyId);
+					printWriter.printf("%s(%s)[%s]\t", participant.getName(), participant.getSundaySchoolClass(), familyId);
 				}
 				
 				printWriter.println();

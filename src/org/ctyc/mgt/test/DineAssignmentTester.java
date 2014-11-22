@@ -35,13 +35,13 @@ public class DineAssignmentTester extends TestCase {
 		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv();
 		
 		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
-		costFunctions.add(new GenderBalanceCostFunction(1, 1));
-		costFunctions.add(new SameGroupCostFunction(1, 1));
+//		costFunctions.add(new GenderBalanceCostFunction(1, 1));
+//		costFunctions.add(new SameGroupCostFunction(1, 1));
 		costFunctions.add(new SameSundayClassCostFunction(1, 1));
 		
 		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
-		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
-		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
+//		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
+//		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 		
 		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campAParticipants, 8, costFunctions, constraintFunctions, 1);
 		

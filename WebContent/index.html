@@ -12,9 +12,9 @@
 <title>CTYC Management System</title>
 
 <!-- Bootstrap Core CSS -->
-<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="common/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <!-- Custom Fonts -->
-<link href="font-awesome-4.1.0/css/font-awesome.css" rel="stylesheet"
+<link href="common/font-awesome-4.1.0/css/font-awesome.css" rel="stylesheet"
 	type="text/css">
 <!-- Custom CSS -->
 <link href="css/ctyc-style.css" rel="stylesheet">
@@ -28,30 +28,10 @@
 		<!-- Navigation -->
 		<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
+
 				<a class="navbar-brand" href="index.html">CTYC Management System</a>
 			</div>
 			<!-- /.navbar-header -->
-
-			<ul class="nav navbar-top-links navbar-right">
-				<!-- /.dropdown -->
-				<li class="dropdown"><a class="dropdown-toggle"	data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
-						<i class="fa fa-caret-down"></i>
-				</a>
-					<ul class="dropdown-menu dropdown-user">
-						<li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a></li>
-						<li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
-						<li class="divider"></li>
-						<li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i>Logout</a></li>
-					</ul> <!-- /.dropdown-user --></li>
-				<!-- /.dropdown -->
-			</ul>
-			<!-- /.navbar-top-links -->
 
 			<div class="navbar-default sidebar" role="navigation">
 				<div class="sidebar-nav navbar-collapse">
@@ -59,6 +39,7 @@
 						<li>
 							<a href="#"><i class="fa fa-users fa-fw"></i>夏令會<span class="fa arrow"></span></a>
 							<ul class="nav nav-second-level">
+								<li><a href="#/DataInput"><i class="fa fa-database fa-fw"></i>資料輸入</a></li>
 								<li><a href="#/DineAssignment"><i class="fa fa-cutlery fa-fw"></i>膳食分檯</a></li>
 							</ul> <!-- /.nav-second-level -->
 						</li>
@@ -78,15 +59,16 @@
 	<!-- /#wrapper -->
 
 	<!-- jQuery -->
-	<script src="jquery/jquery-2.1.1.min.js"></script>
-	<script src="angular/angular.min.js"></script>
-	<script src="angular/angular-route.min.js"></script>
+	<script src="common/jquery/jquery-2.1.1.min.js"></script>
+	<script src="common/angular/angular.min.js"></script>
+	<script src="common/angular/angular-route.min.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<script src="bootstrap/js/bootstrap.min.js"></script>
+	<script src="common/bootstrap/js/bootstrap.min.js"></script>
 
 	<!-- Custom Theme JavaScript -->
 	<script src="js/ctyc-mgt.js"></script>
+	<script src="SummerCamp/js/summercamp.js"></script>
 
 </body>
 

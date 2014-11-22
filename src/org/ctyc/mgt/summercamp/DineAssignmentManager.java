@@ -110,6 +110,7 @@ public class DineAssignmentManager {
 		
 		assignFamilyGroupToTable(participants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(participants, assignedParticipants, dineTableGroups);
+		assignThreeSundayClassmatesToTables(participants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(participants, assignedParticipants, dineTableGroups);
 		
 		this.plan.getPlan().addAll(dineTableGroups);
@@ -193,6 +194,44 @@ public class DineAssignmentManager {
 		
 	}
 	
+	private void assignThreeSundayClassmatesToTables(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		Collection<Participant> unassignedParticipants = new ArrayList<Participant>();
+		for (Participant participant : participants){
+			if (!assignedParticipants.contains(participant)){
+				unassignedParticipants.add(participant);
+			}
+		}
+		
+		/* Create a map according to participants' Sunday class*/
+		Map<String, Collection<Participant>> sundayClassParticipantMap = new HashMap<String, Collection<Participant>>();
+		for (Participant unassignedParticipant : unassignedParticipants){
+			
+			Collection<Participant> sundayClassParticipants = sundayClassParticipantMap.get(unassignedParticipant.getSundaySchoolClass());
+			if (sundayClassParticipants == null){
+				sundayClassParticipants = new ArrayList<Participant>();
+				sundayClassParticipants.add(unassignedParticipant);
+				sundayClassParticipantMap.put(unassignedParticipant.getSundaySchoolClass(), sundayClassParticipants);
+			}else {
+				sundayClassParticipants.add(unassignedParticipant);
+			}
+		}
+		
+		Collection<DineTableGroup> oddTableGroups = new ArrayList<DineTableGroup>();
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			if (this.isEvenNumber(this.tableCapacity - dineTableGroup.getParticipants().size())){
+				continue;
+			}
+		}
+	}
+
 	private void assignParticipantToTable(
 			Collection<Participant> participants,
 			Collection<Participant> assignedParticipants,
@@ -409,5 +448,19 @@ public class DineAssignmentManager {
 		}
 		
 		return null;
+	}
+	
+	private boolean isOddNumber(int number){
+		
+		if( (number%2) == 0){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean isEvenNumber(int number){
+		
+		return !this.isOddNumber(number);
 	}
 }
