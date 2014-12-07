@@ -8,7 +8,31 @@
 		<button type="button" class="btn btn-default" ng-click="inputType='ROOM'">ROOM</button>
 	</div>
 	
-	<div ng-show="inputType=='DINE_TABLE'">
+	<br>
+	
+	<div ng-show="inputType==='DINE_TABLE'">
+	
+		<div ui-grid="dineTableGrid" ui-grid-edit ui-grid-selection class="grid dine-table-grid"></div>
+		
+		<br>
+		
+		<form class="form-inline" role="form" novalidate>
+			<div class="form-inline">
+				<div class="form-group">
+					<label>New Table Capacity</label>
+					<input type="number" class="form-control" id="newTableCapacity" ng-model="newTableCapacity">
+				</div>
+				<button type="button" class="btn btn-default" ng-click="addNewDineTable()" >
+					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</button>
+				<button type="button" class="btn btn-default" ng-disabled="gridApi.selection.getSelectedRows().length <= 0" ng-click="deleteSelectedTable()">
+					<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+				</button>
+			</div>
+			<br>
+			<button type="submit" class="btn btn-success"
+			ng-click="saveDineTable()" >Save</button>
+		</form>
 	</div>
 		
 </div>
