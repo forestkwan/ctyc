@@ -1,4 +1,0 @@
-ctyc
-====
-
-CTYC Management Repository

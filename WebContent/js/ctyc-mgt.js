@@ -44,6 +44,16 @@ angular.module('org.ctyc.mgt', [ 'ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.
 				this.initWebSocket();
 			}
 			return this.webSocket;
+		},
+		sendMessage : function(type, data){
+			var message = {
+					type : type,
+					data : data
+			};
+			this.webSocket.send(JSON.stringify(message));
 		}
 	}
-});
+})
+.run(['ctycWebSocket', function(ctycWebSocket) {
+	ctycWebSocket.initWebSocket();
+}]);

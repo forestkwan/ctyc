@@ -3,6 +3,13 @@
 		<h1 class="page-header">Data Input</h1>
 	</div>
 	<div>
+		<div class="form-group">
+			<label class="inline">Camp:</label>
+				<div class="btn-group" role="group" aria-label="...">
+					<button type="button" ng-click="camp='A'" ng-class="{'btn btn-default active': camp==='A', 'btn btn-default': camp!=='A'}">A</button>
+					<button type="button" ng-click="camp='B'" ng-class="{'btn btn-default active': camp==='B', 'btn btn-default': camp!=='B'}">B</button>
+				</div>
+		</div>
 		<button type="button" class="btn btn-default" ng-click="inputType='DINE_TABLE'">Dine Tables</button>
 		<button type="button" class="btn btn-default" ng-click="inputType='PARTICIPANT'">Participant</button>
 		<button type="button" class="btn btn-default" ng-click="inputType='ROOM'">ROOM</button>

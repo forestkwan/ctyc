@@ -1,6 +1,7 @@
 angular.module('org.ctyc.mgt.summercamp', [])
 .controller('org.ctyc.mgt.summercamp.DataInputCtrl', ['$scope', '$http', 'ctycWebSocket', function($scope, $http, $ctycWebSocket){
 	
+	$scope.camp = 'A';
 	$scope.inputType = 'DINE_TABLE';
 	$scope.newTableCapacity = 8;
 	
@@ -55,10 +56,11 @@ angular.module('org.ctyc.mgt.summercamp', [])
 	};
 	
 	$scope.saveDineTable = function(){
-		var webSocket = $ctycWebSocket.getWebSocket();
-		
-		websocket.send('hi');
-		console.log('get webSocket');
+		var data = {
+				camp : $scope.camp,
+				dineTables : $scope.dineTableGrid.data
+		};
+		var webSocket = $ctycWebSocket.sendMessage('UPDATE_DINE_TABEL', data);
 	};
 	
 	$http.get('campSiteData')
