@@ -21,7 +21,7 @@ public class FileUtils {
 	private static String ENCODING = "UTF-8";
 	private static String DEFAULT_FILE_PATH = "c:\\ctycTempOutput.txt";
 	
-	public static void writeObjectToFile(Serializable object, String filePath){
+	public static void writeObjectToFile(Object object, String filePath){
 		
 		if (StringUtils.isBlank(filePath)){
 			filePath = DEFAULT_FILE_PATH;

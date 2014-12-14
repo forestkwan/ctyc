@@ -1,5 +1,6 @@
 package org.ctyc.mgt.websocket;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +10,11 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.ctyc.mgt.summercamp.SummerCampService;
 
 @ServerEndpoint(value="/ctyc", configurator=CtycWebSocketConfigurator.class)
 public class CtycWebSocket {
@@ -42,7 +48,28 @@ public class CtycWebSocket {
      * @param userSession The session of the client
      */
     @OnMessage
-    public void onMessage(String message, Session userSession) {
-        System.out.println("Message Received: " + message);
+    public void onMessage(String jsonMessage, Session userSession) {
+    	
+    	Message requestMessage = null;
+    	ObjectMapper om = new ObjectMapper();
+    	try {
+    		requestMessage = om.readValue(jsonMessage, Message.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	System.out.println("Message Received: " + jsonMessage);
+    	
+    	SummerCampService summerCampService = SummerCampService.getInstance();
+    	Message responseMessage = summerCampService.processClientMessage(requestMessage);
+    	
+    	if (responseMessage != null){
+    		String responseJson = null;
+			try {
+				responseJson = om.writeValueAsString(responseMessage);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    		userSession.getAsyncRemote().sendText(responseJson);
+    	}
     }
 }

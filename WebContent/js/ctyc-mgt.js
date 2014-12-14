@@ -1,4 +1,7 @@
-angular.module('org.ctyc.mgt', [ 'ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection', 'org.ctyc.mgt.summercamp' ])
+angular.module('org.ctyc.mgt', [ 'ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection'])
+.constant('MESSAGE_TYPE', {
+	"GET_CAMP_SITE" : "GET_CAMP_SITE"
+})
 .config([ '$routeProvider', function($routeProvider) {
 	$routeProvider
 	.when('/', {

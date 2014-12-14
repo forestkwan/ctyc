@@ -1,9 +1,11 @@
-angular.module('org.ctyc.mgt.summercamp', [])
-.controller('org.ctyc.mgt.summercamp.DataInputCtrl', ['$scope', '$http', 'ctycWebSocket', function($scope, $http, $ctycWebSocket){
+var app = angular.module('org.ctyc.mgt');
+app.controller('org.ctyc.mgt.summercamp.DataInputCtrl', ['$scope', 'MESSAGE_TYPE', 'ctycWebSocket', function($scope, MESSAGE_TYPE, $ctycWebSocket){
 	
 	$scope.camp = 'A';
 	$scope.inputType = 'DINE_TABLE';
 	$scope.newTableCapacity = 8;
+	
+	$ctycWebSocket.sendMessage(MESSAGE_TYPE.GET_CAMP_SITE, {});
 	
 	$scope.dineTableGrid = {
 			columnDefs : [
@@ -63,9 +65,9 @@ angular.module('org.ctyc.mgt.summercamp', [])
 		var webSocket = $ctycWebSocket.sendMessage('UPDATE_DINE_TABEL', data);
 	};
 	
-	$http.get('campSiteData')
-	.success(function(data, status, headers, config) {
-		$scope.campsite = data;
-	})
+//	$http.get('campSiteData')
+//	.success(function(data, status, headers, config) {
+//		$scope.campsite = data;
+//	})
 	
 }]);
