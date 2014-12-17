@@ -1,6 +1,7 @@
 angular.module('org.ctyc.mgt', [ 'ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection'])
 .constant('MESSAGE_TYPE', {
-	"GET_CAMP_SITE" : "GET_CAMP_SITE"
+	"GET_CAMP_SITE" : "GET_CAMP_SITE",
+	"UPDATE_DINE_TABLE" : "UPDATE_DINE_TABLE"
 })
 .config([ '$routeProvider', function($routeProvider) {
 	$routeProvider
@@ -19,7 +20,7 @@ angular.module('org.ctyc.mgt', [ 'ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.
 	});
 	}
 ])
-.factory('ctycWebSocket', function(){
+.factory('ctycWebSocket', ['$rootScope', function($rootScope){
 	return {
 		webSocket : null,
 		initWebSocket : function(){
@@ -39,6 +40,7 @@ angular.module('org.ctyc.mgt', [ 'ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.
 		    
 			this.webSocket.onmessage = function(event) {
 				console.log(event.data);
+				$rootScope.$broadcast('websocket-message', event.data);
 		    };
 		    
 		},
@@ -56,7 +58,7 @@ angular.module('org.ctyc.mgt', [ 'ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.
 			this.webSocket.send(JSON.stringify(message));
 		}
 	}
-})
+}])
 .run(['ctycWebSocket', function(ctycWebSocket) {
 	ctycWebSocket.initWebSocket();
 }]);

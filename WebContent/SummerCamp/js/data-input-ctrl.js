@@ -4,12 +4,9 @@ app.controller('org.ctyc.mgt.summercamp.DataInputCtrl', ['$scope', 'MESSAGE_TYPE
 	$scope.camp = 'A';
 	$scope.inputType = 'DINE_TABLE';
 	$scope.newTableCapacity = 8;
-	
-	$ctycWebSocket.sendMessage(MESSAGE_TYPE.GET_CAMP_SITE, {});
-	
 	$scope.dineTableGrid = {
 			columnDefs : [
-			              { name: 'tableNumber', enableCellEdit: false, width: '50%' },
+			              { name: 'number', displayName: 'Table Number', enableCellEdit: false, width: '50%' },
 			              { name: 'capacity', displayName: 'Table Capacity', width: '50%', type: 'number' }
 			              ],
 			enableRowSelection: true,
@@ -18,6 +15,18 @@ app.controller('org.ctyc.mgt.summercamp.DataInputCtrl', ['$scope', 'MESSAGE_TYPE
 			multiSelect : false,
 			data : []
 	};
+	
+	$scope.$on('websocket-message', function(event, jsonMessage){
+		var message = JSON.parse(jsonMessage);
+		
+		if (message.type === 'CAMP_SITE_DATA'){
+			var campSites = message.data.campSites;
+			$scope.dineTableGrid.data = campSites['A'].canteenTables;
+			console.log($scope.dineTableGrid.data);
+		}
+	});
+	
+	$ctycWebSocket.sendMessage(MESSAGE_TYPE.GET_CAMP_SITE, {});
 	
 	$scope.dineTableGrid.onRegisterApi = function( gridApi ) {
 		$scope.gridApi = gridApi;
@@ -62,7 +71,7 @@ app.controller('org.ctyc.mgt.summercamp.DataInputCtrl', ['$scope', 'MESSAGE_TYPE
 				camp : $scope.camp,
 				dineTables : $scope.dineTableGrid.data
 		};
-		var webSocket = $ctycWebSocket.sendMessage('UPDATE_DINE_TABEL', data);
+		var webSocket = $ctycWebSocket.sendMessage(MESSAGE_TYPE.UPDATE_DINE_TABLE, data);
 	};
 	
 //	$http.get('campSiteData')
