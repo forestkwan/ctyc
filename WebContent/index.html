@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="org.ctyc.mgt">
+<html lang="en" ng-app="ctyc.mgt">
 
 <head>
 
@@ -11,13 +11,10 @@
 
 <title>CTYC Management System</title>
 
-<!-- Bootstrap Core CSS -->
 <link href="common/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<!-- ui-grid CSS -->
 <link href="common/ui-grid/ui-grid.min.css" rel="stylesheet">
-<!-- Custom Fonts -->
 <link href="common/font-awesome-4.1.0/css/font-awesome.css" rel="stylesheet" type="text/css">
-<!-- Custom CSS -->
+<link href="common/angular-notify/angular-notify.min.css" rel="stylesheet" type="text/css">
 <link href="css/ctyc-style.css" rel="stylesheet">
 <link href="SummerCamp/css/summer-camp-style.css" rel="stylesheet">
 
@@ -60,18 +57,18 @@
 	</div>
 	<!-- /#wrapper -->
 
-	<!-- jQuery -->
 	<script src="common/jquery/jquery-2.1.1.min.js"></script>
 	<script src="common/angular/angular.min.js"></script>
 	<script src="common/angular/angular-route.min.js"></script>
 	<script src="common/ui-grid/ui-grid.min.js"></script>
-
-	<!-- Bootstrap Core JavaScript -->
+	<script src="common/angular-notify/angular-notify.min.js"></script>
 	<script src="common/bootstrap/js/bootstrap.min.js"></script>
 
 	<!-- Custom Theme JavaScript -->
-	<script src="js/ctyc-mgt.js"></script>
-	<script src="SummerCamp/js/data-input-ctrl.js"></script>
+	<script src="SummerCamp/js/ctyc.mgt.summercamp.module.js"></script>
+	<script src="SummerCamp/js/ctyc.mgt.summercamp.ctrl.datainput.js"></script>
+	<script src="js/ctyc.mgt.module.js"></script>
+	<script src="js/ctyc.mgt.service.websocket.js"></script>
 
 </body>
 

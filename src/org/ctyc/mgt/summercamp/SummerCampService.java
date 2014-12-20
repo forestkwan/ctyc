@@ -36,7 +36,7 @@ public class SummerCampService {
 			campB.setName("B");
 			
 			this.campSiteMap.put("A", campA);
-			this.campSiteMap.put("B", campA);
+			this.campSiteMap.put("B", campB);
 			
 			this.saveCampSiteToFile();
 		}

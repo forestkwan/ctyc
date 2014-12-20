@@ -6,20 +6,20 @@
 		<div class="form-group">
 			<label class="inline">Camp:</label>
 				<div class="btn-group" role="group" aria-label="...">
-					<button type="button" ng-click="camp='A'" ng-class="{'btn btn-default active': camp==='A', 'btn btn-default': camp!=='A'}">A</button>
-					<button type="button" ng-click="camp='B'" ng-class="{'btn btn-default active': camp==='B', 'btn btn-default': camp!=='B'}">B</button>
+					<button type="button" ng-click="vm.changeCampSite('A')" ng-class="{'btn btn-default active': vm.selectedCamp==='A', 'btn btn-default': vm.selectedCamp!=='A'}">A</button>
+					<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
 				</div>
 		</div>
-		<button type="button" class="btn btn-default" ng-click="inputType='DINE_TABLE'">Dine Tables</button>
-		<button type="button" class="btn btn-default" ng-click="inputType='PARTICIPANT'">Participant</button>
-		<button type="button" class="btn btn-default" ng-click="inputType='ROOM'">ROOM</button>
+		<button type="button" class="btn btn-default" ng-click="vm.inputView='DINE_TABLE'">Dine Tables</button>
+		<button type="button" class="btn btn-default" ng-click="vm.inputView='PARTICIPANT'">Participant</button>
+		<button type="button" class="btn btn-default" ng-click="vm.inputView='ROOM'">ROOM</button>
 	</div>
 	
 	<br>
 	
-	<div ng-show="inputType==='DINE_TABLE'">
+	<div ng-show="vm.inputView==='DINE_TABLE'">
 	
-		<div ui-grid="dineTableGrid" ui-grid-edit ui-grid-selection class="grid dine-table-grid"></div>
+		<div ui-grid="vm.dineTableGrid" ui-grid-edit ui-grid-selection class="grid dine-table-grid"></div>
 		
 		<br>
 		
@@ -27,18 +27,17 @@
 			<div class="form-inline">
 				<div class="form-group">
 					<label>New Table Capacity</label>
-					<input type="number" class="form-control" id="newTableCapacity" ng-model="newTableCapacity">
+					<input type="number" class="form-control" id="newTableCapacity" ng-model="vm.newTableCapacity">
 				</div>
-				<button type="button" class="btn btn-default" ng-click="addNewDineTable()" >
+				<button type="button" class="btn btn-default" ng-click="vm.addNewDineTable()" >
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-default" ng-disabled="gridApi.selection.getSelectedRows().length <= 0" ng-click="deleteSelectedTable()">
+				<button type="button" class="btn btn-default" ng-disabled="gridApi.selection.getSelectedRows().length <= 0" ng-click="vm.deleteSelectedTable()">
 					<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
 				</button>
 			</div>
 			<br>
-			<button type="submit" class="btn btn-success"
-			ng-click="saveDineTable()" >Save</button>
+			<button type="submit" class="btn btn-success" ng-click="vm.saveDineTable()" >Save</button>
 		</form>
 	</div>
 		
