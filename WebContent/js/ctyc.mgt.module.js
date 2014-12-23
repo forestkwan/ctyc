@@ -1,5 +1,10 @@
 (function(){
-	var dependency = ['ngRoute', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection', 'ctyc.mgt.summercamp'];
+	var dependency = 
+		['ngRoute',
+		 'ui.grid',
+		 'ui.grid.edit',
+		 'ui.grid.selection',
+		 'ctyc.mgt.summercamp'];
 	
 	angular.module('ctyc.mgt', dependency)
 	.constant('MESSAGE_TYPE', {

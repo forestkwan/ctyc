@@ -14,6 +14,7 @@ import org.ctyc.mgt.websocket.Message;
 
 public class SummerCampService {
 	
+	private static String SERVER_RESPONSE = "SERVER_RESPONSE";
 	private static String GET_CAMP_SITE = "GET_CAMP_SITE";
 	private static String CAMP_SITE_DATA = "CAMP_SITE_DATA";
 	private static String UPDATE_DINE_TABLE = "UPDATE_DINE_TABLE";
@@ -66,23 +67,23 @@ public class SummerCampService {
 		}
 		
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), UPDATE_DINE_TABLE)){
-			this.updateDineTable(requestMessage.getData());
+			responseMessage = this.updateDineTable(requestMessage.getData());
 		}
 		
 		return responseMessage;
 	}
 
-	private void updateDineTable(Map<String, Object> data) {
+	private Message updateDineTable(Map<String, Object> data) {
 		
 		if (data == null || data.get("dineTables") == null || data.get("camp") == null){
-			return;
+			return null;
 		}
 		
 		String campName = data.get("camp").toString();
 		CampSite campSite = this.campSiteMap.get(campName);
 		
 		if (campSite == null){
-			return;
+			return null;
 		}
 		campSite.getCanteenTables().clear();
 		
@@ -97,6 +98,10 @@ public class SummerCampService {
 		}
 		
 		this.saveCampSiteToFile();
+		
+		Map<String, Object> responseData = new HashMap<String, Object>();
+		responseData.put("isSuccess", true);
+		return new Message(SERVER_RESPONSE, responseData);
 	}
 	
 }

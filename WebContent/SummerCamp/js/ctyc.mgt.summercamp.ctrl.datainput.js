@@ -35,6 +35,7 @@
 		vm.addNewDineTable = addNewDineTable;
 		vm.deleteSelectedTable = deleteSelectedTable;
 		vm.saveDineTable = saveDineTable;
+		vm.isLoading = false;
 		
 		/////////
 		
@@ -48,6 +49,13 @@
 					vm.camps[prop] = campSitesData[prop];
 				}
 				vm.dineTableGrid.data = vm.camps[vm.selectedCamp].canteenTables;
+			}
+			
+			if (message.type === 'SERVER_RESPONSE'){
+				if (message.data.isSuccess === true){
+					notify('Save Complete');
+					vm.isLoading = false;
+				}
 			}
 			
 			$scope.$digest();
@@ -104,7 +112,9 @@
 					dineTables : vm.camps[vm.selectedCamp].canteenTables
 			};
 			$ctycWebSocket.sendMessage(MESSAGE_TYPE.UPDATE_DINE_TABLE, data);
-			notify('My message');
+			
+			vm.isLoading = true;
+			notify('Saving...');
 		};
 
 	};
