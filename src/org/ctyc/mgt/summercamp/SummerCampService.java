@@ -1,5 +1,6 @@
 package org.ctyc.mgt.summercamp;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
+import org.ctyc.mgt.model.summercamp.Participant;
+import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 import org.ctyc.mgt.websocket.Message;
 
@@ -19,7 +22,7 @@ public class SummerCampService {
 	private static String CAMP_SITE_DATA = "CAMP_SITE_DATA";
 	private static String UPDATE_DINE_TABLE = "UPDATE_DINE_TABLE";
 	
-	private static String CAMP_SITE_PATH = "CampSite.txt";
+	private static String CAMP_SITE_PATH = "c:\\CTYCSave\\CampSite.txt";
 	
 	private static SummerCampService instance = null;
 	private Map<String, CampSite> campSiteMap = null;
@@ -32,9 +35,11 @@ public class SummerCampService {
 			
 			CampSite campA = new CampSite();
 			campA.setName("A");
+			campA.getParticipants().addAll(CsvReader.readParticipantCsv("c:\\CTYCSave\\campA_panticipants.csv"));
 			
 			CampSite campB = new CampSite();
 			campB.setName("B");
+			campB.getParticipants().addAll(CsvReader.readParticipantCsv("c:\\CTYCSave\\campB_panticipants.csv"));
 			
 			this.campSiteMap.put("A", campA);
 			this.campSiteMap.put("B", campB);

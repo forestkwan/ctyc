@@ -32,7 +32,7 @@ public class DineAssignmentTester extends TestCase {
 		CampSite campSite = TestObjectGenerator.generateTestCampSite();
 		FileUtils.writeObjectToFile(campSite, "c:\\CTYCSave\\CampSite.ser");
 		
-		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv();
+		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv("c:\\CTYCSave\\campA_panticipants.csv");
 		
 		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
 //		costFunctions.add(new GenderBalanceCostFunction(1, 1));

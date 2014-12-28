@@ -32,13 +32,34 @@
 				<button type="button" class="btn btn-default" ng-click="vm.addNewDineTable()" >
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-default" ng-disabled="gridApi.selection.getSelectedRows().length <= 0" ng-click="vm.deleteSelectedTable()">
+				<button type="button" class="btn btn-default" ng-disabled="dineTableGridApi.selection.getSelectedRows().length <= 0" ng-click="vm.deleteSelectedTable()">
 					<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
 				</button>
 			</div>
 			<br>
 			<button type="submit" class="btn btn-success" ng-disabled="vm.isLoading" ng-click="vm.saveDineTable()" >Save</button>
 		</form>
+	</div>
+	
+	<div ng-show="vm.inputView==='PARTICIPANT'">
+	
+		<div ui-grid="vm.participantGrid" ui-grid-edit ui-grid-selection class="grid participant-grid"></div>
+		
+		<br>
+		
+		<form class="form-inline" role="form" novalidate>
+			<div class="form-inline">
+				<button type="button" class="btn btn-default" ng-click="vm.addNewParticipant()" >
+					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</button>
+				<button type="button" class="btn btn-default" ng-disabled="participantGridApi.selection.getSelectedRows().length <= 0" ng-click="vm.deleteParticipant()">
+					<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+				</button>
+			</div>
+			<br>
+			<button type="submit" class="btn btn-success" ng-disabled="vm.isLoading" ng-click="vm.saveParticipant()" >Save</button>
+		</form>
+		
 	</div>
 		
 </div>

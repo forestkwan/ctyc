@@ -63,7 +63,7 @@ public class CtycWebSocket {
     	Message responseMessage = summerCampService.processClientMessage(requestMessage);
     	
     	if (responseMessage != null){
-    		String responseJson = null;
+    		String responseJson = "";
 			try {
 				responseJson = om.writeValueAsString(responseMessage);
 			} catch (Exception e) {

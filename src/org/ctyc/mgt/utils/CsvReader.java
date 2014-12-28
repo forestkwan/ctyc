@@ -16,9 +16,8 @@ import org.ctyc.mgt.model.summercamp.Participant;
 
 public class CsvReader {
 
-	public static Collection<Participant> readParticipantCsv(){
+	public static Collection<Participant> readParticipantCsv(String filepath){
 		
-		String csvFileToRead = "c:\\CTYCSave\\campA_panticipants.csv";
 		BufferedReader bufferedReader = null;
 		String line = "";
 		String separator = ",";
@@ -26,7 +25,7 @@ public class CsvReader {
 		Collection<Participant> participants = new ArrayList<Participant>();
 		try {
 
-			bufferedReader = new BufferedReader(new FileReader(csvFileToRead));
+			bufferedReader = new BufferedReader(new FileReader(filepath));
 			int count = 0;
 			Map<String, FamilyGroup> familyGroupMap = new HashMap<String, FamilyGroup>();
 			
@@ -68,12 +67,12 @@ public class CsvReader {
 					
 					if (familyGroup == null){
 						familyGroup = new FamilyGroup(tokens[13]);
-						familyGroup.getBelievers().add(participant);
+						familyGroup.getBelieverIds().add(participant.getId());
 						familyGroupMap.put(tokens[13], familyGroup);
 						
 						participant.setFamilyGroup(familyGroup);
 					}else {
-						familyGroup.getBelievers().add(participant);
+						familyGroup.getBelieverIds().add(participant.getId());
 						participant.setFamilyGroup(familyGroup);
 					}
 					

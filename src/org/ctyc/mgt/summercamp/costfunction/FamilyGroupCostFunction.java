@@ -36,10 +36,10 @@ public class FamilyGroupCostFunction extends AbstractCostFunction {
 		/* All family group member must be exist in the table */
 		for (FamilyGroup familyGroup : familyGroups){
 			
-			for (Believer believer : familyGroup.getBelievers()){
-				if (!isExistInTable(dineTableGroup, believer)){
-					return PENALTY_COST * weight;
-				}
+			for (String believer : familyGroup.getBelieverIds()){
+//				if (!isExistInTable(dineTableGroup, believer)){
+//					return PENALTY_COST * weight;
+//				}
 			}
 			
 		}

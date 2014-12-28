@@ -54,7 +54,6 @@ public class FileUtils {
 			objectInputStream.close();
 			return object;
 		} catch (Exception ex) {
-			ex.printStackTrace();
 			return null;
 		}
 	}

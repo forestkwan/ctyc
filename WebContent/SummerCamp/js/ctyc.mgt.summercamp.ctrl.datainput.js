@@ -25,16 +25,39 @@
 				enableRowHeaderSelection: false,
 				enableCellEditOnFocus : true,
 				multiSelect : false,
-				onRegisterApi : function( gridApi ) {
-					$scope.gridApi = gridApi;
+				onRegisterApi : function( dineTableGridApi ) {
+					$scope.dineTableGridApi = dineTableGridApi;
 				},
 				data : vm.camps[vm.selectedCamp].canteenTables
+		}
+		
+		vm.participantGrid = {
+				columnDefs : [
+				              { name: 'id', displayName: 'ID', enableCellEdit: false, width: '50' },
+				              { name: 'name', displayName: 'Name', enableCellEdit: false, width: '100' },
+				              { name: 'gender', displayName: 'Gender', enableCellEdit: false, width: '100' },
+				              { name: 'yearOfBirth', displayName: 'Year of Birth', enableCellEdit: false, width: '80' },
+				              { name: 'mentor', displayName: 'Mentor', enableCellEdit: false, width: '100' },
+				              { name: 'groupNumber', displayName: 'Group Number', enableCellEdit: false, width: '80' },
+				              { name: 'groupMentor', displayName: 'Group Mentor', enableCellEdit: false, width: '80' }
+				              ],
+				enableRowSelection: true,
+				enableRowHeaderSelection: false,
+				enableCellEditOnFocus : true,
+				multiSelect : false,
+				onRegisterApi : function( participantGridApi ) {
+					$scope.participantGridApi = participantGridApi;
+				},
+				data : vm.camps[vm.selectedCamp].participants
 		}
 		
 		vm.changeCampSite = changeCampSite;
 		vm.addNewDineTable = addNewDineTable;
 		vm.deleteSelectedTable = deleteSelectedTable;
 		vm.saveDineTable = saveDineTable;
+		vm.addNewParticipant = addNewParticipant;
+		vm.deleteParticipant = deleteParticipant;
+		vm.saveParticipant = saveParticipant;
 		vm.isLoading = false;
 		
 		/////////
@@ -49,6 +72,7 @@
 					vm.camps[prop] = campSitesData[prop];
 				}
 				vm.dineTableGrid.data = vm.camps[vm.selectedCamp].canteenTables;
+				vm.participantGrid.data = vm.camps[vm.selectedCamp].participants;
 			}
 			
 			if (message.type === 'SERVER_RESPONSE'){
@@ -70,6 +94,7 @@
 		function changeCampSite(selectedCamp){
 			vm.selectedCamp = selectedCamp;
 			vm.dineTableGrid.data = vm.camps[vm.selectedCamp].canteenTables;
+			vm.participantGrid.data = vm.camps[vm.selectedCamp].participants;
 		}
 		
 		function addNewDineTable(){
@@ -78,7 +103,7 @@
 		};
 		
 		function deleteSelectedTable(){
-			var selectedRows = $scope.gridApi.selection.getSelectedRows();
+			var selectedRows = $scope.dineTableGridApi.selection.getSelectedRows();
 			if (selectedRows === undefined || selectedRows === null || selectedRows.length <= 0){
 				return;
 			}
@@ -101,7 +126,7 @@
 				
 				/* Select the table with the same table number as the removed table */
 				if (vm.camps[vm.selectedCamp].canteenTables[i].number === removedTableNumber){
-					$scope.gridApi.selection.selectRow(vm.camps[vm.selectedCamp].canteenTables[i]);
+					$scope.dineTableGridApi.selection.selectRow(vm.camps[vm.selectedCamp].canteenTables[i]);
 				}
 			}
 		};
@@ -115,6 +140,18 @@
 			
 			vm.isLoading = true;
 			notify('Saving...');
+		};
+		
+		function addNewParticipant(){
+			
+		};
+		
+		function deleteParticipant(){
+			
+		};
+		
+		function saveParticipant(){
+			
 		};
 
 	};

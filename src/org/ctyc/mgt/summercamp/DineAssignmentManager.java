@@ -156,16 +156,16 @@ public class DineAssignmentManager {
 				
 				int emptySeat = this.tableCapacity - tempTableGroup.getParticipants().size();
 				
-				if (familyGroup.getBelievers().size() > emptySeat){
+				if (familyGroup.getBelieverIds().size() > emptySeat){
 					continue;
 				}
 				
 				hasEnoughCapacity = true;
 			}
 			
-			for (Believer believer : familyGroup.getBelievers()){
-				tempTableGroup.getParticipants().add((Participant)believer);
-				assignedParticipants.add((Participant)believer);
+			for (String believerId : familyGroup.getBelieverIds()){
+//				tempTableGroup.getParticipants().add((Participant)believer);
+//				assignedParticipants.add((Participant)believer);
 			}
 		}		
 	}

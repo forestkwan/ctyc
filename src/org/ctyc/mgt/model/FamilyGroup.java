@@ -1,12 +1,17 @@
 package org.ctyc.mgt.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class FamilyGroup {
+public class FamilyGroup implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String familyId;	/* The Believer ID of the family leader */
-	private Collection<Believer> believers;
+	private Collection<String> believerIds;
 	
 	@Override
 	public int hashCode() {
@@ -40,23 +45,23 @@ public class FamilyGroup {
 
 	public FamilyGroup(String familyId){
 		this.familyId = familyId;
-		this.believers = new HashSet<Believer>();
+		this.believerIds = new HashSet<String>();
 	}
 	
-	public FamilyGroup(String familyId, Collection<Believer> believers){
+	public FamilyGroup(String familyId, Collection<String> believerIds){
 		this.familyId = familyId;
-		this.believers = new HashSet<Believer>();
-		this.believers.addAll(believers);
+		this.believerIds = new HashSet<String>();
+		this.believerIds.addAll(believerIds);
 	}
 
 	public String getFamilyId() {
 		return familyId;
 	}
 
-	public Collection<Believer> getBelievers() {
-		if (this.believers == null){
-			this.believers = new HashSet<Believer>();
+	public Collection<String> getBelieverIds() {
+		if (this.believerIds == null){
+			this.believerIds = new HashSet<String>();
 		}
-		return believers;
+		return believerIds;
 	}
 }
