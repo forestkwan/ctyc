@@ -1,5 +1,6 @@
 package org.ctyc.mgt.summercamp;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.Participant;
+import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 import org.ctyc.mgt.websocket.Message;
@@ -21,35 +24,85 @@ public class SummerCampService {
 	private static String GET_CAMP_SITE = "GET_CAMP_SITE";
 	private static String CAMP_SITE_DATA = "CAMP_SITE_DATA";
 	private static String UPDATE_DINE_TABLE = "UPDATE_DINE_TABLE";
+	private static String GET_DINE_ASSIGNMENT = "GET_DINE_ASSIGNMENT";
+	private static String DINE_ASSIGNMENT_DATA = "DINE_ASSIGNMENT_DATA";
 	
 	private static String CAMP_SITE_PATH = "c:\\CTYCSave\\CampSite.txt";
+	private static String DINE_ASSIGNMENT_PLAN_PATH = "c:\\CTYCSave\\DineAssignmentPlan.txt";
+	
+	private static String[] campNames = {"A", "B"};
 	
 	private static SummerCampService instance = null;
 	private Map<String, CampSite> campSiteMap = null;
+	private Map<String, DineAssignmentPlan> dineAssignmentPlanMap = null;
 
 	protected SummerCampService(){
 		// Load saved camp site
+		this.initCampSiteMap();
+		this.initDineAssignmentPlanMap();
+	}
+	
+	private void initCampSiteMap(){
+		
 		this.campSiteMap = FileUtils.readFileToObject(CAMP_SITE_PATH);
+		
 		if (this.campSiteMap == null){
 			this.campSiteMap = new HashMap<String, CampSite>();
 			
-			CampSite campA = new CampSite();
-			campA.setName("A");
-			campA.getParticipants().addAll(CsvReader.readParticipantCsv("c:\\CTYCSave\\campA_panticipants.csv"));
-			
-			CampSite campB = new CampSite();
-			campB.setName("B");
-			campB.getParticipants().addAll(CsvReader.readParticipantCsv("c:\\CTYCSave\\campB_panticipants.csv"));
-			
-			this.campSiteMap.put("A", campA);
-			this.campSiteMap.put("B", campB);
+			for (String campName : campNames){
+				CampSite campSite = new CampSite();
+				campSite.setName(campName);
+				campSite.getParticipants().addAll(CsvReader.readParticipantCsv("c:\\CTYCSave\\camp" + campName + "_panticipants.csv"));
+				
+				this.campSiteMap.put(campName, campSite);
+			}
 			
 			this.saveCampSiteToFile();
 		}
 	}
 	
+	private void initDineAssignmentPlanMap(){
+		
+		this.dineAssignmentPlanMap = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
+		
+		if (this.dineAssignmentPlanMap == null){
+			
+			this.dineAssignmentPlanMap = new HashMap<String, DineAssignmentPlan>();
+			Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
+//			costFunctions.add(new GenderBalanceCostFunction(1, 1));
+//			costFunctions.add(new SameGroupCostFunction(1, 1));
+			costFunctions.add(new SameSundayClassCostFunction(1, 1));
+			
+			Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
+//			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
+//			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
+			
+			for (String campName : campNames){
+				
+				CampSite campSite = this.campSiteMap.get(campName);
+				if (campSite == null){
+					continue;
+				}
+				
+				DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campSite.getParticipants(), 8, costFunctions, constraintFunctions, 1);
+				dineAssignmentManager.doAssignment();
+				DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
+				
+				if (dineAssignmentPlan != null){
+					this.dineAssignmentPlanMap.put(campName, dineAssignmentPlan);
+				}
+			}
+		}
+		
+		this.saveDineTableAssignmentToFile();
+	}
+	
 	protected void saveCampSiteToFile(){
 		FileUtils.writeObjectToFile(this.campSiteMap, CAMP_SITE_PATH);
+	}
+	
+	protected void saveDineTableAssignmentToFile(){
+		FileUtils.writeObjectToFile(this.dineAssignmentPlanMap, DINE_ASSIGNMENT_PLAN_PATH);
 	}
 	
 	public static SummerCampService getInstance() {
@@ -69,6 +122,12 @@ public class SummerCampService {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("campSites", this.campSiteMap);
 			responseMessage = new Message(CAMP_SITE_DATA, data);
+		}
+		
+		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), GET_DINE_ASSIGNMENT)){
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("dineAssignment", this.dineAssignmentPlanMap);
+			responseMessage = new Message(DINE_ASSIGNMENT_DATA, data);
 		}
 		
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), UPDATE_DINE_TABLE)){

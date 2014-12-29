@@ -8,6 +8,7 @@
 		
 		var vm = this;
 		
+		vm.isLoading = false;
 		vm.selectedCamp = 'A';
 		vm.inputView = 'DINE_TABLE';
 		vm.newTableCapacity = 8;
@@ -58,7 +59,6 @@
 		vm.addNewParticipant = addNewParticipant;
 		vm.deleteParticipant = deleteParticipant;
 		vm.saveParticipant = saveParticipant;
-		vm.isLoading = false;
 		
 		/////////
 		

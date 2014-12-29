@@ -1,12 +1,17 @@
 package org.ctyc.mgt.summercamp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 
-public class DineAssignmentPlan {
+public class DineAssignmentPlan implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private double cost;
 	private Collection<DineTableGroup> plan;
 	

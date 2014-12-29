@@ -9,7 +9,8 @@
 	angular.module('ctyc.mgt', dependency)
 	.constant('MESSAGE_TYPE', {
 		"GET_CAMP_SITE" : "GET_CAMP_SITE",
-		"UPDATE_DINE_TABLE" : "UPDATE_DINE_TABLE"
+		"UPDATE_DINE_TABLE" : "UPDATE_DINE_TABLE",
+		"GET_DINE_ASSIGNMENT" : "GET_DINE_ASSIGNMENT"
 	})
 	.config([ '$routeProvider', function($routeProvider) {
 		$routeProvider
@@ -22,7 +23,9 @@
 			controllerAs : 'vm'
 		})
 		.when('/DineAssignment', {
-			templateUrl : 'SummerCamp/DineAssignment.html'
+			templateUrl : 'SummerCamp/DineAssignment.html',
+			controller : 'ctyc.mgt.summercamp.ctrl.dineassignment',
+			controllerAs : 'vm'
 		})
 		.otherwise({
 			redirectTo : '/'
