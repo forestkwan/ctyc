@@ -27,12 +27,12 @@ public class DineAssignmentEvaluator {
 
 	public void evaluatePlan(DineAssignmentPlan plan){
 		
-		if (CollectionUtils.isEmpty(plan.getPlan())){
+		if (CollectionUtils.isEmpty(plan.getDineTableGroups())){
 			return;
 		}
 		
 		double totalCost = 0;
-		for (DineTableGroup dineTableGroup : plan.getPlan()){
+		for (DineTableGroup dineTableGroup : plan.getDineTableGroups()){
 			evaluateTable(dineTableGroup);
 			totalCost += dineTableGroup.getCost();
 		}

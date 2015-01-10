@@ -27,7 +27,7 @@ public class DineAssignmentPlan implements Serializable {
 		this.cost = cost;
 	}
 
-	public Collection<DineTableGroup> getPlan(){
+	public Collection<DineTableGroup> getDineTableGroups(){
 		if (this.plan == null){
 			this.plan = new ArrayList<DineTableGroup>();
 		}

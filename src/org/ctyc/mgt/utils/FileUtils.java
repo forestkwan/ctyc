@@ -60,7 +60,7 @@ public class FileUtils {
 	
 	public static void writeDineAssignmentPlan(DineTimeSlot dineTimeSlot, DineAssignmentPlan dineAssignmentPlan, String filePath){
 		
-		if (dineTimeSlot == null || CollectionUtils.isEmpty(dineAssignmentPlan.getPlan())){
+		if (dineTimeSlot == null || CollectionUtils.isEmpty(dineAssignmentPlan.getDineTableGroups())){
 			System.out.println("Dine assignment plan is empty. No file is outputed");
 		}
 		
@@ -73,7 +73,7 @@ public class FileUtils {
 			
 			printWriter.printf("Day %d, %s", dineTimeSlot.getNumberOfDay(), dineTimeSlot.getTimeOfDay().toString());
 			printWriter.println();
-			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getPlan()){
+			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
 				
 				printWriter.printf("Table%d [%d¤H][Cost=%.2f][Mentor Number=%d]: ",
 						dineTableGroup.getTableNumber(),

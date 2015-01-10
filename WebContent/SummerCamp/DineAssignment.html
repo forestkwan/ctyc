@@ -11,6 +11,11 @@
 					<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
 				</div>
 		</div>
+		
+		<div ng-repeat="dineTableGroup in vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups">
+			<dine-table dine-table-data='dineTableGroup'></dine-table>
+		</div>
+		
 	</div>
 	
 	<br>

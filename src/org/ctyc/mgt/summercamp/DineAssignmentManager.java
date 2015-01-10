@@ -113,7 +113,7 @@ public class DineAssignmentManager {
 		assignThreeSundayClassmatesToTables(participants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(participants, assignedParticipants, dineTableGroups);
 		
-		this.plan.getPlan().addAll(dineTableGroups);
+		this.plan.getDineTableGroups().addAll(dineTableGroups);
 	}
 
 	private void assignFamilyGroupToTable(
@@ -277,18 +277,18 @@ public class DineAssignmentManager {
 	}
 	
 	private void reAssignment(){
-		if (this.plan == null || this.plan.getPlan() == null || this.plan.getPlan().size() < 2){
+		if (this.plan == null || this.plan.getDineTableGroups() == null || this.plan.getDineTableGroups().size() < 2){
 			return;
 		}
 
-		DineTableGroup dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
-		DineTableGroup dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
+		DineTableGroup dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getDineTableGroups(), this.randomObj);
+		DineTableGroup dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getDineTableGroups(), this.randomObj);
 		
 		Participant participant1 = null;
 		Participant participant2 = null;
 		while (dineTableGroup1 == dineTableGroup2 || participant1 == null || participant2 == null){
-			dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
-			dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getPlan(), this.randomObj);
+			dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getDineTableGroups(), this.randomObj);
+			dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getDineTableGroups(), this.randomObj);
 			
 			participant1 = RandomnessUtils.pickRandomParticipant(dineTableGroup1.getParticipants(), randomObj);
 			participant2 = RandomnessUtils.pickRandomParticipant(dineTableGroup2.getParticipants(), randomObj);
