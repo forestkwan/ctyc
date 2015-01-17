@@ -6,11 +6,13 @@
 	<div>
 		<div class="form-group">
 			<label class="inline">Camp:</label>
-				<div class="btn-group" role="group" aria-label="...">
-					<button type="button" ng-click="vm.changeCampSite('A')" ng-class="{'btn btn-default active': vm.selectedCamp==='A', 'btn btn-default': vm.selectedCamp!=='A'}">A</button>
-					<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
-				</div>
+			<div class="btn-group" role="group" aria-label="...">
+				<button type="button" ng-click="vm.changeCampSite('A')" ng-class="{'btn btn-default active': vm.selectedCamp==='A', 'btn btn-default': vm.selectedCamp!=='A'}">A</button>
+				<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
+			</div>
+			<button class="btn btn-default" type="button" ng-click="vm.saveAssignment()">Save</button>
 		</div>
+		
 		
 		<div ng-repeat="dineTableGroup in vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups">
 			<dine-table dine-table-data='dineTableGroup'></dine-table>

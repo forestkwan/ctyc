@@ -10,7 +10,8 @@
 	.constant('MESSAGE_TYPE', {
 		"GET_CAMP_SITE" : "GET_CAMP_SITE",
 		"UPDATE_DINE_TABLE" : "UPDATE_DINE_TABLE",
-		"GET_DINE_ASSIGNMENT" : "GET_DINE_ASSIGNMENT"
+		"GET_DINE_ASSIGNMENT" : "GET_DINE_ASSIGNMENT",
+		"UPDATE_DINE_ASSIGNMENT" : "UPDATE_DINE_ASSIGNMENT"
 	})
 	.config([ '$routeProvider', function($routeProvider) {
 		$routeProvider

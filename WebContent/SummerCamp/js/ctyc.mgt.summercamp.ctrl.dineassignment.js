@@ -16,6 +16,7 @@
 		vm.isLoading = false;
 		
 		vm.changeCampSite = changeCampSite;
+		vm.saveAssignment = saveAssignment;
 		
 		//////////////////
 		
@@ -36,6 +37,17 @@
 		
 		function changeCampSite(selectedCamp){
 			vm.selectedCamp = selectedCamp;
+		}
+		
+		function saveAssignment(){
+			var data = {
+					camp : vm.selectedCamp,
+					dineAssignment : vm.camps[vm.selectedCamp].assignmentPlan
+			};
+			$ctycWebSocket.sendMessage(MESSAGE_TYPE.UPDATE_DINE_ASSIGNMENT, data);
+			
+			vm.isLoading = true;
+			notify('Saving...');
 		}
 	};
 })();

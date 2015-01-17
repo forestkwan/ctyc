@@ -26,6 +26,7 @@ public class SummerCampService {
 	private static String UPDATE_DINE_TABLE = "UPDATE_DINE_TABLE";
 	private static String GET_DINE_ASSIGNMENT = "GET_DINE_ASSIGNMENT";
 	private static String DINE_ASSIGNMENT_DATA = "DINE_ASSIGNMENT_DATA";
+	private static String UPDATE_DINE_ASSIGNMENT = "UPDATE_DINE_ASSIGNMENT";
 	
 	private static String CAMP_SITE_PATH = "c:\\CTYCSave\\CampSite.txt";
 	private static String DINE_ASSIGNMENT_PLAN_PATH = "c:\\CTYCSave\\DineAssignmentPlan.txt";
@@ -134,6 +135,10 @@ public class SummerCampService {
 			responseMessage = this.updateDineTable(requestMessage.getData());
 		}
 		
+		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), UPDATE_DINE_ASSIGNMENT)){
+			responseMessage = this.updateDineAssignment(requestMessage.getData());
+		}
+		
 		return responseMessage;
 	}
 
@@ -162,6 +167,38 @@ public class SummerCampService {
 		}
 		
 		this.saveCampSiteToFile();
+		
+		Map<String, Object> responseData = new HashMap<String, Object>();
+		responseData.put("isSuccess", true);
+		return new Message(SERVER_RESPONSE, responseData);
+	}
+	
+	private Message updateDineAssignment(Map<String, Object> data) {
+		
+		if (data == null || data.get("assignmentPlan") == null || data.get("camp") == null){
+			return null;
+		}
+		
+		String campName = data.get("camp").toString();
+		DineAssignmentPlan dineAssignmentPlan = this.dineAssignmentPlanMap.get(campName);
+		
+		if (dineAssignmentPlan == null){
+			return null;
+		}
+		//dineAssignmentPlan.getDineTableGroups().clear();
+		
+		List<Map<String, Object>> dineAssignmentPlanDataMaps = (List<Map<String, Object>>) data.get("assignmentPlan");
+		String i = "";
+		/*for (Map<String, Object> dineTableMap : dineTableMaps){
+			
+			int tableNumber = Integer.valueOf(dineTableMap.get("number").toString());
+			int capacity = Integer.valueOf(dineTableMap.get("capacity").toString());
+			
+			CanteenTable canteenTable = new CanteenTable(tableNumber, capacity);
+			campSite.getCanteenTables().add(canteenTable);
+		}
+		
+		this.saveCampSiteToFile();*/
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();
 		responseData.put("isSuccess", true);
