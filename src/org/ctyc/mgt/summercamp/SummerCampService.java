@@ -175,7 +175,7 @@ public class SummerCampService {
 	
 	private Message updateDineAssignment(Map<String, Object> data) {
 		
-		if (data == null || data.get("assignmentPlan") == null || data.get("camp") == null){
+		if (data == null || data.get("camp") == null || data.get("dineTableGroups") == null){
 			return null;
 		}
 		
@@ -187,17 +187,14 @@ public class SummerCampService {
 		}
 		//dineAssignmentPlan.getDineTableGroups().clear();
 		
-		List<Map<String, Object>> dineAssignmentPlanDataMaps = (List<Map<String, Object>>) data.get("assignmentPlan");
-		String i = "";
-		/*for (Map<String, Object> dineTableMap : dineTableMaps){
-			
-			int tableNumber = Integer.valueOf(dineTableMap.get("number").toString());
-			int capacity = Integer.valueOf(dineTableMap.get("capacity").toString());
-			
-			CanteenTable canteenTable = new CanteenTable(tableNumber, capacity);
-			campSite.getCanteenTables().add(canteenTable);
+		List<Map<String, Object>> dineTableGroupsDataList = (List<Map<String, Object>>) data.get("dineTableGroups");
+		
+		for (Map<String, Object> dineTableGroupsData : dineTableGroupsDataList){
+			Integer tableNumber = Integer.valueOf(dineTableGroupsData.get("tableNumber").toString());
+			List<Map<String, Object>> participantDataList = (List<Map<String, Object>>) dineTableGroupsData.get("participants");
 		}
 		
+		/*
 		this.saveCampSiteToFile();*/
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();

@@ -28,6 +28,8 @@ public class CtycWebSocket {
      */
     @OnOpen
     public void onOpen(Session userSession) {
+    	userSession.setMaxBinaryMessageBufferSize(81920);
+    	userSession.setMaxTextMessageBufferSize(81920);
         userSessions.add(userSession);
     }
      

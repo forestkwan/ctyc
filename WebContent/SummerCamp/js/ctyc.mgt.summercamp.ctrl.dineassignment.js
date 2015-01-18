@@ -40,9 +40,10 @@
 		}
 		
 		function saveAssignment(){
+
 			var data = {
 					camp : vm.selectedCamp,
-					dineAssignment : vm.camps[vm.selectedCamp].assignmentPlan
+					dineTableGroups : vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups
 			};
 			$ctycWebSocket.sendMessage(MESSAGE_TYPE.UPDATE_DINE_ASSIGNMENT, data);
 			
