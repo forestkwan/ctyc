@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
+import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
@@ -36,11 +37,13 @@ public class SummerCampService {
 	private static SummerCampService instance = null;
 	private Map<String, CampSite> campSiteMap = null;
 	private Map<String, DineAssignmentPlan> dineAssignmentPlanMap = null;
+	private Map<String, Participant> participantMap = null;
 
 	protected SummerCampService(){
 		// Load saved camp site
 		this.initCampSiteMap();
 		this.initDineAssignmentPlanMap();
+		this.initParticipantMap();
 	}
 	
 	private void initCampSiteMap(){
@@ -96,6 +99,28 @@ public class SummerCampService {
 		}
 		
 		this.saveDineTableAssignmentToFile();
+	}
+	
+	private void initParticipantMap(){
+		this.participantMap = new HashMap<String, Participant>();
+		
+		if (this.dineAssignmentPlanMap == null){
+			return;
+		}
+		
+		for (String campName : campNames){
+			
+			DineAssignmentPlan dineAssignmentPlan = this.dineAssignmentPlanMap.get(campName);
+			if (dineAssignmentPlan == null){
+				continue;
+			}
+			
+			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
+				for (Participant participant : dineTableGroup.getParticipants()){
+					this.participantMap.put(participant.getId(), participant);
+				}
+			}
+		}
 	}
 	
 	protected void saveCampSiteToFile(){
@@ -185,17 +210,26 @@ public class SummerCampService {
 		if (dineAssignmentPlan == null){
 			return null;
 		}
-		//dineAssignmentPlan.getDineTableGroups().clear();
+		dineAssignmentPlan.getDineTableGroups().clear();
 		
 		List<Map<String, Object>> dineTableGroupsDataList = (List<Map<String, Object>>) data.get("dineTableGroups");
 		
 		for (Map<String, Object> dineTableGroupsData : dineTableGroupsDataList){
 			Integer tableNumber = Integer.valueOf(dineTableGroupsData.get("tableNumber").toString());
 			List<Map<String, Object>> participantDataList = (List<Map<String, Object>>) dineTableGroupsData.get("participants");
+			
+			DineTableGroup dineTableGroup = new DineTableGroup();
+			dineTableGroup.setTableNumber(tableNumber);
+			
+			for (Map<String, Object> participantData : participantDataList){
+				Participant participant = this.participantMap.get(participantData.get("id").toString());
+				dineTableGroup.getParticipants().add(participant);
+			}
+			
+			dineAssignmentPlan.getDineTableGroups().add(dineTableGroup);
 		}
 		
-		/*
-		this.saveCampSiteToFile();*/
+		this.saveDineTableAssignmentToFile();
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();
 		responseData.put("isSuccess", true);

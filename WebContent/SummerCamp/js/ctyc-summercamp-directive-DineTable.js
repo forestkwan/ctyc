@@ -1,10 +1,10 @@
 (function(){
-	angular.module('ctyc.mgt.summercamp')
+	angular.module('ctyc-summercamp')
 	.directive('dineTable', function(){
 		return {
 			restrict: 'EA',
 			replace : true,
-			controller: 'ctyc.mgt.summercamp.ctrl.dinetable',
+			controller: 'ctyc-summercamp-ctrl-DineTableCtrl',
 			controllerAs: 'vm',
 			templateUrl: 'SummerCamp/DineTable.html',
 			bindToController: true,

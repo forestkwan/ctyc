@@ -1,9 +1,10 @@
 (function(){
-	angular.module('ctyc.mgt').factory('ctycWebSocket', ctycWebSocket);
+	angular.module('ctyc')
+	.factory('ctyc-svc-SocketSvc', socketSvc);
 	
-	ctycWebSocket.$inject = ['$rootScope'];
+	socketSvc.$inject = ['$rootScope'];
 	
-	function ctycWebSocket($rootScope){
+	function socketSvc($rootScope){
 		return {
 			webSocket : null,
 			initWebSocket : function(){

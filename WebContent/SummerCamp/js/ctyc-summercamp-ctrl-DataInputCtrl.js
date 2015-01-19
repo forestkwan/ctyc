@@ -1,10 +1,14 @@
 (function(){
 
-	angular.module('ctyc.mgt.summercamp').controller('ctyc.mgt.summercamp.ctrl.datainput', controller);
+	angular.module('ctyc-summercamp').controller('ctyc-summercamp-ctrl-DataInputCtrl', controller);
 	
-	controller.$inject = ['$scope', 'MESSAGE_TYPE', 'ctycWebSocket', 'notify'];
+	controller.$inject = 
+		['$scope',
+		 'MESSAGE_TYPE',
+		 'ctyc-svc-SocketSvc',
+		 'notify'];
 	
-	function controller($scope, MESSAGE_TYPE, $ctycWebSocket, notify){
+	function controller($scope, MESSAGE_TYPE, SocketSvc, notify){
 		
 		var vm = this;
 		
@@ -62,7 +66,7 @@
 		
 		/////////
 		
-		$ctycWebSocket.sendMessage(MESSAGE_TYPE.GET_CAMP_SITE, {});
+		SocketSvc.sendMessage(MESSAGE_TYPE.GET_CAMP_SITE, {});
 		$scope.$on('websocket-message', function(event, jsonMessage){
 			var message = JSON.parse(jsonMessage);
 			
@@ -136,7 +140,7 @@
 					camp : vm.selectedCamp,
 					dineTables : vm.camps[vm.selectedCamp].canteenTables
 			};
-			$ctycWebSocket.sendMessage(MESSAGE_TYPE.UPDATE_DINE_TABLE, data);
+			SocketSvc.sendMessage(MESSAGE_TYPE.UPDATE_DINE_TABLE, data);
 			
 			vm.isLoading = true;
 			notify('Saving...');

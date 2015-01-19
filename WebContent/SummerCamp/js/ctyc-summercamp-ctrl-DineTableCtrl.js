@@ -1,6 +1,6 @@
 (function(){
-	angular.module('ctyc.mgt.summercamp')
-	.controller('ctyc.mgt.summercamp.ctrl.dinetable', controller);
+	angular.module('ctyc-summercamp')
+	.controller('ctyc-summercamp-ctrl-DineTableCtrl', controller);
 	
 	controller.$inject = ['$scope'];
 	

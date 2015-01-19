@@ -1,10 +1,10 @@
 (function(){
 	
 	var dependency = 
-		['ctyc.mgt',
+		['ctyc',
 		 'cgNotify',
 		 'ngDragDrop'];
 	
-	angular.module('ctyc.mgt.summercamp', dependency);
+	angular.module('ctyc-summercamp', dependency);
 	
 })();

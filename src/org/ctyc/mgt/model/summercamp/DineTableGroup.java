@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.Gender;
 
 public class DineTableGroup implements Serializable{
@@ -65,5 +66,22 @@ public class DineTableGroup implements Serializable{
 		}
 		
 		return numberOfMale - numberOfFemale;
+	}
+	
+	public boolean removeParticipant(String id){
+		Participant target = null;
+		for (Participant participant : this.getParticipants()){
+			if (StringUtils.equalsIgnoreCase(id, participant.getId())){
+				target = participant;
+				break;
+			}
+		}
+		
+		if (target == null){
+			return false;
+		}else {
+			this.getParticipants().remove(target);
+			return true;
+		}
 	}
 }

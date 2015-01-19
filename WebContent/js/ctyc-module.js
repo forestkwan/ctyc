@@ -4,9 +4,9 @@
 		 'ui.grid',
 		 'ui.grid.edit',
 		 'ui.grid.selection',
-		 'ctyc.mgt.summercamp'];
+		 'ctyc-summercamp'];
 	
-	angular.module('ctyc.mgt', dependency)
+	angular.module('ctyc', dependency)
 	.constant('MESSAGE_TYPE', {
 		"GET_CAMP_SITE" : "GET_CAMP_SITE",
 		"UPDATE_DINE_TABLE" : "UPDATE_DINE_TABLE",
@@ -20,12 +20,12 @@
 		})
 		.when('/DataInput', {
 			templateUrl : 'SummerCamp/DataInput.html',
-			controller : 'ctyc.mgt.summercamp.ctrl.datainput',
+			controller : 'ctyc-summercamp-ctrl-DataInputCtrl',
 			controllerAs : 'vm'
 		})
 		.when('/DineAssignment', {
 			templateUrl : 'SummerCamp/DineAssignment.html',
-			controller : 'ctyc.mgt.summercamp.ctrl.dineassignment',
+			controller : 'ctyc-summercamp-ctrl-DineAssignmentCtrl',
 			controllerAs : 'vm'
 		})
 		.otherwise({
@@ -33,7 +33,7 @@
 		});
 		}
 	])
-	.run(['ctycWebSocket', function(ctycWebSocket) {
-		ctycWebSocket.initWebSocket();
+	.run(['ctyc-svc-SocketSvc', function(SocketSvc) {
+		SocketSvc.initWebSocket();
 	}]);
 })();

@@ -10,7 +10,7 @@
 				<button type="button" ng-click="vm.changeCampSite('A')" ng-class="{'btn btn-default active': vm.selectedCamp==='A', 'btn btn-default': vm.selectedCamp!=='A'}">A</button>
 				<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
 			</div>
-			<button class="btn btn-default" type="button" ng-click="vm.saveAssignment()">Save</button>
+			<button class="btn btn-default" type="button" ng-click="vm.saveAssignment()" ng-disabled="vm.isLoading">Save</button>
 		</div>
 		
 		
