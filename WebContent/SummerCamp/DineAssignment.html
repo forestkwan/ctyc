@@ -11,6 +11,7 @@
 				<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
 			</div>
 			<button class="btn btn-default" type="button" ng-click="vm.saveAssignment()" ng-disabled="vm.isLoading">Save</button>
+			<button class="btn btn-default" type="button" ng-click="vm.autoAssign()" ng-disabled="vm.isLoading">Auto Assignment</button>
 		</div>
 		
 		

@@ -28,6 +28,9 @@ public class SummerCampService {
 	private static String GET_DINE_ASSIGNMENT = "GET_DINE_ASSIGNMENT";
 	private static String DINE_ASSIGNMENT_DATA = "DINE_ASSIGNMENT_DATA";
 	private static String UPDATE_DINE_ASSIGNMENT = "UPDATE_DINE_ASSIGNMENT";
+	private static String UPDATE_DINE_ASSIGNMENT_COMPLETE = "UPDATE_DINE_ASSIGNMENT_COMPLETE";
+	private static String AUTO_ASSIGN = "AUTO_ASSIGN";
+	private static String AUTO_ASSIGN_COMPLETE = "AUTO_ASSIGN_COMPLETE";
 	
 	private static String CAMP_SITE_PATH = "c:\\CTYCSave\\CampSite.txt";
 	private static String DINE_ASSIGNMENT_PLAN_PATH = "c:\\CTYCSave\\DineAssignmentPlan.txt";
@@ -164,6 +167,10 @@ public class SummerCampService {
 			responseMessage = this.updateDineAssignment(requestMessage.getData());
 		}
 		
+		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), AUTO_ASSIGN)){
+			responseMessage = this.autoDineAssignment(requestMessage.getData());
+		}
+		
 		return responseMessage;
 	}
 
@@ -233,7 +240,45 @@ public class SummerCampService {
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();
 		responseData.put("isSuccess", true);
-		return new Message(SERVER_RESPONSE, responseData);
+		return new Message("UPDATE_DINE_ASSIGNMENT_COMPLETE", responseData);
+	}
+	
+	private Message autoDineAssignment(Map<String, Object> data){
+		
+		if (data == null || data.get("camp") == null){
+			return null;
+		}
+		
+		String campName = data.get("camp").toString();
+		
+		System.out.println("Auto assign summer camp " + campName);
+		
+		CampSite campSite = this.campSiteMap.get(campName);
+		if (campSite == null){
+			return null;
+		}
+		
+		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
+//		costFunctions.add(new GenderBalanceCostFunction(1, 1));
+//		costFunctions.add(new SameGroupCostFunction(1, 1));
+		costFunctions.add(new SameSundayClassCostFunction(1, 1));
+		
+		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
+//		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
+//		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
+		
+		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campSite.getParticipants(), 8, costFunctions, constraintFunctions, 2);
+		dineAssignmentManager.doAssignment();
+		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
+		
+		if (dineAssignmentPlan != null){
+			this.dineAssignmentPlanMap.put(campName, dineAssignmentPlan);
+		}
+		
+		Map<String, Object> responseData = new HashMap<String, Object>();
+		responseData.put("dineAssignment", this.dineAssignmentPlanMap);
+		responseData.put("isSuccess", true);
+		return new Message(AUTO_ASSIGN_COMPLETE, responseData);
 	}
 	
 }

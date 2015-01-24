@@ -21,30 +21,50 @@
 		
 		vm.changeCampSite = changeCampSite;
 		vm.saveAssignment = saveAssignment;
+		vm.autoAssign = autoAssign;
+		
+		init();
 		
 		//////////////////
 		
 		SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});
 		
-		$scope.$on('websocket-message', function(event, jsonMessage){
-			var message = JSON.parse(jsonMessage);
-			
-			if (message.type === 'DINE_ASSIGNMENT_DATA'){
-				var dineAssignmentData = message.data.dineAssignment;
-				for (prop in vm.camps){
-					vm.camps[prop].assignmentPlan = dineAssignmentData[prop];
+		
+		function init(){
+			$scope.$on('websocket-message', function(event, jsonMessage){
+				var message = JSON.parse(jsonMessage);
+				
+				if (message.type === 'DINE_ASSIGNMENT_DATA'){
+					var dineAssignmentData = message.data.dineAssignment;
+					for (prop in vm.camps){
+						vm.camps[prop].assignmentPlan = dineAssignmentData[prop];
+					}
 				}
-			}
-			
-			if (message.type === 'SERVER_RESPONSE'){
-				if (message.data.isSuccess === true){
-					notify('Save Complete');
-					vm.isLoading = false;
+				
+				if (message.type === 'UPDATE_DINE_ASSIGNMENT_COMPLETE'){
+					if (message.data.isSuccess === true){
+						notify('Save Complete');
+						vm.isLoading = false;
+					}
 				}
-			}
+				
+				if (message.type === 'AUTO_ASSIGN_COMPLETE'){
+					if (message.data.isSuccess === true){
+						
+						notify('Auto Assignment Complete');
+						
+						var dineAssignmentData = message.data.dineAssignment;
+						for (prop in vm.camps){
+							vm.camps[prop].assignmentPlan = dineAssignmentData[prop];
+						}
+						
+						vm.isLoading = false;
+					}
+				}
 
-			$scope.$digest();
-		});
+				$scope.$digest();
+			});
+		}
 		
 		function changeCampSite(selectedCamp){
 			vm.selectedCamp = selectedCamp;
@@ -76,6 +96,16 @@
 			
 			vm.isLoading = true;
 			notify('Saving...');
+		}
+		
+		function autoAssign(){
+			var data = {
+					camp : vm.selectedCamp
+			};
+			
+			SocketSvc.sendMessage(MESSAGE_TYPE.AUTO_ASSIGN, data);
+			vm.isLoading = true;
+			notify('Auto Assignment in progress...');
 		}
 	};
 })();
