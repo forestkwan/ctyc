@@ -9,7 +9,8 @@
 			templateUrl: 'SummerCamp/DineTable.html',
 			bindToController: true,
 			scope: {
-				dineTableData : '='
+				dineTableData : '=',
+				filter : '='
 			}
 		};
 	});

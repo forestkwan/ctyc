@@ -13,7 +13,8 @@ public class FamilyGroupCostFunction extends AbstractCostFunction {
 
 	public FamilyGroupCostFunction(int priority, double weight) {
 		super(priority, weight);
-		this.name = "®a®x¦PÂi";
+		this.name = "å®¶åº­åŒæª¯";
+		this.code = "FAMILY_SAME_TABLE";
 	}
 
 	@Override

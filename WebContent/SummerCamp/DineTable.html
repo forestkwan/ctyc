@@ -1,6 +1,16 @@
 <div class="panel panel-default">
 	<div class="panel-heading">Table {{vm.getTableName()}}</div>
 	<div class="panel-body">
+	
+		<div class="row">
+			<div class="col-xs-3" ng-if="vm.filter.genderBalance"><p>男女比例平衡: {{vm.getCost('GENDER_BALANCE') | number : 2}}</p></div>
+			<div class="col-xs-3" ng-if="vm.filter.familySameTable"><p>家庭同檯: {{vm.getCost('FAMILY_SAME_TABLE') | number : 2}}</p></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-3" ng-if="vm.filter.mentorInTable"><p>駐檯導師: {{vm.getCost('MENTOR_IN_TABLE') | number : 2}}</p></div>
+			<div class="col-xs-3" ng-if="vm.filter.sameSundayClass"><p>主日學班同檯陪伴: {{vm.getCost('SAME_SUNDAY_CLASS') | number : 2}}</p></div>
+		</div>
+		
 		<table class="table" ui-on-Drop="vm.onParticipantDrop($event, $data, vm.dineTableData.participants)">
 			<tr>
 				<th>Name</th>
@@ -19,5 +29,3 @@
 		</table>
 	</div>
 </div>
-
-

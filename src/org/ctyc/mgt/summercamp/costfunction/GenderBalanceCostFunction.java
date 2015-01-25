@@ -7,7 +7,8 @@ public class GenderBalanceCostFunction extends AbstractCostFunction {
 
 	public GenderBalanceCostFunction(int priority, double weight) {
 		super(priority, weight);
-		this.name = "¨k¤k¤ñ¨Ò¥­¿Å";
+		this.name = "ç”·å¥³æ¯”ä¾‹å¹³è¡¡";
+		this.code = "GENDER_BALANCE";
 	}
 
 	@Override

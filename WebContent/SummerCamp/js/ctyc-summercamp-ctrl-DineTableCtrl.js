@@ -12,6 +12,8 @@
 		vm.onParticipantDrop = onParticipantDrop;
 		vm.dropSuccessHandler = dropSuccessHandler;
 		
+		vm.getCost = getCost;
+		
 		////////////////////////////
 		
 		function getTableName(){
@@ -24,6 +26,19 @@
 		
 		function dropSuccessHandler($event, $index, participant){
 			vm.dineTableData.participants.splice($index, 1);
+		}
+		
+		function getCost(type){
+			var evaluationResultMap = vm.dineTableData.evaluationResultMap;
+			if (evaluationResultMap === undefined || evaluationResultMap === null){
+				return -2;
+			}
+			
+			var cost = evaluationResultMap[type];
+			if (cost === undefined || cost === null){
+				return -1;
+			}
+			return cost;
 		}
 	}
 })();

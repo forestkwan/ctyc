@@ -14,6 +14,9 @@ import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.FamilyGroupCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.GenderBalanceCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.MentorInTableCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
@@ -245,11 +248,18 @@ public class SummerCampService {
 	
 	private Message autoDineAssignment(Map<String, Object> data){
 		
-		if (data == null || data.get("camp") == null){
+		if (data == null
+				|| data.get("camp") == null
+				|| data.get("tableCapacity") == null
+				|| data.get("constraints") == null
+				|| data.get("seed") == null){
 			return null;
 		}
 		
 		String campName = data.get("camp").toString();
+		int tableCapacity = Integer.valueOf(data.get("tableCapacity").toString());
+		int seed = Integer.valueOf(data.get("seed").toString());
+		Map<String, Object> constraintsMap = (Map<String, Object>)data.get("constraints");
 		
 		System.out.println("Auto assign summer camp " + campName);
 		
@@ -258,16 +268,12 @@ public class SummerCampService {
 			return null;
 		}
 		
-		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
-//		costFunctions.add(new GenderBalanceCostFunction(1, 1));
-//		costFunctions.add(new SameGroupCostFunction(1, 1));
-		costFunctions.add(new SameSundayClassCostFunction(1, 1));
+		Collection<AbstractCostFunction> costFunctions = this.createCostFunctions(constraintsMap);
+		Collection<AbstractCostFunction> constraintFunctions = this.createConstraintFunctions(constraintsMap);
 		
-		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
-//		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
-//		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
+		DineAssignmentManager dineAssignmentManager =
+				new DineAssignmentManager(campSite.getParticipants(), tableCapacity, costFunctions, constraintFunctions, seed);
 		
-		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campSite.getParticipants(), 8, costFunctions, constraintFunctions, 2);
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 		
@@ -275,10 +281,40 @@ public class SummerCampService {
 			this.dineAssignmentPlanMap.put(campName, dineAssignmentPlan);
 		}
 		
+		this.saveDineTableAssignmentToFile();
+		
 		Map<String, Object> responseData = new HashMap<String, Object>();
 		responseData.put("dineAssignment", this.dineAssignmentPlanMap);
 		responseData.put("isSuccess", true);
 		return new Message(AUTO_ASSIGN_COMPLETE, responseData);
+	}
+	
+	private Collection<AbstractCostFunction> createCostFunctions(Map<String, Object> constraintMap){
+		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
+		
+		if (Boolean.valueOf(constraintMap.get("genderBalance").toString())){
+			costFunctions.add(new GenderBalanceCostFunction(1, 1));
+		}
+		
+		if (Boolean.valueOf(constraintMap.get("sameSundayClass").toString())){
+			costFunctions.add(new SameSundayClassCostFunction(1, 1));
+		}
+		
+		return costFunctions;
+	}
+	
+	private Collection<AbstractCostFunction> createConstraintFunctions(Map<String, Object> constraintMap){
+		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
+		
+		if (Boolean.valueOf(constraintMap.get("mentorInTable").toString())){
+			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
+		}
+		
+		if (Boolean.valueOf(constraintMap.get("familySameTable").toString())){
+			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
+		}
+
+		return constraintFunctions;
 	}
 	
 }

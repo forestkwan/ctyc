@@ -13,10 +13,21 @@
 			<button class="btn btn-default" type="button" ng-click="vm.saveAssignment()" ng-disabled="vm.isLoading">Save</button>
 			<button class="btn btn-default" type="button" ng-click="vm.autoAssign()" ng-disabled="vm.isLoading">Auto Assignment</button>
 		</div>
-		
-		
+
+		<div class="container-fluid">
+			<h4>顯示:</h4>
+			<div class="row">
+				<div class="col-xs-3"><label><input type="checkbox" ng-model="vm.filter.genderBalance">男女比例平衡</label></div>
+				<div class="col-xs-3"><label><input type="checkbox" ng-model="vm.filter.familySameTable">家庭同檯</label></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-3"><label><input type="checkbox" ng-model="vm.filter.mentorInTable">駐檯導師</label></div>
+				<div class="col-xs-3"><label><input type="checkbox" ng-model="vm.filter.sameSundayClass">主日學班同檯陪伴</label></div>
+			</div>
+		</div>
+
 		<div ng-repeat="dineTableGroup in vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups">
-			<dine-table dine-table-data='dineTableGroup'></dine-table>
+			<dine-table dine-table-data='dineTableGroup' filter='vm.filter'></dine-table>
 		</div>
 		
 	</div>

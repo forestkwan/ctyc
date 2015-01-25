@@ -6,9 +6,17 @@
 		['$scope',
 		 'MESSAGE_TYPE',
 		 'ctyc-svc-SocketSvc',
-		 'notify'];
+		 'ctyc-summercamp-svc-DineAssignmentSvc',
+		 'notify',
+		 '$modal'];
 	
-	function controller($scope, MESSAGE_TYPE, SocketSvc, notify){
+	function controller(
+			$scope,
+			MESSAGE_TYPE,
+			SocketSvc,
+			DineAssignmentSvc,
+			notify,
+			$modal){
 	
 		var vm = this;
 		
@@ -17,6 +25,12 @@
 				'A' : {},
 				'B' : {}
 		};
+		vm.filter = {
+				genderBalance : true,
+				familySameTable : true,
+				mentorInTable : true,
+				sameSundayClass : true
+		}
 		vm.isLoading = false;
 		
 		vm.changeCampSite = changeCampSite;
@@ -99,13 +113,7 @@
 		}
 		
 		function autoAssign(){
-			var data = {
-					camp : vm.selectedCamp
-			};
-			
-			SocketSvc.sendMessage(MESSAGE_TYPE.AUTO_ASSIGN, data);
-			vm.isLoading = true;
-			notify('Auto Assignment in progress...');
+			DineAssignmentSvc.autoDineAssignment(vm.selectedCamp);
 		}
 	};
 })();

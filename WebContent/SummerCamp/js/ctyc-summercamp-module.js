@@ -3,7 +3,8 @@
 	var dependency = 
 		['ctyc',
 		 'cgNotify',
-		 'ngDragDrop'];
+		 'ngDragDrop',
+		 'ui.bootstrap'];
 	
 	angular.module('ctyc-summercamp', dependency);
 	

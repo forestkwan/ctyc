@@ -3,6 +3,8 @@ package org.ctyc.mgt.model.summercamp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.Gender;
@@ -13,7 +15,8 @@ public class DineTableGroup implements Serializable{
 	private int tableNumber;
 	private Collection<Participant> participants;
 	private double cost;
-	
+	private Map<String, Double> evaluationResultMap;
+
 	public int getTableNumber() {
 		return tableNumber;
 	}
@@ -83,5 +86,12 @@ public class DineTableGroup implements Serializable{
 			this.getParticipants().remove(target);
 			return true;
 		}
+	}
+	
+	public Map<String, Double> getEvaluationResultMap() {
+		if (this.evaluationResultMap == null){
+			this.evaluationResultMap = new HashMap<String, Double>();
+		}
+		return evaluationResultMap;
 	}
 }

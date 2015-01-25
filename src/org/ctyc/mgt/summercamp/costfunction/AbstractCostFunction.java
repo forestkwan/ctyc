@@ -9,6 +9,8 @@ public abstract class AbstractCostFunction {
 	public static int PENALTY_COST = 10000;
 	public static short MAX_COST = 100;
 	protected String name = "";
+	protected String code = "";
+
 	protected int priority;	// Value from 1 to 10. 1 is the highest priority
 	protected double weight;	// Value from 0 to 1
 	
@@ -20,6 +22,10 @@ public abstract class AbstractCostFunction {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public String getCode() {
+		return code;
 	}
 	
 	public int getPriority() {

@@ -1,0 +1,40 @@
+<div class="modal-header">
+	<h3 class="modal-title">Auto Dine Assignment: Camp {{vm.camp}}</h3>
+</div>
+<div class="modal-body">
+	<form name="inputForm">
+
+		<form class="form-inline">
+			<label for="exampleInputEmail1">Enter assignment requirements</label>
+			
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xs-6"><input type="checkbox" ng-model="vm.constraints.genderBalance">男女比例平衡</div>
+					<div class="col-xs-6"><input type="checkbox" ng-model="vm.constraints.familySameTable">家庭同檯</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6"><input type="checkbox" ng-model="vm.constraints.mentorInTable">駐檯導師</div>
+					<div class="col-xs-6"><input type="checkbox" ng-model="vm.constraints.sameSundayClass">主日學班同檯陪伴</div>
+				</div>
+			</div>
+			
+			<br>
+
+			<div class="form-group">
+				<label>Table Capacity</label><input type="number" class="form-control" placeholder="Enter the table capacity"
+				 ng-model="vm.tableCapacity">
+			</div>
+			
+			<div class="form-group">
+				<label>Random Seed</label><input type="number" class="form-control" placeholder="Enter the random seed"
+				 ng-model="vm.seed">
+			</div>
+		</form>
+
+		<div class="modal-footer">
+			<button class="btn btn-warning" ng-click="vm.cancelClicked()">Cancel</button>
+			<button class="btn btn-primary" ng-click="vm.confirmClicked()">Confirm</button>
+		</div>
+
+	</form>
+</div>
