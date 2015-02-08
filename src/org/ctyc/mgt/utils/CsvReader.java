@@ -43,7 +43,7 @@ public class CsvReader {
 				participant.setName(tokens[1]);
 				
 				if (StringUtils.isNotBlank(tokens[2])){
-					Gender sex = (StringUtils.equals(tokens[2], "¨k")) ? Gender.MALE : Gender.FEMALE;
+					Gender sex = (StringUtils.equals(tokens[2], "ç”·")) ? Gender.MALE : Gender.FEMALE;
 					participant.setGender(sex);
 				}
 				
@@ -104,94 +104,94 @@ public class CsvReader {
 			return 0;
 		}
 		
-		if (StringUtils.contains(name, "¤T¤Q")){
+		if (StringUtils.contains(name, "ä¸‰å")){
 			return 30;
 		}
-		if (StringUtils.contains(name, "¤Ü¤E") || StringUtils.contains(name, "¤G¤Q¤E")){
+		if (StringUtils.contains(name, "å»¿ä¹") || StringUtils.contains(name, "äºŒåä¹")){
 			return 29;
 		}
-		if (StringUtils.contains(name, "¤Ü¤K") || StringUtils.contains(name, "¤G¤Q¤K")){
+		if (StringUtils.contains(name, "å»¿å…«") || StringUtils.contains(name, "äºŒåå…«")){
 			return 28;
 		}
-		if (StringUtils.contains(name, "¤Ü¤C") || StringUtils.contains(name, "¤G¤Q¤C")){
+		if (StringUtils.contains(name, "å»¿ä¸ƒ") || StringUtils.contains(name, "äºŒåä¸ƒ")){
 			return 27;
 		}
-		if (StringUtils.contains(name, "¤Ü¤»") || StringUtils.contains(name, "¤G¤Q¤»")){
+		if (StringUtils.contains(name, "å»¿å…­") || StringUtils.contains(name, "äºŒåå…­")){
 			return 26;
 		}
-		if (StringUtils.contains(name, "¤Ü¤­") || StringUtils.contains(name, "¤G¤Q¤­")){
+		if (StringUtils.contains(name, "å»¿äº”") || StringUtils.contains(name, "äºŒåäº”")){
 			return 25;
 		}
-		if (StringUtils.contains(name, "¤Ü¥|") || StringUtils.contains(name, "¤G¤Q¥|")){
+		if (StringUtils.contains(name, "å»¿å››") || StringUtils.contains(name, "äºŒåå››")){
 			return 24;
 		}
-		if (StringUtils.contains(name, "¤Ü¤T") || StringUtils.contains(name, "¤G¤Q¤T")){
+		if (StringUtils.contains(name, "å»¿ä¸‰") || StringUtils.contains(name, "äºŒåä¸‰")){
 			return 23;
 		}
-		if (StringUtils.contains(name, "¤Ü¤G") || StringUtils.contains(name, "¤G¤Q¤G")){
+		if (StringUtils.contains(name, "å»¿äºŒ") || StringUtils.contains(name, "äºŒåäºŒ")){
 			return 22;
 		}
-		if (StringUtils.contains(name, "¤Ü¤@") || StringUtils.contains(name, "¤G¤Q¤@")){
+		if (StringUtils.contains(name, "å»¿ä¸€") || StringUtils.contains(name, "äºŒåä¸€")){
 			return 21;
 		}
-		if (StringUtils.contains(name, "¤Ü") || StringUtils.contains(name, "¤G¤Q")){
+		if (StringUtils.contains(name, "å»¿") || StringUtils.contains(name, "äºŒå")){
 			return 20;
 		}
-		if (StringUtils.contains(name, "¤Q¤E")){
+		if (StringUtils.contains(name, "åä¹")){
 			return 19;
 		}
-		if (StringUtils.contains(name, "¤Q¤K")){
+		if (StringUtils.contains(name, "åå…«")){
 			return 18;
 		}
-		if (StringUtils.contains(name, "¤Q¤C")){
+		if (StringUtils.contains(name, "åä¸ƒ")){
 			return 17;
 		}
-		if (StringUtils.contains(name, "¤Q¤»")){
+		if (StringUtils.contains(name, "åå…­")){
 			return 16;
 		}
-		if (StringUtils.contains(name, "¤Q¤­")){
+		if (StringUtils.contains(name, "åäº”")){
 			return 15;
 		}
-		if (StringUtils.contains(name, "¤Q¥|")){
+		if (StringUtils.contains(name, "åå››")){
 			return 14;
 		}
-		if (StringUtils.contains(name, "¤Q¤T")){
+		if (StringUtils.contains(name, "åä¸‰")){
 			return 13;
 		}
-		if (StringUtils.contains(name, "¤Q¤G")){
+		if (StringUtils.contains(name, "åäºŒ")){
 			return 12;
 		}
-		if (StringUtils.contains(name, "¤Q¤@")){
+		if (StringUtils.contains(name, "åä¸€")){
 			return 11;
 		}
-		if (StringUtils.contains(name, "¤Q")){
+		if (StringUtils.contains(name, "å")){
 			return 10;
 		}
-		if (StringUtils.contains(name, "¤E")){
+		if (StringUtils.contains(name, "ä¹")){
 			return 9;
 		}
-		if (StringUtils.contains(name, "¤K")){
+		if (StringUtils.contains(name, "å…«")){
 			return 8;
 		}
-		if (StringUtils.contains(name, "¤C")){
+		if (StringUtils.contains(name, "ä¸ƒ")){
 			return 7;
 		}
-		if (StringUtils.contains(name, "¤»")){
+		if (StringUtils.contains(name, "å…­")){
 			return 6;
 		}
-		if (StringUtils.contains(name, "¤­")){
+		if (StringUtils.contains(name, "äº”")){
 			return 5;
 		}
-		if (StringUtils.contains(name, "¥|")){
+		if (StringUtils.contains(name, "å››")){
 			return 4;
 		}
-		if (StringUtils.contains(name, "¤T")){
+		if (StringUtils.contains(name, "ä¸‰")){
 			return 3;
 		}
-		if (StringUtils.contains(name, "¤G")){
+		if (StringUtils.contains(name, "äºŒ")){
 			return 2;
 		}
-		if (StringUtils.contains(name, "¤@")){
+		if (StringUtils.contains(name, "ä¸€")){
 			return 1;
 		}
 		return 0;

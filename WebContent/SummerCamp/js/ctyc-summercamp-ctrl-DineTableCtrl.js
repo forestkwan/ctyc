@@ -11,6 +11,7 @@
 		vm.getTableName = getTableName;
 		vm.onParticipantDrop = onParticipantDrop;
 		vm.dropSuccessHandler = dropSuccessHandler;
+		vm.displayAlertClass = displayAlertClass;
 		
 		vm.getCost = getCost;
 		
@@ -39,6 +40,12 @@
 				return -1;
 			}
 			return cost;
+		}
+		
+		function displayAlertClass(cost){
+			if (cost > 0){
+				return 'constraint-alert';
+			}
 		}
 	}
 })();

@@ -8,7 +8,8 @@ public class SameGroupCostFunction extends AbstractCostFunction {
 
 	public SameGroupCostFunction(int priority, double weight) {
 		super(priority, weight);
-		this.name = "同檯主日學班同學";
+		this.name = "";
+		this.code = "";
 	}
 
 	@Override

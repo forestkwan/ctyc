@@ -30,6 +30,7 @@ public class DineAssignmentManager {
 	
 	// Input Object
 	private Collection<Participant> participants;
+	private Map<String, Participant> participantMap;
 	private int tableCapacity;
 	
 	// Private calculation object
@@ -45,6 +46,11 @@ public class DineAssignmentManager {
 		this.tableCapacity = tableCapacity;
 		this.plan = new DineAssignmentPlan();
 		this.randomObj = new Random();
+		
+		this.participantMap = new HashMap<String, Participant>();
+		for(Participant participant : this.participants){
+			this.participantMap.put(participant.getId(), participant);
+		}
 		
 		this.evaluator = new DineAssignmentEvaluator(costFunctions, constraintFunctions);
 		
@@ -89,22 +95,7 @@ public class DineAssignmentManager {
 	}
 	
 	private void initAssignment(){
-		
-//		Stack<Participant> unassignedParticipants = new Stack<Participant>();
-//		unassignedParticipants.addAll(participants);
-//		
-//		Collection<DineTableGroup> dineTableGroupList = this.createEmptyTableGroupList();
-//		
-//		for (DineTableGroup dineTableGroup : dineTableGroupList){
-//			
-//			while (!isTableFull(dineTableGroup) && !CollectionUtils.isEmpty(unassignedParticipants)){
-//				Participant unassignedParticipant = RandomnessUtils.popRandomParticipant(unassignedParticipants, this.randomObj);
-//				dineTableGroup.getParticipants().add(unassignedParticipant);
-//			}
-//		}
-//		
-//		this.plan.getPlan().addAll(dineTableGroupList);
-		
+				
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
 		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
 		
@@ -164,8 +155,9 @@ public class DineAssignmentManager {
 			}
 			
 			for (String believerId : familyGroup.getBelieverIds()){
-//				tempTableGroup.getParticipants().add((Participant)believer);
-//				assignedParticipants.add((Participant)believer);
+				Participant tempParticipant = this.participantMap.get(believerId);
+				tempTableGroup.getParticipants().add(tempParticipant);
+				assignedParticipants.add(tempParticipant);
 			}
 		}		
 	}

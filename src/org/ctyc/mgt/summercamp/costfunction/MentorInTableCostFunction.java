@@ -8,7 +8,7 @@ public class MentorInTableCostFunction extends AbstractCostFunction {
 
 	public MentorInTableCostFunction(int priority, double weight) {
 		super(priority, weight);
-		this.name = "駐檯導師";
+		this.name = "";
 		this.code = "MENTOR_IN_TABLE";
 	}
 

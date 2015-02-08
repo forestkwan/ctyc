@@ -7,7 +7,7 @@ public class GenderBalanceCostFunction extends AbstractCostFunction {
 
 	public GenderBalanceCostFunction(int priority, double weight) {
 		super(priority, weight);
-		this.name = "男女比例平衡";
+		this.name = "";
 		this.code = "GENDER_BALANCE";
 	}
 

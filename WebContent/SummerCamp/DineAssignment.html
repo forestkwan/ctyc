@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-lg-12">
-		<h1 class="page-header">Dine Assignment</h1>
+		<h2 class="page-header">Dine Assignment</h2>
 	</div>
 	
 	<div>
@@ -12,6 +12,7 @@
 			</div>
 			<button class="btn btn-default" type="button" ng-click="vm.saveAssignment()" ng-disabled="vm.isLoading">Save</button>
 			<button class="btn btn-default" type="button" ng-click="vm.autoAssign()" ng-disabled="vm.isLoading">Auto Assignment</button>
+			<button class="btn btn-default" type="button" ng-click="vm.calculateCost()" ng-disabled="vm.isLoading">Calculate Cost</button>
 		</div>
 
 		<div class="container-fluid">
@@ -27,7 +28,7 @@
 		</div>
 
 		<div ng-repeat="dineTableGroup in vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups">
-			<dine-table dine-table-data='dineTableGroup' filter='vm.filter'></dine-table>
+			<dine-table class="col-xs-4" dine-table-data='dineTableGroup' filter='vm.filter'></dine-table>
 		</div>
 		
 	</div>

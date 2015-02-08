@@ -1,31 +1,40 @@
 <div class="panel panel-default">
-	<div class="panel-heading">Table {{vm.getTableName()}}</div>
 	<div class="panel-body">
-	
-		<div class="row">
-			<div class="col-xs-3" ng-if="vm.filter.genderBalance"><p>男女比例平衡: {{vm.getCost('GENDER_BALANCE') | number : 2}}</p></div>
-			<div class="col-xs-3" ng-if="vm.filter.familySameTable"><p>家庭同檯: {{vm.getCost('FAMILY_SAME_TABLE') | number : 2}}</p></div>
+		<div class="dine-table-panel">
+			<label>Table {{vm.getTableName()}}</label>
+			<div class="row">
+				<div class="col-xs-6" ng-if="vm.filter.genderBalance" ng-class="vm.displayAlertClass(vm.getCost('GENDER_BALANCE'))">
+					<p>男女比例平衡: {{vm.getCost('GENDER_BALANCE') | number : 2}}</p>
+				</div>
+				<div class="col-xs-6" ng-if="vm.filter.familySameTable" ng-class="vm.displayAlertClass(vm.getCost('FAMILY_SAME_TABLE'))">
+					<p>家庭同檯: {{vm.getCost('FAMILY_SAME_TABLE') | number : 2}}</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6" ng-if="vm.filter.mentorInTable" ng-class="vm.displayAlertClass(vm.getCost('MENTOR_IN_TABLE'))">
+					<p>駐檯導師: {{vm.getCost('MENTOR_IN_TABLE') | number : 2}}</p>
+				</div>
+				<div class="col-xs-6" ng-if="vm.filter.sameSundayClass" ng-class="vm.displayAlertClass(vm.getCost('SAME_SUNDAY_CLASS'))">
+					<p>主日學班同檯陪伴: {{vm.getCost('SAME_SUNDAY_CLASS') | number : 2}}</p>
+				</div>
+			</div>
+			
+			<table class="table table-condensed" ui-on-Drop="vm.onParticipantDrop($event, $data, vm.dineTableData.participants)">
+				<tr>
+					<th>姓名</th>
+					<th>性別</th>
+					<th>主日學班</th>
+					<th>組別</th>
+				</tr>
+				<tr ng-repeat="participant in vm.dineTableData.participants"
+				ui-draggable="true" drag="participant"
+				on-drop-success="vm.dropSuccessHandler($event, $index, participant)">
+					<th>{{participant.name}}</th>
+					<th>{{participant.gender | GenderFilter}}</th>
+					<th>{{participant.sundaySchoolClass}}</th>
+					<th>{{participant.groupNumber}}</th>
+				</tr>
+			</table>
 		</div>
-		<div class="row">
-			<div class="col-xs-3" ng-if="vm.filter.mentorInTable"><p>駐檯導師: {{vm.getCost('MENTOR_IN_TABLE') | number : 2}}</p></div>
-			<div class="col-xs-3" ng-if="vm.filter.sameSundayClass"><p>主日學班同檯陪伴: {{vm.getCost('SAME_SUNDAY_CLASS') | number : 2}}</p></div>
-		</div>
-		
-		<table class="table" ui-on-Drop="vm.onParticipantDrop($event, $data, vm.dineTableData.participants)">
-			<tr>
-				<th>Name</th>
-				<th>Gender</th>
-				<th>Sunday School Class</th>
-				<th>Group Number</th>
-			</tr>
-			<tr ng-repeat="participant in vm.dineTableData.participants"
-			ui-draggable="true" drag="participant"
-			on-drop-success="vm.dropSuccessHandler($event, $index, participant)">
-				<th>{{participant.name}}</th>
-				<th>{{participant.gender}}</th>
-				<th>{{participant.sundaySchoolClass}}</th>
-				<th>{{participant.groupNumber}}</th>
-			</tr>
-		</table>
 	</div>
 </div>

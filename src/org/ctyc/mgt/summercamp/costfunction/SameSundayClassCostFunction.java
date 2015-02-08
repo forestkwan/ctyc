@@ -7,11 +7,11 @@ import org.springframework.util.CollectionUtils;
 
 public class SameSundayClassCostFunction  extends AbstractCostFunction {
 
-	private String[] excludedSundayClassArray = {"å°å­¸ç­", "æ–ç±ƒç­ / å¹¼å…’ç­", "", "", ""};
+	private String[] excludedSundayClassArray = {"¤p¾Ç¯Z", "·nÄx¯Z / ¥®¨à¯Z", "¥~¶Ä"};
 	
 	public SameSundayClassCostFunction(int priority, double weight) {
 		super(priority, weight);
-		this.name = "ä¸»æ—¥å­¸ç­åŒæª¯é™ªä¼´";
+		this.name = "";
 		this.code = "SAME_SUNDAY_CLASS";
 	}
 

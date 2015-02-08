@@ -34,6 +34,8 @@ public class SummerCampService {
 	private static String UPDATE_DINE_ASSIGNMENT_COMPLETE = "UPDATE_DINE_ASSIGNMENT_COMPLETE";
 	private static String AUTO_ASSIGN = "AUTO_ASSIGN";
 	private static String AUTO_ASSIGN_COMPLETE = "AUTO_ASSIGN_COMPLETE";
+	private static String CALCULATE_COST = "CALCULATE_COST";
+	private static String CALCULATE_COST_COMPLETE = "CALCULATE_COST_COMPLETE";
 	
 	private static String CAMP_SITE_PATH = "c:\\CTYCSave\\CampSite.txt";
 	private static String DINE_ASSIGNMENT_PLAN_PATH = "c:\\CTYCSave\\DineAssignmentPlan.txt";
@@ -79,13 +81,13 @@ public class SummerCampService {
 			
 			this.dineAssignmentPlanMap = new HashMap<String, DineAssignmentPlan>();
 			Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
-//			costFunctions.add(new GenderBalanceCostFunction(1, 1));
+			costFunctions.add(new GenderBalanceCostFunction(1, 1));
 //			costFunctions.add(new SameGroupCostFunction(1, 1));
 			costFunctions.add(new SameSundayClassCostFunction(1, 1));
 			
 			Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
-//			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
-//			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
+			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
+			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 			
 			for (String campName : campNames){
 				
@@ -172,6 +174,10 @@ public class SummerCampService {
 		
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), AUTO_ASSIGN)){
 			responseMessage = this.autoDineAssignment(requestMessage.getData());
+		}
+		
+		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), CALCULATE_COST)){
+			responseMessage = this.calculateCost(requestMessage.getData());
 		}
 		
 		return responseMessage;
@@ -315,6 +321,50 @@ public class SummerCampService {
 		}
 
 		return constraintFunctions;
+	}
+	
+	private Message calculateCost(Map<String, Object> data) {
+		if (data == null ||  data.get("camp") == null || data.get("dineTableGroups") == null){
+			return null;
+		}
+		
+		DineAssignmentPlan dineAssignmentPlan = new DineAssignmentPlan();
+		
+		List<Map<String, Object>> dineTableGroupsDataList = (List<Map<String, Object>>) data.get("dineTableGroups");
+		
+		for (Map<String, Object> dineTableGroupsData : dineTableGroupsDataList){
+			Integer tableNumber = Integer.valueOf(dineTableGroupsData.get("tableNumber").toString());
+			List<Map<String, Object>> participantDataList = (List<Map<String, Object>>) dineTableGroupsData.get("participants");
+			
+			DineTableGroup dineTableGroup = new DineTableGroup();
+			dineTableGroup.setTableNumber(tableNumber);
+			
+			for (Map<String, Object> participantData : participantDataList){
+				Participant participant = this.participantMap.get(participantData.get("id").toString());
+				dineTableGroup.getParticipants().add(participant);
+			}
+			
+			dineAssignmentPlan.getDineTableGroups().add(dineTableGroup);
+		}
+		
+		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
+		costFunctions.add(new GenderBalanceCostFunction(1, 1));
+		costFunctions.add(new SameSundayClassCostFunction(1, 1));
+		
+		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
+		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
+		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
+		
+		DineAssignmentEvaluator evaluator = new DineAssignmentEvaluator(costFunctions, constraintFunctions);
+		evaluator.evaluatePlan(dineAssignmentPlan);
+		
+		String campName = data.get("camp").toString();
+		
+		Map<String, Object> responseData = new HashMap<String, Object>();
+		responseData.put("dineAssignment", dineAssignmentPlan);
+		responseData.put("camp", campName);
+		responseData.put("isSuccess", true);
+		return new Message(CALCULATE_COST_COMPLETE, responseData);
 	}
 	
 }

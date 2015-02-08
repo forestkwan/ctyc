@@ -36,6 +36,7 @@
 		vm.changeCampSite = changeCampSite;
 		vm.saveAssignment = saveAssignment;
 		vm.autoAssign = autoAssign;
+		vm.calculateCost = calculateCost;
 		
 		init();
 		
@@ -72,6 +73,14 @@
 							vm.camps[prop].assignmentPlan = dineAssignmentData[prop];
 						}
 						
+						vm.isLoading = false;
+					}
+				}
+				
+				if (message.type === 'CALCULATE_COST_COMPLETE'){
+					if (message.data.isSuccess === true){
+						vm.camps[message.data.camp].assignmentPlan = message.data.dineAssignment;
+						notify('Calculate Complete');
 						vm.isLoading = false;
 					}
 				}
@@ -114,6 +123,33 @@
 		
 		function autoAssign(){
 			DineAssignmentSvc.autoDineAssignment(vm.selectedCamp);
+		}
+		
+		function calculateCost(){
+			var dineTableGroups = [];
+			for (var i=0; i<vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups.length; i++){
+				
+				var dineTableGroup = vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups[i];
+				
+				var participants = []
+				for (j=0; j<dineTableGroup.participants.length; j++){
+					participants.push({id: dineTableGroup.participants[j].id})
+				}
+				
+				dineTableGroups.push({
+						tableNumber : dineTableGroup.tableNumber,
+						participants : participants
+				});
+			}
+
+			var data = {
+					camp : vm.selectedCamp,
+					dineTableGroups : dineTableGroups
+			};
+			SocketSvc.sendMessage(MESSAGE_TYPE.CALCULATE_COST, data);
+			
+			vm.isLoading = true;
+			notify('Calculating Cost...');
 		}
 	};
 })();

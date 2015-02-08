@@ -3,6 +3,7 @@ package org.ctyc.mgt.summercamp.costfunction;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.Believer;
 import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
@@ -13,7 +14,7 @@ public class FamilyGroupCostFunction extends AbstractCostFunction {
 
 	public FamilyGroupCostFunction(int priority, double weight) {
 		super(priority, weight);
-		this.name = "家庭同檯";
+		this.name = "";
 		this.code = "FAMILY_SAME_TABLE";
 	}
 
@@ -37,10 +38,10 @@ public class FamilyGroupCostFunction extends AbstractCostFunction {
 		/* All family group member must be exist in the table */
 		for (FamilyGroup familyGroup : familyGroups){
 			
-			for (String believer : familyGroup.getBelieverIds()){
-//				if (!isExistInTable(dineTableGroup, believer)){
-//					return PENALTY_COST * weight;
-//				}
+			for (String believerId : familyGroup.getBelieverIds()){
+				if (!isExistInTable(dineTableGroup, believerId)){
+					return PENALTY_COST * weight;
+				}
 			}
 			
 		}
@@ -48,14 +49,14 @@ public class FamilyGroupCostFunction extends AbstractCostFunction {
 		return 0;
 	}
 	
-	private boolean isExistInTable(DineTableGroup dineTableGroup, Believer targetBeliever){
+	private boolean isExistInTable(DineTableGroup dineTableGroup, String believerId){
 		
 		if (dineTableGroup == null || CollectionUtils.isEmpty(dineTableGroup.getParticipants())){
 			return false;
 		}
 		
 		for (Believer believer :  dineTableGroup.getParticipants()){
-			if (believer.equals(targetBeliever)){
+			if (StringUtils.equalsIgnoreCase(believer.getId(), believerId)){
 				return true;
 			}
 		}
