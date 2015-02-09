@@ -12,6 +12,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.Gender;
+import org.ctyc.mgt.model.summercamp.DineAvailability;
+import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
 
 public class CsvReader {
@@ -76,6 +78,66 @@ public class CsvReader {
 						participant.setFamilyGroup(familyGroup);
 					}
 					
+				}
+				
+				if (StringUtils.isNotBlank(tokens[16])){
+					boolean isDine = (StringUtils.equals(tokens[16], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(1, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[17])){
+					boolean isDine = (StringUtils.equals(tokens[17], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(1, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[18])){
+					boolean isDine = (StringUtils.equals(tokens[18], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(1, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[19])){
+					boolean isDine = (StringUtils.equals(tokens[19], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(2, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[20])){
+					boolean isDine = (StringUtils.equals(tokens[20], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(2, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[21])){
+					boolean isDine = (StringUtils.equals(tokens[21], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(2, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[22])){
+					boolean isDine = (StringUtils.equals(tokens[22], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(3, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[23])){
+					boolean isDine = (StringUtils.equals(tokens[23], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(3, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[24])){
+					boolean isDine = (StringUtils.equals(tokens[24], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(3, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[25])){
+					boolean isDine = (StringUtils.equals(tokens[25], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[26])){
+					boolean isDine = (StringUtils.equals(tokens[26], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[27])){
+					boolean isDine = (StringUtils.equals(tokens[27], "Y")) ? true : false;
+					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
 				}
 				
 				participants.add(participant);
