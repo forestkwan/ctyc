@@ -30,6 +30,11 @@
 			controller : 'ctyc-summercamp-ctrl-DineAssignmentCtrl',
 			controllerAs : 'vm'
 		})
+		.when('/DineAssignmentPrint', {
+			templateUrl : 'SummerCamp/DineAssignmentPrint.html',
+			controller : 'ctyc-summercamp-ctrl-DineAssignmentCtrl',
+			controllerAs : 'vm'
+		})
 		.otherwise({
 			redirectTo : '/'
 		});

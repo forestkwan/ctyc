@@ -4,6 +4,7 @@
 	
 	controller.$inject = 
 		['$scope',
+		 '$location',
 		 'MESSAGE_TYPE',
 		 'ctyc-svc-SocketSvc',
 		 'ctyc-summercamp-svc-DineAssignmentSvc',
@@ -12,6 +13,7 @@
 	
 	function controller(
 			$scope,
+			$location,
 			MESSAGE_TYPE,
 			SocketSvc,
 			DineAssignmentSvc,
@@ -37,6 +39,8 @@
 		vm.saveAssignment = saveAssignment;
 		vm.autoAssign = autoAssign;
 		vm.calculateCost = calculateCost;
+		vm.openPrintTemplate = openPrintTemplate;
+		vm.showAvailability = showAvailability;
 		
 		init();
 		
@@ -150,6 +154,26 @@
 			
 			vm.isLoading = true;
 			notify('Calculating Cost...');
+		}
+		
+		function openPrintTemplate(){
+			$location.path('/DineAssignmentPrint');
+		}
+		
+		function showAvailability(numberOfDay, timeOfDay, dineAvailabilitys){
+			var targetDineAvailability = null;
+			for (var i=0; i<dineAvailabilitys.length; i++){
+				if (dineAvailabilitys[i].numberOfDay === numberOfDay &&
+						dineAvailabilitys[i].timeOfDay === timeOfDay){
+					targetDineAvailability = dineAvailabilitys[i];
+				}
+			}
+			
+			if (targetDineAvailability !== null){
+				return targetDineAvailability.join;
+			}
+			
+			return 'N';
 		}
 	};
 })();
