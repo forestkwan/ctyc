@@ -5,12 +5,14 @@
 	controller.$inject =
 		['$scope',
 		 '$modalInstance',
-		 'camp'];
+		 'camp',
+		 'day'];
 	
 	function controller(
 			$scope,
 			$modalInstance,
-			camp){
+			camp,
+			day){
 		
 		var vm = this;
 		vm.tableCapacity = 8;
@@ -22,6 +24,7 @@
 				sameSundayClass : true
 		}
 		vm.camp = camp;
+		vm.day = day;
 		
 		vm.confirmClicked = confirmClicked;
 		vm.cancelClicked = cancelClicked;
@@ -31,6 +34,7 @@
 		function confirmClicked(){
 			var data = {
 					camp : vm.camp,
+					day : day,
 					tableCapacity : vm.tableCapacity,
 					constraints : vm.constraints,
 					seed : vm.seed

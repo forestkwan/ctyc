@@ -44,7 +44,7 @@ public class SummerCampService {
 	
 	private static SummerCampService instance = null;
 	private Map<String, CampSite> campSiteMap = null;
-	private Map<String, DineAssignmentPlan> dineAssignmentPlanMap = null;
+	private Collection<DineAssignmentPlan> dineAssignmentPlanList = null;
 	private Map<String, Participant> participantMap = null;
 
 	protected SummerCampService(){
@@ -75,11 +75,11 @@ public class SummerCampService {
 	
 	private void initDineAssignmentPlanMap(){
 		
-		this.dineAssignmentPlanMap = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
+		this.dineAssignmentPlanList = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
 		
-		if (this.dineAssignmentPlanMap == null){
+		if (this.dineAssignmentPlanList == null){
 			
-			this.dineAssignmentPlanMap = new HashMap<String, DineAssignmentPlan>();
+			this.dineAssignmentPlanList = new ArrayList<DineAssignmentPlan>();
 			Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
 			costFunctions.add(new GenderBalanceCostFunction(1, 1));
 //			costFunctions.add(new SameGroupCostFunction(1, 1));
@@ -96,12 +96,16 @@ public class SummerCampService {
 					continue;
 				}
 				
-				DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campSite.getParticipants(), 8, costFunctions, constraintFunctions, 1);
-				dineAssignmentManager.doAssignment();
-				DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
-				
-				if (dineAssignmentPlan != null){
-					this.dineAssignmentPlanMap.put(campName, dineAssignmentPlan);
+				for (int i=0; i<4; i++){
+					
+					DineAssignmentManager dineAssignmentManager =
+							new DineAssignmentManager(campName, i + 1, campSite.getParticipants(), 8, costFunctions, constraintFunctions, 1);
+					dineAssignmentManager.doAssignment();
+					DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
+					
+					if (dineAssignmentPlan != null){
+						this.dineAssignmentPlanList.add(dineAssignmentPlan);
+					}
 				}
 			}
 		}
@@ -112,17 +116,11 @@ public class SummerCampService {
 	private void initParticipantMap(){
 		this.participantMap = new HashMap<String, Participant>();
 		
-		if (this.dineAssignmentPlanMap == null){
+		if (this.dineAssignmentPlanList == null){
 			return;
 		}
 		
-		for (String campName : campNames){
-			
-			DineAssignmentPlan dineAssignmentPlan = this.dineAssignmentPlanMap.get(campName);
-			if (dineAssignmentPlan == null){
-				continue;
-			}
-			
+		for (DineAssignmentPlan dineAssignmentPlan : this.dineAssignmentPlanList){
 			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
 				for (Participant participant : dineTableGroup.getParticipants()){
 					this.participantMap.put(participant.getId(), participant);
@@ -136,7 +134,7 @@ public class SummerCampService {
 	}
 	
 	protected void saveDineTableAssignmentToFile(){
-		FileUtils.writeObjectToFile(this.dineAssignmentPlanMap, DINE_ASSIGNMENT_PLAN_PATH);
+		FileUtils.writeObjectToFile(this.dineAssignmentPlanList, DINE_ASSIGNMENT_PLAN_PATH);
 	}
 	
 	public static SummerCampService getInstance() {
@@ -160,7 +158,7 @@ public class SummerCampService {
 		
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), GET_DINE_ASSIGNMENT)){
 			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("dineAssignment", this.dineAssignmentPlanMap);
+			data.put("dineAssignmentPlans", this.dineAssignmentPlanList);
 			responseMessage = new Message(DINE_ASSIGNMENT_DATA, data);
 		}
 		
@@ -216,12 +214,13 @@ public class SummerCampService {
 	
 	private Message updateDineAssignment(Map<String, Object> data) {
 		
-		if (data == null || data.get("camp") == null || data.get("dineTableGroups") == null){
+		if (data == null || data.get("camp") == null || data.get("day") == null || data.get("dineTableGroups") == null){
 			return null;
 		}
 		
 		String campName = data.get("camp").toString();
-		DineAssignmentPlan dineAssignmentPlan = this.dineAssignmentPlanMap.get(campName);
+		int day = Integer.parseInt(data.get("day").toString());
+		DineAssignmentPlan dineAssignmentPlan = this.findDineAssignmentPlan(campName, day);
 		
 		if (dineAssignmentPlan == null){
 			return null;
@@ -256,6 +255,7 @@ public class SummerCampService {
 		
 		if (data == null
 				|| data.get("camp") == null
+				|| data.get("day") == null
 				|| data.get("tableCapacity") == null
 				|| data.get("constraints") == null
 				|| data.get("seed") == null){
@@ -263,6 +263,8 @@ public class SummerCampService {
 		}
 		
 		String campName = data.get("camp").toString();
+		int day = Integer.parseInt(data.get("day").toString());
+		
 		int tableCapacity = Integer.valueOf(data.get("tableCapacity").toString());
 		int seed = Integer.valueOf(data.get("seed").toString());
 		Map<String, Object> constraintsMap = (Map<String, Object>)data.get("constraints");
@@ -278,19 +280,19 @@ public class SummerCampService {
 		Collection<AbstractCostFunction> constraintFunctions = this.createConstraintFunctions(constraintsMap);
 		
 		DineAssignmentManager dineAssignmentManager =
-				new DineAssignmentManager(campSite.getParticipants(), tableCapacity, costFunctions, constraintFunctions, seed);
+				new DineAssignmentManager(campName, day, campSite.getParticipants(), tableCapacity, costFunctions, constraintFunctions, seed);
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 		
 		if (dineAssignmentPlan != null){
-			this.dineAssignmentPlanMap.put(campName, dineAssignmentPlan);
+			this.dineAssignmentPlanList.add(dineAssignmentPlan);
 		}
 		
 		this.saveDineTableAssignmentToFile();
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();
-		responseData.put("dineAssignment", this.dineAssignmentPlanMap);
+		responseData.put("dineAssignmentPlan", dineAssignmentPlan);
 		responseData.put("isSuccess", true);
 		return new Message(AUTO_ASSIGN_COMPLETE, responseData);
 	}
@@ -324,11 +326,13 @@ public class SummerCampService {
 	}
 	
 	private Message calculateCost(Map<String, Object> data) {
-		if (data == null ||  data.get("camp") == null || data.get("dineTableGroups") == null){
+		if (data == null ||  data.get("camp") == null || data.get("day") == null || data.get("dineTableGroups") == null){
 			return null;
 		}
 		
-		DineAssignmentPlan dineAssignmentPlan = new DineAssignmentPlan();
+		String campName = data.get("camp").toString();
+		int day = Integer.parseInt(data.get("day").toString());
+		DineAssignmentPlan dineAssignmentPlan = new DineAssignmentPlan(campName, day);
 		
 		List<Map<String, Object>> dineTableGroupsDataList = (List<Map<String, Object>>) data.get("dineTableGroups");
 		
@@ -358,13 +362,26 @@ public class SummerCampService {
 		DineAssignmentEvaluator evaluator = new DineAssignmentEvaluator(costFunctions, constraintFunctions);
 		evaluator.evaluatePlan(dineAssignmentPlan);
 		
-		String campName = data.get("camp").toString();
-		
 		Map<String, Object> responseData = new HashMap<String, Object>();
-		responseData.put("dineAssignment", dineAssignmentPlan);
+		responseData.put("dineAssignmentPlan", dineAssignmentPlan);
 		responseData.put("camp", campName);
+		responseData.put("day", day);
 		responseData.put("isSuccess", true);
 		return new Message(CALCULATE_COST_COMPLETE, responseData);
+	}
+	
+	private DineAssignmentPlan findDineAssignmentPlan(String campSiteName, int day){
+		if (this.dineAssignmentPlanList == null){
+			return null;
+		}
+		
+		for (DineAssignmentPlan dineAssignmentPlan : this.dineAssignmentPlanList){
+			if (StringUtils.equalsIgnoreCase(campSiteName, dineAssignmentPlan.getCampName()) &&
+					day == dineAssignmentPlan.getDay()){
+				return dineAssignmentPlan;
+			}
+		}
+		return null;
 	}
 	
 }

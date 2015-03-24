@@ -23,10 +23,8 @@
 		var vm = this;
 		
 		vm.selectedCamp = 'A';
-		vm.camps = {
-				'A' : {},
-				'B' : {}
-		};
+		vm.selectedDay = 1;
+		vm.dineAssignmentPlans = [];
 		vm.filter = {
 				genderBalance : true,
 				familySameTable : true,
@@ -36,6 +34,8 @@
 		vm.isLoading = false;
 		
 		vm.changeCampSite = changeCampSite;
+		vm.changeDineDay = changeDineDay;
+		vm.getSelectedDineAssignmentPlan = getSelectedDineAssignmentPlan;
 		vm.saveAssignment = saveAssignment;
 		vm.autoAssign = autoAssign;
 		vm.calculateCost = calculateCost;
@@ -54,10 +54,7 @@
 				var message = JSON.parse(jsonMessage);
 				
 				if (message.type === 'DINE_ASSIGNMENT_DATA'){
-					var dineAssignmentData = message.data.dineAssignment;
-					for (prop in vm.camps){
-						vm.camps[prop].assignmentPlan = dineAssignmentData[prop];
-					}
+					vm.dineAssignmentPlans = message.data.dineAssignmentPlans;
 				}
 				
 				if (message.type === 'UPDATE_DINE_ASSIGNMENT_COMPLETE'){
@@ -69,21 +66,34 @@
 				
 				if (message.type === 'AUTO_ASSIGN_COMPLETE'){
 					if (message.data.isSuccess === true){
+
+						var newDineAssignmentPlan = message.data.dineAssignmentPlan;
 						
-						notify('Auto Assignment Complete');
-						
-						var dineAssignmentData = message.data.dineAssignment;
-						for (prop in vm.camps){
-							vm.camps[prop].assignmentPlan = dineAssignmentData[prop];
+						for (var i=0; i<vm.dineAssignmentPlans.length; i++){
+							if (vm.dineAssignmentPlans[i].campName === newDineAssignmentPlan.campName &&
+									vm.dineAssignmentPlans[i].day === newDineAssignmentPlan.day){
+								vm.dineAssignmentPlans[i] = newDineAssignmentPlan;
+								break;
+							}
 						}
 						
+						notify('Auto Assignment Complete');
 						vm.isLoading = false;
 					}
 				}
 				
 				if (message.type === 'CALCULATE_COST_COMPLETE'){
 					if (message.data.isSuccess === true){
-						vm.camps[message.data.camp].assignmentPlan = message.data.dineAssignment;
+						var newDineAssignmentPlan = message.data.dineAssignmentPlan;
+						
+						for (var i=0; i<vm.dineAssignmentPlans.length; i++){
+							if (vm.dineAssignmentPlans[i].campName === newDineAssignmentPlan.campName &&
+									vm.dineAssignmentPlans[i].day === newDineAssignmentPlan.day){
+								vm.dineAssignmentPlans[i] = newDineAssignmentPlan;
+								break;
+							}
+						}
+
 						notify('Calculate Complete');
 						vm.isLoading = false;
 					}
@@ -97,12 +107,27 @@
 			vm.selectedCamp = selectedCamp;
 		}
 		
+		function changeDineDay(selectedDay){
+			vm.selectedDay = selectedDay;
+		}
+		
+		function getSelectedDineAssignmentPlan(){
+			for (var i=0; i<vm.dineAssignmentPlans.length; i++){
+				if (vm.dineAssignmentPlans[i].campName === vm.selectedCamp &&
+						vm.dineAssignmentPlans[i].day === vm.selectedDay){
+					return vm.dineAssignmentPlans[i];
+				}
+			}
+			return {};
+		}
+		
 		function saveAssignment(){
 			
 			var dineTableGroups = [];
-			for (var i=0; i<vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups.length; i++){
+			var dineAssignmentPlan = getSelectedDineAssignmentPlan();
+			for (var i=0; i<dineAssignmentPlan.dineTableGroups.length; i++){
 				
-				var dineTableGroup = vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups[i];
+				var dineTableGroup = dineAssignmentPlan.dineTableGroups[i];
 				
 				var participants = []
 				for (j=0; j<dineTableGroup.participants.length; j++){
@@ -117,6 +142,7 @@
 
 			var data = {
 					camp : vm.selectedCamp,
+					day : vm.selectedDay,
 					dineTableGroups : dineTableGroups
 			};
 			SocketSvc.sendMessage(MESSAGE_TYPE.UPDATE_DINE_ASSIGNMENT, data);
@@ -126,14 +152,16 @@
 		}
 		
 		function autoAssign(){
-			DineAssignmentSvc.autoDineAssignment(vm.selectedCamp);
+			DineAssignmentSvc.autoDineAssignment(vm.selectedCamp, vm.selectedDay);
 		}
 		
 		function calculateCost(){
 			var dineTableGroups = [];
-			for (var i=0; i<vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups.length; i++){
+			var dineAssignmentPlan = getSelectedDineAssignmentPlan();
+			
+			for (var i=0; i<dineAssignmentPlan.dineTableGroups.length; i++){
 				
-				var dineTableGroup = vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups[i];
+				var dineTableGroup = dineAssignmentPlan.dineTableGroups[i];
 				
 				var participants = []
 				for (j=0; j<dineTableGroup.participants.length; j++){
@@ -148,6 +176,7 @@
 
 			var data = {
 					camp : vm.selectedCamp,
+					day : vm.selectedDay,
 					dineTableGroups : dineTableGroups
 			};
 			SocketSvc.sendMessage(MESSAGE_TYPE.CALCULATE_COST, data);

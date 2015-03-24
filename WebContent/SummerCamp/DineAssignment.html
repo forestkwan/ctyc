@@ -10,6 +10,13 @@
 				<button type="button" ng-click="vm.changeCampSite('A')" ng-class="{'btn btn-default active': vm.selectedCamp==='A', 'btn btn-default': vm.selectedCamp!=='A'}">A</button>
 				<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
 			</div>
+			<label class="inline">Day:</label>
+			<div class="btn-group" role="group" aria-label="...">
+				<button type="button" ng-click="vm.changeDineDay(1)" ng-class="{'btn btn-default active': vm.selectedDay===1, 'btn btn-default': vm.selectedDay!==1}">1</button>
+				<button type="button" ng-click="vm.changeDineDay(2)" ng-class="{'btn btn-default active': vm.selectedDay===2, 'btn btn-default': vm.selectedDay!==2}">2</button>
+				<button type="button" ng-click="vm.changeDineDay(3)" ng-class="{'btn btn-default active': vm.selectedDay===3, 'btn btn-default': vm.selectedDay!==3}">3</button>
+				<button type="button" ng-click="vm.changeDineDay(4)" ng-class="{'btn btn-default active': vm.selectedDay===4, 'btn btn-default': vm.selectedDay!==4}">4</button>
+			</div>
 			<button class="btn btn-default" type="button" ng-click="vm.saveAssignment()" ng-disabled="vm.isLoading">Save</button>
 			<button class="btn btn-default" type="button" ng-click="vm.autoAssign()" ng-disabled="vm.isLoading">Auto Assignment</button>
 			<button class="btn btn-default" type="button" ng-click="vm.calculateCost()" ng-disabled="vm.isLoading">Calculate Cost</button>
@@ -28,7 +35,7 @@
 			</div>
 		</div>
 
-		<div ng-repeat="dineTableGroup in vm.camps[vm.selectedCamp].assignmentPlan.dineTableGroups">
+		<div ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
 			<dine-table class="col-xs-4" dine-table-data='dineTableGroup' filter='vm.filter'></dine-table>
 		</div>
 		

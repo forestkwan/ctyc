@@ -37,6 +37,8 @@ public class DineAssignmentManager {
 	private Random randomObj;
 	
 	public DineAssignmentManager(
+			String campSiteName,
+			int day,
 			Collection<Participant> participants,
 			int tableCapacity,
 			Collection<AbstractCostFunction> costFunctions,
@@ -44,7 +46,7 @@ public class DineAssignmentManager {
 		
 		this.participants = participants;
 		this.tableCapacity = tableCapacity;
-		this.plan = new DineAssignmentPlan();
+		this.plan = new DineAssignmentPlan(campSiteName, day);
 		this.randomObj = new Random();
 		
 		this.participantMap = new HashMap<String, Participant>();
@@ -57,13 +59,15 @@ public class DineAssignmentManager {
 	}
 	
 	public DineAssignmentManager(
+			String campSiteName,
+			int day,
 			Collection<Participant> participants,
 			int tableCapacity,
 			Collection<AbstractCostFunction> costFunctions,
 			Collection<AbstractCostFunction> constraintFunctions,
 			int seed){
 		
-		this(participants, tableCapacity, costFunctions, constraintFunctions);
+		this(campSiteName, day, participants, tableCapacity, costFunctions, constraintFunctions);
 		this.randomObj = new Random(seed);
 	}
 	

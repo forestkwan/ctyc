@@ -13,10 +13,22 @@ public class DineAssignmentPlan implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private double cost;
+	private String campName;
+	private int day;
 	private Collection<DineTableGroup> plan;
 	
-	public DineAssignmentPlan(){
+	public DineAssignmentPlan(String campName, int day){
+		this.campName = campName;
+		this.day = day;
 		cost = 0;
+	}
+	
+	public String getCampName() {
+		return campName;
+	}
+
+	public int getDay() {
+		return day;
 	}
 	
 	public double getCost() {

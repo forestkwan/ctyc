@@ -2,13 +2,19 @@
 	angular.module('ctyc')
 	.factory('ctyc-svc-SocketSvc', socketSvc);
 	
-	socketSvc.$inject = ['$rootScope'];
+	socketSvc.$inject = 
+		[
+		 '$rootScope',
+		 '$location'];
 	
-	function socketSvc($rootScope){
+	function socketSvc(
+			$rootScope,
+			$location){
 		return {
 			webSocket : null,
 			initWebSocket : function(){
-				this.webSocket = new WebSocket('ws://localhost:8080/CTYCManagement/ctyc');
+				var wsUrl = 'ws://' + $location.host() + ':' + $location.port() + '/CTYCManagement/ctyc';
+				this.webSocket = new WebSocket(wsUrl);
 				
 				this.webSocket.onopen = function(event) {
 					console.log('WebSocket open');

@@ -18,7 +18,7 @@
 			autoDineAssignment : autoDineAssignment
 			};
 		
-		function autoDineAssignment(camp){
+		function autoDineAssignment(camp, day){
 			var autoDineAssignmentModal = $modal.open({
 				templateUrl : 'SummerCamp/AutoDineAssignmentForm.html',
 				controller : 'ctyc-summercamp-ctrl-AutoDineAssignmentCtrl',
@@ -26,6 +26,9 @@
 				resolve : {
 					camp : function () {
 				          return camp;
+			        },
+			        day : function(){
+			        	return day;
 			        }
 				}
 			});

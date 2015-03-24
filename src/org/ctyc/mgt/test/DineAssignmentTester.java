@@ -43,7 +43,7 @@ public class DineAssignmentTester extends TestCase {
 //		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 //		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 		
-		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager(campAParticipants, 8, costFunctions, constraintFunctions, 1);
+		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager("A", 1, campAParticipants, 8, costFunctions, constraintFunctions, 1);
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
