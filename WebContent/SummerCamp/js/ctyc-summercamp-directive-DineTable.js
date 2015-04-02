@@ -10,7 +10,8 @@
 			bindToController: true,
 			scope: {
 				dineTableData : '=',
-				filter : '='
+				filter : '=',
+				selectedDay : '=',
 			}
 		};
 	});

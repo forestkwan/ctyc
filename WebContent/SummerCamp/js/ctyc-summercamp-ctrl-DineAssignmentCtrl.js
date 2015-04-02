@@ -202,7 +202,7 @@
 				return targetDineAvailability.join;
 			}
 			
-			return 'N';
+			return false;
 		}
 	};
 })();

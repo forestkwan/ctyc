@@ -25,14 +25,29 @@
 					<th>性別</th>
 					<th>主日學班</th>
 					<th>組別</th>
+					<th>晚</th>
+					<th>早</th>
+					<th>午</th>
 				</tr>
 				<tr ng-repeat="participant in vm.dineTableData.participants"
 				ui-draggable="true" drag="participant"
 				on-drop-success="vm.dropSuccessHandler($event, $index, participant)">
-					<th>{{participant.name}}</th>
-					<th>{{participant.gender | GenderFilter}}</th>
-					<th>{{participant.sundaySchoolClass}}</th>
-					<th>{{participant.groupNumber}}</th>
+					<td>{{participant.name}}</td>
+					<td>{{participant.gender | GenderFilter}}</td>
+					<td>{{participant.sundaySchoolClass}}</td>
+					<td>{{participant.groupNumber}}</td>
+					<td>
+						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
+						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
+					</td>
+					<td>
+						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)"></i>
+						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)"></i>
+					</td>
+					<td>
+						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)"></i>
+						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)"></i>
+					</td>
 				</tr>
 			</table>
 		</div>

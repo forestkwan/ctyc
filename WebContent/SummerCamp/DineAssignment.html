@@ -36,7 +36,11 @@
 		</div>
 
 		<div ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
-			<dine-table class="col-xs-4" dine-table-data='dineTableGroup' filter='vm.filter'></dine-table>
+			<div ng-if="$even" class="row">
+				<dine-table class="col-xs-6" dine-table-data="dineTableGroup" filter="vm.filter" selected-day="vm.selectedDay"></dine-table>
+				<dine-table class="col-xs-6" ng-if="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]"
+				dine-table-data="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]" filter="vm.filter" selected-day="vm.selectedDay"></dine-table>
+			</div>
 		</div>
 		
 	</div>

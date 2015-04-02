@@ -12,6 +12,7 @@
 		vm.onParticipantDrop = onParticipantDrop;
 		vm.dropSuccessHandler = dropSuccessHandler;
 		vm.displayAlertClass = displayAlertClass;
+		vm.showAvailability = showAvailability;
 		
 		vm.getCost = getCost;
 		
@@ -46,6 +47,22 @@
 			if (cost > 0){
 				return 'constraint-alert';
 			}
+		}
+		
+		function showAvailability(numberOfDay, timeOfDay, dineAvailabilitys){
+			var targetDineAvailability = null;
+			for (var i=0; i<dineAvailabilitys.length; i++){
+				if (dineAvailabilitys[i].numberOfDay === numberOfDay &&
+						dineAvailabilitys[i].timeOfDay === timeOfDay){
+					targetDineAvailability = dineAvailabilitys[i];
+				}
+			}
+			
+			if (targetDineAvailability !== null){
+				return targetDineAvailability.join;
+			}
+			
+			return false;
 		}
 	}
 })();
