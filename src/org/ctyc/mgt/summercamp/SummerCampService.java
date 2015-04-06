@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
+import org.ctyc.mgt.model.summercamp.DineAssignmentStatistics;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
@@ -99,6 +100,7 @@ public class SummerCampService {
 					continue;
 				}
 				
+				// Generate 4 days of dine assignment plan
 				for (int i=0; i<4; i++){
 					
 					DineAssignmentManager dineAssignmentManager =
@@ -198,6 +200,7 @@ public class SummerCampService {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("dineAssignmentPlans", this.dineAssignmentPlanList);
 			data.put("groupAssignmentPlans", this.constructGroupAssignmentPlan());
+			data.put("dineAssignmentStatistics", this.generateDineAssignmentStatistics());
 			responseMessage = new Message(DINE_ASSIGNMENT_DATA, data);
 		}
 		
@@ -447,6 +450,38 @@ public class SummerCampService {
 		}
 		
 		return groupAssignmentPlanMap;
+	}
+	
+	private Map<String, Collection<DineAssignmentStatistics>> generateDineAssignmentStatistics() {
+		
+		if (this.dineAssignmentPlanList == null){
+			return null;
+		}
+		
+		Map<String, Collection<DineAssignmentStatistics>> campDineTableStatistics = new HashMap<String, Collection<DineAssignmentStatistics>>();
+		for (DineAssignmentPlan dineAssignmentPlan : this.dineAssignmentPlanList){
+			
+			String campName = dineAssignmentPlan.getCampName();
+			
+			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
+				
+				Collection<DineAssignmentStatistics> tempDineTableStatistics = campDineTableStatistics.get(campName);
+				if (tempDineTableStatistics == null){
+					tempDineTableStatistics = new ArrayList<DineAssignmentStatistics>();
+					campDineTableStatistics.put(campName, tempDineTableStatistics);
+				}
+				
+				DineAssignmentStatistics dineTableStatistics = new DineAssignmentStatistics(
+						dineAssignmentPlan.getDay(),
+						DineTimeSlot.TimeOfDay.NIGHT.toString(),
+						dineTableGroup.getTableNumber(),
+						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString()));
+				
+				tempDineTableStatistics.add(dineTableStatistics);
+			}
+		}
+		
+		return campDineTableStatistics;
 	}
 	
 }

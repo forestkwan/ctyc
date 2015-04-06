@@ -23,6 +23,12 @@
 				<button type="button" ng-click="vm.changeDineDay(3)" ng-class="{'btn btn-default active': vm.selectedDay===3, 'btn btn-default': vm.selectedDay!==3}">3</button>
 				<button type="button" ng-click="vm.changeDineDay(4)" ng-class="{'btn btn-default active': vm.selectedDay===4, 'btn btn-default': vm.selectedDay!==4}">4</button>
 			</div>
+			<label class="inline" ng-if="vm.selectedPrintType==='STATISTICS'">Day:</label>
+			<div class="btn-group" role="group" ng-if="vm.selectedPrintType==='STATISTICS'">
+				<button type="button" ng-click="vm.changeTimeOfDine('MORNING')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='MORNING', 'btn btn-default': vm.selectedTimeOfDine!=='MORNING'}">早</button>
+				<button type="button" ng-click="vm.changeTimeOfDine('NOON')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NOON', 'btn btn-default': vm.selectedTimeOfDine!=='NOON'}">午</button>
+				<button type="button" ng-click="vm.changeTimeOfDine('NIGHT')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NIGHT', 'btn btn-default': vm.selectedTimeOfDine!=='NIGHT'}">晚</button>
+			</div>
 		</div>
 
 		<div ng-if="vm.selectedPrintType==='DINE'" ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
@@ -99,6 +105,30 @@
 					<td>{{vm.getTableNumberForParticularDine(2, 'NIGHT', participant.dineAvailabilitys)}}</td>
 					<td>{{vm.getTableNumberForParticularDine(3, 'NIGHT', participant.dineAvailabilitys)}}</td>
 					<td>{{vm.getTableNumberForParticularDine(4, 'NIGHT', participant.dineAvailabilitys)}}</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div ng-if="vm.selectedPrintType==='STATISTICS'">
+			<table class="table table-condensed">
+				<tr style="border-bottom: 2px solid black;">
+					<col width="20%">
+					<col width="20%">
+					<col width="20%">
+					<col width="20%">
+					<col width="20%">
+					<th>枱號</th>
+					<th>第一天</th>
+					<th>第二天</th>
+					<th>第三天</th>
+					<th>第四天</th>
+				</tr>
+				<tr ng-repeat="statistics in vm.getSelectedDineStatistics() | filter:{timeOfDay:vm.selectedTimeOfDine} | orderBy:'tableNumber'">
+					<td>{{statistics.tableNumber}}</td>
+					<td>{{statistics.participantCount}}</td>
+					<td>{{statistics.participantCount}}</td>
+					<td>{{statistics.participantCount}}</td>
+					<td>{{statistics.participantCount}}</td>
 				</tr>
 			</table>
 		</div>

@@ -94,4 +94,24 @@ public class DineTableGroup implements Serializable{
 		}
 		return evaluationResultMap;
 	}
+	
+	public int countParticipantForParticularDine(int numberOfDay, String timeOfDay){
+		int count = 0;
+		for (Participant participant : this.getParticipants()){
+			
+			for (DineAvailability dineAvailability : participant.getDineAvailabilitys()){
+				
+				if (dineAvailability.getNumberOfDay() != numberOfDay ||
+						!StringUtils.equalsIgnoreCase(dineAvailability.getTimeOfDay(), timeOfDay)){
+					continue;
+				}
+				
+				if (dineAvailability.isJoin()){
+					count++;
+				}
+			}
+		}
+		
+		return count;
+	}
 }

@@ -24,9 +24,11 @@
 		
 		vm.selectedPrintType = 'DINE';
 		vm.selectedCamp = 'A';
+		vm.selectedTimeOfDine = 'NIGHT';
 		vm.selectedDay = 1;
 		vm.dineAssignmentPlans = [];
 		vm.groupAssignmentPlans = [];
+		vm.dineAssignmentStatistics = {};
 		vm.filter = {
 				genderBalance : true,
 				familySameTable : true,
@@ -38,6 +40,7 @@
 		vm.changePrintType = changePrintType;
 		vm.changeCampSite = changeCampSite;
 		vm.changeDineDay = changeDineDay;
+		vm.changeTimeOfDine = changeTimeOfDine;
 		vm.getSelectedDineAssignmentPlan = getSelectedDineAssignmentPlan;
 		vm.saveAssignment = saveAssignment;
 		vm.autoAssign = autoAssign;
@@ -46,6 +49,7 @@
 		vm.showAvailability = showAvailability;
 		vm.getTableNumberForParticularDine = getTableNumberForParticularDine;
 		vm.displayPrintHeader = displayPrintHeader;
+		vm.getSelectedDineStatistics = getSelectedDineStatistics;
 		
 		init();
 		
@@ -60,6 +64,7 @@
 				if (message.type === 'DINE_ASSIGNMENT_DATA'){
 					vm.dineAssignmentPlans = message.data.dineAssignmentPlans;
 					vm.groupAssignmentPlans = message.data.groupAssignmentPlans;
+					vm.dineAssignmentStatistics = message.data.dineAssignmentStatistics;
 				}
 				
 				if (message.type === 'UPDATE_DINE_ASSIGNMENT_COMPLETE'){
@@ -118,6 +123,10 @@
 		
 		function changeDineDay(selectedDay){
 			vm.selectedDay = selectedDay;
+		}
+		
+		function changeTimeOfDine(selectedTimeOfDine){
+			vm.selectedTimeOfDine = selectedTimeOfDine;
 		}
 		
 		function getSelectedDineAssignmentPlan(){
@@ -237,7 +246,15 @@
 			
 			if (vm.selectedPrintType === 'GROUP'){
 				return '2015夏令會' + vm.selectedCamp + ' 膳食座位安排（按組別）';
-			}			
+			}
+			
+			if (vm.selectedPrintType === 'STATISTICS'){
+				return '2015夏令會' + vm.selectedCamp + ' 膳食統計';
+			}
+		}
+		
+		function getSelectedDineStatistics(){
+			return vm.dineAssignmentStatistics[vm.selectedCamp];
 		}
 	};
 })();
