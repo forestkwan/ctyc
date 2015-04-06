@@ -22,9 +22,11 @@
 	
 		var vm = this;
 		
+		vm.selectedPrintType = 'DINE';
 		vm.selectedCamp = 'A';
 		vm.selectedDay = 1;
 		vm.dineAssignmentPlans = [];
+		vm.groupAssignmentPlans = [];
 		vm.filter = {
 				genderBalance : true,
 				familySameTable : true,
@@ -33,6 +35,7 @@
 		}
 		vm.isLoading = false;
 		
+		vm.changePrintType = changePrintType;
 		vm.changeCampSite = changeCampSite;
 		vm.changeDineDay = changeDineDay;
 		vm.getSelectedDineAssignmentPlan = getSelectedDineAssignmentPlan;
@@ -41,13 +44,14 @@
 		vm.calculateCost = calculateCost;
 		vm.openPrintTemplate = openPrintTemplate;
 		vm.showAvailability = showAvailability;
+		vm.getTableNumberForParticularDine = getTableNumberForParticularDine;
+		vm.displayPrintHeader = displayPrintHeader;
 		
 		init();
 		
 		//////////////////
 		
-		SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});
-		
+		SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});		
 		
 		function init(){
 			$scope.$on('websocket-message', function(event, jsonMessage){
@@ -55,6 +59,7 @@
 				
 				if (message.type === 'DINE_ASSIGNMENT_DATA'){
 					vm.dineAssignmentPlans = message.data.dineAssignmentPlans;
+					vm.groupAssignmentPlans = message.data.groupAssignmentPlans;
 				}
 				
 				if (message.type === 'UPDATE_DINE_ASSIGNMENT_COMPLETE'){
@@ -101,6 +106,10 @@
 
 				$scope.$digest();
 			});
+		}
+		
+		function changePrintType(printType){
+			vm.selectedPrintType = printType;
 		}
 		
 		function changeCampSite(selectedCamp){
@@ -203,6 +212,32 @@
 			}
 			
 			return false;
+		}
+		
+		function getTableNumberForParticularDine(numberOfDay, timeOfDay, dineAvailabilitys){
+			var targetDineAvailability = null;
+			for (var i=0; i<dineAvailabilitys.length; i++){
+				if (dineAvailabilitys[i].numberOfDay === numberOfDay &&
+						dineAvailabilitys[i].timeOfDay === timeOfDay){
+					targetDineAvailability = dineAvailabilitys[i];
+				}
+			}
+			
+			if (!targetDineAvailability || targetDineAvailability.join === false || !targetDineAvailability.assignedTableNumber){
+				return '-';
+			}
+			
+			return targetDineAvailability.assignedTableNumber;
+		}
+		
+		function displayPrintHeader(){
+			if (vm.selectedPrintType === 'DINE'){
+				return '2015夏令會' + vm.selectedCamp + '  膳食安排（按枱號）';
+			}
+			
+			if (vm.selectedPrintType === 'GROUP'){
+				return '2015夏令會' + vm.selectedCamp + ' 膳食座位安排（按組別）';
+			}			
 		}
 	};
 })();

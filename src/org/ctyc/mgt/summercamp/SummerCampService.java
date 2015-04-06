@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
+import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.FamilyGroupCostFunction;
@@ -21,6 +22,7 @@ import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 import org.ctyc.mgt.websocket.Message;
+import org.springframework.util.CollectionUtils;
 
 public class SummerCampService {
 	
@@ -30,6 +32,7 @@ public class SummerCampService {
 	private static String UPDATE_DINE_TABLE = "UPDATE_DINE_TABLE";
 	private static String GET_DINE_ASSIGNMENT = "GET_DINE_ASSIGNMENT";
 	private static String DINE_ASSIGNMENT_DATA = "DINE_ASSIGNMENT_DATA";
+	private static String GROUP_ASSIGNMENT_DATA = "GROUP_ASSIGNMENT_DATA";
 	private static String UPDATE_DINE_ASSIGNMENT = "UPDATE_DINE_ASSIGNMENT";
 	private static String UPDATE_DINE_ASSIGNMENT_COMPLETE = "UPDATE_DINE_ASSIGNMENT_COMPLETE";
 	private static String AUTO_ASSIGN = "AUTO_ASSIGN";
@@ -123,6 +126,41 @@ public class SummerCampService {
 		for (DineAssignmentPlan dineAssignmentPlan : this.dineAssignmentPlanList){
 			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
 				for (Participant participant : dineTableGroup.getParticipants()){
+					
+					System.out.printf("Table Number: %s\n", dineTableGroup.getTableNumber());
+					
+					participant.setDineTableNumber(
+							dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString(), dineTableGroup.getTableNumber());
+					participant.setDineTableNumber(
+							dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NOON.toString(), dineTableGroup.getTableNumber());
+					participant.setDineTableNumber(
+							dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.MORNING.toString(), dineTableGroup.getTableNumber());
+					
+					this.participantMap.put(participant.getId(), participant);
+				}
+			}
+		}
+	}
+	
+	private void updateTableNumberOfEachParticipant(){
+		
+		if (this.dineAssignmentPlanList == null){
+			return;
+		}
+		
+		for (DineAssignmentPlan dineAssignmentPlan : this.dineAssignmentPlanList){
+			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
+				for (Participant participant : dineTableGroup.getParticipants()){
+					
+					System.out.printf("Table Number: %s\n", dineTableGroup.getTableNumber());
+					
+					participant.setDineTableNumber(
+							dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString(), dineTableGroup.getTableNumber());
+					participant.setDineTableNumber(
+							dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NOON.toString(), dineTableGroup.getTableNumber());
+					participant.setDineTableNumber(
+							dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.MORNING.toString(), dineTableGroup.getTableNumber());
+					
 					this.participantMap.put(participant.getId(), participant);
 				}
 			}
@@ -159,6 +197,7 @@ public class SummerCampService {
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), GET_DINE_ASSIGNMENT)){
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("dineAssignmentPlans", this.dineAssignmentPlanList);
+			data.put("groupAssignmentPlans", this.constructGroupAssignmentPlan());
 			responseMessage = new Message(DINE_ASSIGNMENT_DATA, data);
 		}
 		
@@ -244,6 +283,7 @@ public class SummerCampService {
 			dineAssignmentPlan.getDineTableGroups().add(dineTableGroup);
 		}
 		
+		this.updateTableNumberOfEachParticipant();
 		this.saveDineTableAssignmentToFile();
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();
@@ -382,6 +422,31 @@ public class SummerCampService {
 			}
 		}
 		return null;
+	}
+	
+	private Map<String, GroupAssignmentPlan> constructGroupAssignmentPlan() {
+		
+		if (participantMap == null){
+			return new HashMap<String, GroupAssignmentPlan>();
+		}
+		
+		Map<String, GroupAssignmentPlan> groupAssignmentPlanMap = new HashMap<String, GroupAssignmentPlan>();
+		
+		for (Participant participant : participantMap.values()){
+			
+			String camp = participant.getId().substring(0, 1);
+			String key = camp + "-" + String.valueOf(participant.getGroupNumber());
+			
+			if (groupAssignmentPlanMap.get(key) == null){
+				GroupAssignmentPlan tempGroupAssignmentPlan = new GroupAssignmentPlan(camp, participant.getGroupNumber());
+				tempGroupAssignmentPlan.getParticipants().add(participant);
+				groupAssignmentPlanMap.put(key, tempGroupAssignmentPlan);
+			}else {
+				groupAssignmentPlanMap.get(key).getParticipants().add(participant);
+			}
+		}
+		
+		return groupAssignmentPlanMap;
 	}
 	
 }

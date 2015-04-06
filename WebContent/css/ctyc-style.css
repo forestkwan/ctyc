@@ -22,6 +22,14 @@ body {
     }
 }
 
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}
+
 .navbar-top-links {
     margin-right: 0;
 }

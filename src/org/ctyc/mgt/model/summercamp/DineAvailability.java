@@ -10,11 +10,13 @@ public class DineAvailability implements Serializable{
 	private int numberOfDay;
 	private String timeOfDay;
 	private boolean isJoin;
-	
+	private int assignedTableNumber;
+
 	public DineAvailability(int numberOfDay, String timeOfDay, boolean isJoin){
 		this.numberOfDay = numberOfDay;
 		this.timeOfDay = timeOfDay;
 		this.isJoin = isJoin;
+		this.assignedTableNumber = -1;
 	}
 	
 	@Override
@@ -67,5 +69,13 @@ public class DineAvailability implements Serializable{
 	}
 	public void setJoin(boolean isJoin) {
 		this.isJoin = isJoin;
+	}
+	
+	public int getAssignedTableNumber() {
+		return assignedTableNumber;
+	}
+
+	public void setAssignedTableNumber(int assignedTableNumber) {
+		this.assignedTableNumber = assignedTableNumber;
 	}
 }

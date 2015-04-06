@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.Believer;
 
 public class Participant extends Believer {
@@ -44,6 +45,15 @@ public class Participant extends Believer {
 			this.dineAvailabilitys = new HashSet<DineAvailability>();
 		}
 		return dineAvailabilitys;
+	}
+	
+	public void setDineTableNumber(int numberOfDay, String timeOfDay, int tableNumber){
+		for (DineAvailability dineAvailability : this.getDineAvailabilitys()){
+			if (dineAvailability.getNumberOfDay() == numberOfDay &&
+					StringUtils.equalsIgnoreCase(dineAvailability.getTimeOfDay(), timeOfDay)){
+				dineAvailability.setAssignedTableNumber(tableNumber);
+			}
+		}
 	}
 
 }
