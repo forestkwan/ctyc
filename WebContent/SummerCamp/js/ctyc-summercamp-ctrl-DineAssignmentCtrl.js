@@ -254,7 +254,8 @@
 		}
 		
 		function getSelectedDineStatistics(){
-			return vm.dineAssignmentStatistics[vm.selectedCamp];
+			var statistics = vm.dineAssignmentStatistics[vm.selectedCamp][vm.selectedTimeOfDine].dineTableStatisticsList;
+			return statistics;
 		}
 	};
 })();

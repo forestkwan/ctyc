@@ -123,12 +123,12 @@
 					<th>第三天</th>
 					<th>第四天</th>
 				</tr>
-				<tr ng-repeat="statistics in vm.getSelectedDineStatistics() | filter:{timeOfDay:vm.selectedTimeOfDine} | orderBy:'tableNumber'">
+				<tr ng-repeat="statistics in vm.getSelectedDineStatistics() | orderBy:'tableNumber'">
 					<td>{{statistics.tableNumber}}</td>
-					<td>{{statistics.participantCount}}</td>
-					<td>{{statistics.participantCount}}</td>
-					<td>{{statistics.participantCount}}</td>
-					<td>{{statistics.participantCount}}</td>
+					<td>{{statistics.day1Count}}</td>
+					<td>{{statistics.day2Count}}</td>
+					<td>{{statistics.day3Count}}</td>
+					<td>{{statistics.day4Count}}</td>
 				</tr>
 			</table>
 		</div>

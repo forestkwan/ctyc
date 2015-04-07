@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
-import org.ctyc.mgt.model.summercamp.DineAssignmentStatistics;
+import org.ctyc.mgt.model.summercamp.DineTimeStatistics;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
@@ -452,32 +452,59 @@ public class SummerCampService {
 		return groupAssignmentPlanMap;
 	}
 	
-	private Map<String, Collection<DineAssignmentStatistics>> generateDineAssignmentStatistics() {
+	private Map<String, Map<String, DineTimeStatistics>> generateDineAssignmentStatistics() {
 		
 		if (this.dineAssignmentPlanList == null){
 			return null;
 		}
 		
-		Map<String, Collection<DineAssignmentStatistics>> campDineTableStatistics = new HashMap<String, Collection<DineAssignmentStatistics>>();
+		Map<String, Map<String, DineTimeStatistics>> campDineTableStatistics = new HashMap<String, Map<String, DineTimeStatistics>>();
 		for (DineAssignmentPlan dineAssignmentPlan : this.dineAssignmentPlanList){
 			
 			String campName = dineAssignmentPlan.getCampName();
+			Map<String, DineTimeStatistics> tempDineTimeStatistics = campDineTableStatistics.get(campName);
+			if (tempDineTimeStatistics == null){
+				tempDineTimeStatistics = new HashMap<String, DineTimeStatistics>();
+				campDineTableStatistics.put(campName, tempDineTimeStatistics);
+			}
 			
 			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
 				
-				Collection<DineAssignmentStatistics> tempDineTableStatistics = campDineTableStatistics.get(campName);
+				// Count the number of participant at Night for that table
+				DineTimeStatistics tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.NIGHT.toString());
 				if (tempDineTableStatistics == null){
-					tempDineTableStatistics = new ArrayList<DineAssignmentStatistics>();
-					campDineTableStatistics.put(campName, tempDineTableStatistics);
+					tempDineTableStatistics = new DineTimeStatistics(DineTimeSlot.TimeOfDay.NIGHT.toString());
+					tempDineTimeStatistics.put(DineTimeSlot.TimeOfDay.NIGHT.toString(), tempDineTableStatistics);
 				}
-				
-				DineAssignmentStatistics dineTableStatistics = new DineAssignmentStatistics(
-						dineAssignmentPlan.getDay(),
-						DineTimeSlot.TimeOfDay.NIGHT.toString(),
+
+				tempDineTableStatistics.setDineTableStatistics(
 						dineTableGroup.getTableNumber(),
+						dineAssignmentPlan.getDay(),
 						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString()));
 				
-				tempDineTableStatistics.add(dineTableStatistics);
+				// Count the number of participant at Morning for that table
+				tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.MORNING.toString());
+				if (tempDineTableStatistics == null){
+					tempDineTableStatistics = new DineTimeStatistics(DineTimeSlot.TimeOfDay.MORNING.toString());
+					tempDineTimeStatistics.put(DineTimeSlot.TimeOfDay.MORNING.toString(), tempDineTableStatistics);
+				}
+
+				tempDineTableStatistics.setDineTableStatistics(
+						dineTableGroup.getTableNumber(),
+						dineAssignmentPlan.getDay(),
+						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.MORNING.toString()));
+				
+				// Count the number of participant at Noon for that table
+				tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.NOON.toString());
+				if (tempDineTableStatistics == null){
+					tempDineTableStatistics = new DineTimeStatistics(DineTimeSlot.TimeOfDay.NOON.toString());
+					tempDineTimeStatistics.put(DineTimeSlot.TimeOfDay.NOON.toString(), tempDineTableStatistics);
+				}
+
+				tempDineTableStatistics.setDineTableStatistics(
+						dineTableGroup.getTableNumber(),
+						dineAssignmentPlan.getDay(),
+						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NOON.toString()));
 			}
 		}
 		
