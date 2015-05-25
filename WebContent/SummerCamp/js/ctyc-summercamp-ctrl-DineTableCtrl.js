@@ -4,7 +4,8 @@
 	
 	controller.$inject = ['$scope'];
 	
-	function controller($scope){
+	function controller(
+			$scope){
 		
 		var vm = this;
 		
@@ -28,6 +29,7 @@
 		
 		function dropSuccessHandler($event, $index, participant){
 			vm.dineTableData.participants.splice($index, 1);
+			$scope.$emit('DINE_ASSIGNMENT_CHANGE', vm.dineTableData.participants);
 		}
 		
 		function getCost(type){

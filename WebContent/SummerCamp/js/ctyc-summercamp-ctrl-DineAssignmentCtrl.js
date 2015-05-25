@@ -58,6 +58,11 @@
 		SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});		
 		
 		function init(){
+			
+			$scope.$on('DINE_ASSIGNMENT_CHANGE', function(event, data){
+				calculateCost();
+			});
+			
 			$scope.$on('websocket-message', function(event, jsonMessage){
 				var message = JSON.parse(jsonMessage);
 				
@@ -104,6 +109,7 @@
 							}
 						}
 
+						notify.closeAll();
 						notify('Calculate Complete');
 						vm.isLoading = false;
 					}
