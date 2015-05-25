@@ -140,6 +140,11 @@ public class CsvReader {
 					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
 				}
 				
+				if (StringUtils.isNotBlank(tokens[34])){
+					Integer specialGroup = Integer.parseInt(tokens[34]);
+					participant.setSpecialGroup(specialGroup);
+				}
+				
 				participants.add(participant);
 			}
 

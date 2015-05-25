@@ -16,6 +16,7 @@ public class DineTableGroup implements Serializable{
 	private Collection<Participant> participants;
 	private double cost;
 	private Map<String, Double> evaluationResultMap;
+	private Integer specialGroup;
 
 	public int getTableNumber() {
 		return tableNumber;
@@ -38,6 +39,14 @@ public class DineTableGroup implements Serializable{
 	
 	public void setCost(double cost) {
 		this.cost = cost;
+	}
+	
+	public Integer getSpecialGroup() {
+		return specialGroup;
+	}
+
+	public void setSpecialGroup(Integer specialGroup) {
+		this.specialGroup = specialGroup;
 	}
 	
 	public int getNoOfGroupMentor(){

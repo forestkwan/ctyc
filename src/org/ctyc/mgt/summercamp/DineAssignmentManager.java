@@ -103,12 +103,39 @@ public class DineAssignmentManager {
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
 		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
 		
+		assignSpecialGroupToTable(participants, assignedParticipants, dineTableGroups);
 		assignFamilyGroupToTable(participants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(participants, assignedParticipants, dineTableGroups);
 		assignThreeSundayClassmatesToTables(participants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(participants, assignedParticipants, dineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
+	}
+
+	private void assignSpecialGroupToTable(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		Collection<Participant> specialGroupParticipants = new ArrayList<Participant>();
+		for (Participant participant : participants){
+			if (participant.getSpecialGroup() != null && !assignedParticipants.contains(participant)){
+				specialGroupParticipants.add(participant);
+			}
+		}
+		
+		DineTableGroup specialDineTableGroup = new DineTableGroup();
+		specialDineTableGroup.setTableNumber(99);
+		specialDineTableGroup.setSpecialGroup(1);
+		specialDineTableGroup.getParticipants().addAll(specialGroupParticipants);
+		
+		assignedParticipants.addAll(specialGroupParticipants);
+		
+		dineTableGroups.add(specialDineTableGroup);
 	}
 
 	private void assignFamilyGroupToTable(

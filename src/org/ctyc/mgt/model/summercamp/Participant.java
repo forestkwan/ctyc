@@ -15,6 +15,7 @@ public class Participant extends Believer {
 	private int groupNumber;
 	private boolean isGroupMentor;
 	private Set<DineAvailability> dineAvailabilitys;
+	private Integer specialGroup;
 
 	public Participant() {
 
@@ -34,6 +35,14 @@ public class Participant extends Believer {
 
 	public void setGroupMentor(boolean isGroupMentor) {
 		this.isGroupMentor = isGroupMentor;
+	}
+	
+	public Integer getSpecialGroup() {
+		return specialGroup;
+	}
+
+	public void setSpecialGroup(Integer specialGroup) {
+		this.specialGroup = specialGroup;
 	}
 
 	public static long getSerialversionuid() {
