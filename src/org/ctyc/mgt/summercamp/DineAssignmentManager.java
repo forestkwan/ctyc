@@ -103,13 +103,17 @@ public class DineAssignmentManager {
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
 		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
 		
-		assignSpecialGroupToTable(participants, assignedParticipants, dineTableGroups);
+		int specialTableStartingIndex = dineTableGroups.size() + 1;
+		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
+		
+		assignSpecialGroupToTable(participants, assignedParticipants, specialDineTableGroups);
 		assignFamilyGroupToTable(participants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(participants, assignedParticipants, dineTableGroups);
 		assignThreeSundayClassmatesToTables(participants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(participants, assignedParticipants, dineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
+		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
 	}
 
 	private void assignSpecialGroupToTable(
@@ -121,21 +125,18 @@ public class DineAssignmentManager {
 			return;
 		}
 		
-		Collection<Participant> specialGroupParticipants = new ArrayList<Participant>();
+		Collection<Participant> specialParticipants = new ArrayList<Participant>();
 		for (Participant participant : participants){
-			if (participant.getSpecialGroup() != null && !assignedParticipants.contains(participant)){
-				specialGroupParticipants.add(participant);
+			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
+				specialParticipants.add(participant);
 			}
 		}
 		
-		DineTableGroup specialDineTableGroup = new DineTableGroup();
-		specialDineTableGroup.setTableNumber(99);
-		specialDineTableGroup.setSpecialGroup(1);
-		specialDineTableGroup.getParticipants().addAll(specialGroupParticipants);
-		
-		assignedParticipants.addAll(specialGroupParticipants);
-		
-		dineTableGroups.add(specialDineTableGroup);
+		for (Participant specialParticipant : specialParticipants){
+			DineTableGroup dineTable = this.randomlyPickTableWithGenderBalance(dineTableGroups, specialParticipant.getGender());
+			dineTable.getParticipants().add(specialParticipant);
+			assignedParticipants.add(specialParticipant);
+		}
 	}
 
 	private void assignFamilyGroupToTable(
@@ -289,7 +290,7 @@ public class DineAssignmentManager {
 		System.out.println("-->Start re-assignment");
 		this.doPlanEvaluation();
 		
-		for (int i=0; i<10000; i++){
+		for (int i=0; i<0; i++){
 			this.reAssignment();
 			System.out.printf("-->Total cost after %d Iteration: %f\n", i, this.plan.getCost());
 		}
@@ -370,8 +371,15 @@ public class DineAssignmentManager {
 			return new ArrayList<DineTableGroup>();
 		}
 		
-		int numberOfTable = this.participants.size() / this.tableCapacity;
-		if ((this.participants.size() % this.tableCapacity) > 0){
+		int participantCount = 0;
+		for (Participant participant : this.participants){
+			if (participant.getSpecialGroup() == null || participant.getSpecialGroup() == 0){
+				participantCount++;
+			}
+		}
+		
+		int numberOfTable = participantCount / this.tableCapacity;
+		if ((participantCount % this.tableCapacity) > 0){
 			numberOfTable++;
 		}
 		
@@ -379,6 +387,38 @@ public class DineAssignmentManager {
 		for (int i=0; i< numberOfTable; i++){
 			DineTableGroup dineTableGroup = new DineTableGroup();
 			dineTableGroup.setTableNumber(i + 1);
+			emptyTableGroupList.add(dineTableGroup);
+		}
+		
+		return emptyTableGroupList;
+	}
+	
+	private Collection<DineTableGroup> createSpecialEmptyTableGroupList(int specialTableStartingIndex){
+		if (CollectionUtils.isEmpty(this.participants)){
+			return new ArrayList<DineTableGroup>();
+		}
+		
+		if (this.tableCapacity <= 0){
+			System.out.println("No table capacity");
+			return new ArrayList<DineTableGroup>();
+		}
+		
+		int participantCount = 0;
+		for (Participant participant : this.participants){
+			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
+				participantCount++;
+			}
+		}
+		
+		int numberOfTable = participantCount / this.tableCapacity;
+		if ((participantCount % this.tableCapacity) > 0){
+			numberOfTable++;
+		}
+		
+		Collection<DineTableGroup> emptyTableGroupList = new ArrayList<DineTableGroup>();
+		for (int i=0; i< numberOfTable; i++){
+			DineTableGroup dineTableGroup = new DineTableGroup();
+			dineTableGroup.setTableNumber(specialTableStartingIndex + i + 1);
 			emptyTableGroupList.add(dineTableGroup);
 		}
 		
