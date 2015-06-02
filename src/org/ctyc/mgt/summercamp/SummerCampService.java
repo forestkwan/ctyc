@@ -104,7 +104,7 @@ public class SummerCampService {
 				for (int i=0; i<4; i++){
 					
 					DineAssignmentManager dineAssignmentManager =
-							new DineAssignmentManager(campName, i + 1, campSite.getParticipants(), 8, costFunctions, constraintFunctions, 1);
+							new DineAssignmentManager(campName, i + 1, campSite.getParticipants(), 8, costFunctions, constraintFunctions, i);
 					dineAssignmentManager.doAssignment();
 					DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 					

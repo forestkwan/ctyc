@@ -9,9 +9,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import org.ctyc.mgt.model.Believer;
+import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.Gender;
+import org.ctyc.mgt.model.summercamp.DineAvailability;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
@@ -32,6 +33,7 @@ public class DineAssignmentManager {
 	private Collection<Participant> participants;
 	private Map<String, Participant> participantMap;
 	private int tableCapacity;
+	private static Map<String, Integer> mentorTableMap;
 	
 	// Private calculation object
 	private Random randomObj;
@@ -55,7 +57,10 @@ public class DineAssignmentManager {
 		}
 		
 		this.evaluator = new DineAssignmentEvaluator(costFunctions, constraintFunctions);
-		
+	}
+	
+	static {
+		mentorTableMap = new HashMap<String, Integer>();
 	}
 	
 	public DineAssignmentManager(
@@ -99,21 +104,84 @@ public class DineAssignmentManager {
 	}
 	
 	private void initAssignment(){
-				
+		
+		removeLeftParticipants(this.participants);
+		
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
 		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
 		
 		int specialTableStartingIndex = dineTableGroups.size() + 1;
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
-		assignSpecialGroupToTable(participants, assignedParticipants, specialDineTableGroups);
-		assignFamilyGroupToTable(participants, assignedParticipants, dineTableGroups);
-		assignGroupMentorToTable(participants, assignedParticipants, dineTableGroups);
-		assignThreeSundayClassmatesToTables(participants, assignedParticipants, dineTableGroups);
-		assignParticipantToTable(participants, assignedParticipants, dineTableGroups);
+		assignPreassignedAssignment(this.participants, assignedParticipants, dineTableGroups);
+		assignSpecialGroupToTable(this.participants, assignedParticipants, specialDineTableGroups);
+		assignFamilyGroupToTable(this.participants, assignedParticipants, dineTableGroups);
+		assignGroupMentorToTable(this.participants, assignedParticipants, dineTableGroups);
+		assignThreeSundayClassmatesToTables(this.participants, assignedParticipants, dineTableGroups);
+		assignParticipantToTable(this.participants, assignedParticipants, dineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
 		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
+	}
+	
+	private void removeLeftParticipants(Collection<Participant> participants) {
+		
+		int day = this.getAssignmentPlan().getDay();
+		
+		Collection<Participant> leftParticipants = new ArrayList<Participant>();
+		
+		for (Participant participant : participants){
+			
+			boolean isMorningJoin = false;
+			boolean isNoonJoin = false;
+			boolean isNightJoin = false;
+			
+			Collection<DineAvailability> dineAvailabilitys = participant.getDineAvailabilitys();
+			
+			for (DineAvailability dineAvailability : dineAvailabilitys){
+				
+				if (dineAvailability.getNumberOfDay() != day){
+					continue;
+				}
+				
+				if (StringUtils.equalsIgnoreCase(DineTimeSlot.TimeOfDay.MORNING.toString(), dineAvailability.getTimeOfDay())){
+					isMorningJoin = dineAvailability.isJoin();
+				}else if (StringUtils.equalsIgnoreCase(DineTimeSlot.TimeOfDay.NOON.toString(), dineAvailability.getTimeOfDay())){
+					isNoonJoin = dineAvailability.isJoin();
+				}else if (StringUtils.equalsIgnoreCase(DineTimeSlot.TimeOfDay.NIGHT.toString(), dineAvailability.getTimeOfDay())){
+					isNightJoin = dineAvailability.isJoin();
+				}
+			}
+			
+			if (!isMorningJoin && !isNoonJoin && !isNightJoin){
+				leftParticipants.add(participant);
+			}
+		}
+		
+		participants.removeAll(leftParticipants);
+		
+	}
+
+	private void assignPreassignedAssignment(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		// Assign the mentor to pre-assigned table
+		for (Participant participant : participants){
+			
+			Integer tableNumber = mentorTableMap.get(participant.getId());
+			if (tableNumber == null){
+				continue;
+			}
+			
+			for (DineTableGroup dineTableGroup : dineTableGroups){
+				if (dineTableGroup.getTableNumber() == tableNumber.intValue()){
+					dineTableGroup.getParticipants().add(participant);
+					assignedParticipants.add(participant);
+				}
+			}
+		}
 	}
 
 	private void assignSpecialGroupToTable(
@@ -212,6 +280,11 @@ public class DineAssignmentManager {
 		
 		for (Participant groupMentor : groupMentors){
 			DineTableGroup minimumMentorDineTable = this.randomlyPickMinimumGroupMentorTable(dineTableGroups);
+			
+			if (minimumMentorDineTable.getNoOfGroupMentor() < 1){
+				mentorTableMap.put(groupMentor.getId(), minimumMentorDineTable.getTableNumber());
+			}
+			
 			minimumMentorDineTable.getParticipants().add(groupMentor);
 			assignedParticipants.add(groupMentor);
 		}
