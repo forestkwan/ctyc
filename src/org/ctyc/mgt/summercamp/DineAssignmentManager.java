@@ -110,7 +110,7 @@ public class DineAssignmentManager {
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
 		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
 		
-		int specialTableStartingIndex = dineTableGroups.size() + 1;
+		int specialTableStartingIndex = dineTableGroups.size();
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
 		assignPreassignedAssignment(this.participants, assignedParticipants, dineTableGroups);

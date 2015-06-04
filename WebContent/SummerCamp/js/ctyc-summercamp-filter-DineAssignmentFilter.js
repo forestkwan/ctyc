@@ -1,7 +1,8 @@
 (function(){
 	angular.module('ctyc-summercamp')
 	.filter('GenderFilter', genderFilter)
-	.filter('GroupAssignmentFilter', groupAssignmentFilter);
+	.filter('GroupAssignmentFilter', groupAssignmentFilter)
+	.filter('CustomNumberFilter', customNumberFilter);
 	
 	genderFilter.$inject = [];
 	
@@ -34,6 +35,22 @@
 			}
 			
 			return filteredData;
+		}
+	}
+	
+	customNumberFilter.$inject = [];
+	
+	function customNumberFilter(){
+		return function(data){
+			if (!_.isNumber(data)){
+				return data;
+			}
+			
+			if (data < 0){
+				return 0;
+			}
+			
+			return data;
 		}
 	}
 })();

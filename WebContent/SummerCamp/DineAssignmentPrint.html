@@ -125,10 +125,10 @@
 				</tr>
 				<tr ng-repeat="statistics in vm.getSelectedDineStatistics() | orderBy:'tableNumber'">
 					<td>{{statistics.tableNumber}}</td>
-					<td>{{statistics.day1Count}}</td>
-					<td>{{statistics.day2Count}}</td>
-					<td>{{statistics.day3Count}}</td>
-					<td>{{statistics.day4Count}}</td>
+					<td>{{statistics.day1Count | CustomNumberFilter}}</td>
+					<td>{{statistics.day2Count | CustomNumberFilter}}</td>
+					<td>{{statistics.day3Count | CustomNumberFilter}}</td>
+					<td>{{statistics.day4Count | CustomNumberFilter}}</td>
 				</tr>
 			</table>
 		</div>
