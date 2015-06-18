@@ -52,7 +52,7 @@
 					<th>早</th>
 					<th>午</th>
 				</tr>
-				<tr ng-repeat="participant in dineTableGroup.participants | orderBy:'sundaySchoolClass'">
+				<tr ng-repeat="participant in dineTableGroup.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
 					<td>{{$index+1}}</td>
 					<td>{{participant.sundaySchoolClass}}</td>
 					<td>{{participant.name}}</td>
@@ -96,7 +96,7 @@
 					<th>第三天</th>
 					<th>第四天</th>
 				</tr>
-				<tr ng-repeat="participant in groupAssignmentPlan.participants | orderBy:'sundaySchoolClass'">
+				<tr ng-repeat="participant in groupAssignmentPlan.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
 					<td>{{$index+1}}</td>
 					<td>{{participant.sundaySchoolClass}}</td>
 					<td>{{participant.name}}</td>

@@ -2,7 +2,8 @@
 	angular.module('ctyc-summercamp')
 	.filter('GenderFilter', genderFilter)
 	.filter('GroupAssignmentFilter', groupAssignmentFilter)
-	.filter('CustomNumberFilter', customNumberFilter);
+	.filter('CustomNumberFilter', customNumberFilter)
+	.filter('GroupMentorOnTop', groupMentorOnTop);
 	
 	genderFilter.$inject = [];
 	
@@ -16,7 +17,7 @@
 					return 'M';
 				}
 			}
-		}
+		};
 	}
 	
 	groupAssignmentFilter.$inject = [];
@@ -35,7 +36,7 @@
 			}
 			
 			return filteredData;
-		}
+		};
 	}
 	
 	customNumberFilter.$inject = [];
@@ -51,6 +52,27 @@
 			}
 			
 			return data;
-		}
+		};
+	}
+	
+	groupMentorOnTop.$inject = [];
+	
+	function groupMentorOnTop(){
+		return function(data){
+			if (!_.isArray(data)){
+				return data;
+			}
+			
+			var ordered = [];
+			for (var i = 0 ; i < data.length; i++){
+				if (data[i].sundaySchoolClass === '導師'){
+					ordered.splice(0, 0, data[i]);
+				}else {
+					ordered.push(data[i]);
+				}
+			}
+			return ordered;
+			
+		};
 	}
 })();
