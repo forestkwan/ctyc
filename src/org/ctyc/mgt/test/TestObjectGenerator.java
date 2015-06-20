@@ -10,7 +10,7 @@ public class TestObjectGenerator {
 
 	public static CampSite generateTestCampSite(){
 		CampSite campSite = new CampSite();
-		campSite.setName("ªø¬w©ú·R");
+		campSite.setName("é•·æ´²æ˜Žæ„›");
 		campSite.getCanteenTables().addAll(generateCanteenTables(30, 8));
 		
 		return campSite;

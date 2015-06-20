@@ -75,7 +75,7 @@ public class FileUtils {
 			printWriter.println();
 			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
 				
-				printWriter.printf("Table%d [%d¤H][Cost=%.2f][Mentor Number=%d]: ",
+				printWriter.printf("Table%d [%däºº][Cost=%.2f][Mentor Number=%d]: ",
 						dineTableGroup.getTableNumber(),
 						dineTableGroup.getParticipants().size(),
 						dineTableGroup.getCost(),
