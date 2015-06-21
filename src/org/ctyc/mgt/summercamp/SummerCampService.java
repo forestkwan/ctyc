@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
@@ -43,6 +44,7 @@ public class SummerCampService {
 	
 	private static String CAMP_SITE_PATH = "CTYCSave/CampSite.txt";
 	private static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
+	private static String SAVE_HOME;
 	
 	private static String[] campNames = {"A", "B"};
 	
@@ -50,6 +52,29 @@ public class SummerCampService {
 	private Map<String, CampSite> campSiteMap = null;
 	private Collection<DineAssignmentPlan> dineAssignmentPlanList = null;
 	private Map<String, Participant> participantMap = null;
+	
+	static {
+		SAVE_HOME = System.getenv("SAVE_HOME");
+		
+		if (SystemUtils.IS_OS_WINDOWS){
+			
+			if (SAVE_HOME == null){
+				SAVE_HOME = "c:\\CTYCSAVE";
+			}
+			
+			CAMP_SITE_PATH = SAVE_HOME + "\\CampSite.txt";
+			DINE_ASSIGNMENT_PLAN_PATH = SAVE_HOME + "\\DineAssignmentPlan.txt";
+			
+		}else if (SystemUtils.IS_OS_MAC){
+			
+			if (SAVE_HOME == null){
+				SAVE_HOME = "CTYCSAVE";
+			}
+			
+			CAMP_SITE_PATH = SAVE_HOME + "/CampSite.txt";
+			DINE_ASSIGNMENT_PLAN_PATH = SAVE_HOME + "/DineAssignmentPlan.txt";
+		}
+	}
 
 	protected SummerCampService(){
 		// Load saved camp site
@@ -68,7 +93,12 @@ public class SummerCampService {
 			for (String campName : campNames){
 				CampSite campSite = new CampSite();
 				campSite.setName(campName);
-				campSite.getParticipants().addAll(CsvReader.readParticipantCsv("CTYCSave/camp" + campName + "_panticipants.csv"));
+				
+				if (SystemUtils.IS_OS_WINDOWS){
+					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "\\camp" + campName + "_panticipants.csv"));
+				}else if (SystemUtils.IS_OS_MAC){
+					campSite.getParticipants().addAll(CsvReader.readParticipantCsv("CTYCSave/camp" + campName + "_panticipants.csv"));
+				}
 				
 				this.campSiteMap.put(campName, campSite);
 			}

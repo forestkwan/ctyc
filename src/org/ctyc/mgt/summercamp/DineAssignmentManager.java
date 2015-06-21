@@ -170,6 +170,32 @@ public class DineAssignmentManager {
 		// Assign the mentor to pre-assigned table
 		for (Participant participant : participants){
 			
+			//Assign Dr.Wong to table 1
+			if (StringUtils.equalsIgnoreCase(participant.getName(), "黃耀銓")){
+				
+				for (DineTableGroup dineTableGroup : dineTableGroups){
+					if (dineTableGroup.getTableNumber() == 1){
+						dineTableGroup.getParticipants().add(participant);
+						assignedParticipants.add(participant);
+					}
+				}
+				
+				continue;
+			}
+			
+			//Assign Cheung Wan Sang to table 2
+			if (StringUtils.equalsIgnoreCase(participant.getName(), "張運生")){
+				
+				for (DineTableGroup dineTableGroup : dineTableGroups){
+					if (dineTableGroup.getTableNumber() == 2){
+						dineTableGroup.getParticipants().add(participant);
+						assignedParticipants.add(participant);
+					}
+				}
+				
+				continue;
+			}
+			
 			Integer tableNumber = mentorTableMap.get(participant.getId());
 			if (tableNumber == null){
 				continue;
