@@ -30,9 +30,9 @@ public class DineAssignmentTester extends TestCase {
 		System.out.println("testDineAssignment");
 		
 		CampSite campSite = TestObjectGenerator.generateTestCampSite();
-		FileUtils.writeObjectToFile(campSite, "c:\\CTYCSave\\CampSite.ser");
+		FileUtils.writeObjectToFile(campSite, "CTYCSave/CampSite.ser");
 		
-		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv("c:\\CTYCSave\\campA_panticipants.csv");
+		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv("CTYCSave/campA_panticipants.csv");
 		
 		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
 //		costFunctions.add(new GenderBalanceCostFunction(1, 1));
@@ -51,9 +51,9 @@ public class DineAssignmentTester extends TestCase {
 		DineTimeSlot dineTimeSlot = new DineTimeSlot(1, DineTimeSlot.TimeOfDay.NIGHT);
 		String filename = "Day" + dineTimeSlot.getNumberOfDay() + dineTimeSlot.getTimeOfDay().toString() + ".txt";
 			
-		FileUtils.writeDineAssignmentPlan(dineTimeSlot, dineAssignmentPlan, "C:\\CTYCSave\\" + filename);
+		FileUtils.writeDineAssignmentPlan(dineTimeSlot, dineAssignmentPlan, "CTYCSave/" + filename);
 		
-		CampSite campSite2 = FileUtils.readFileToObject("c:\\CTYCSave\\CampSite.ser");
+		CampSite campSite2 = FileUtils.readFileToObject("CTYCSave/CampSite.ser");
 		
 		System.out.println(campSite2);
 	}

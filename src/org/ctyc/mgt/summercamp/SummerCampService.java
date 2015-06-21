@@ -41,8 +41,8 @@ public class SummerCampService {
 	private static String CALCULATE_COST = "CALCULATE_COST";
 	private static String CALCULATE_COST_COMPLETE = "CALCULATE_COST_COMPLETE";
 	
-	private static String CAMP_SITE_PATH = "c:\\CTYCSave\\CampSite.txt";
-	private static String DINE_ASSIGNMENT_PLAN_PATH = "c:\\CTYCSave\\DineAssignmentPlan.txt";
+	private static String CAMP_SITE_PATH = "CTYCSave/CampSite.txt";
+	private static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
 	
 	private static String[] campNames = {"A", "B"};
 	
@@ -68,7 +68,7 @@ public class SummerCampService {
 			for (String campName : campNames){
 				CampSite campSite = new CampSite();
 				campSite.setName(campName);
-				campSite.getParticipants().addAll(CsvReader.readParticipantCsv("c:\\CTYCSave\\camp" + campName + "_panticipants.csv"));
+				campSite.getParticipants().addAll(CsvReader.readParticipantCsv("CTYCSave/camp" + campName + "_panticipants.csv"));
 				
 				this.campSiteMap.put(campName, campSite);
 			}

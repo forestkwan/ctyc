@@ -10,6 +10,6 @@ public class ReadAndWriteFileTester {
 	public void testWriteParticipants(){
 		
 		System.out.println("Test Write Participants");
-		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv("c:\\CTYCSave\\campA_panticipants.csv");
+		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv("CTYCSave/campA_panticipants.csv");
 	}
 }

@@ -19,7 +19,7 @@ import org.springframework.util.CollectionUtils;
 public class FileUtils {
 	
 	private static String ENCODING = "UTF-8";
-	private static String DEFAULT_FILE_PATH = "c:\\ctycTempOutput.txt";
+	private static String DEFAULT_FILE_PATH = "ctycTempOutput.txt";
 	
 	public static void writeObjectToFile(Object object, String filePath){
 		
