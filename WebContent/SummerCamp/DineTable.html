@@ -14,8 +14,8 @@
 				<div class="col-xs-6" ng-if="vm.filter.mentorInTable" ng-class="vm.displayAlertClass(vm.getCost('MENTOR_IN_TABLE'))">
 					<p>駐檯導師: {{vm.getCost('MENTOR_IN_TABLE') | number : 2}}</p>
 				</div>
-				<div class="col-xs-6" ng-if="vm.filter.sameSundayClass" ng-class="vm.displayAlertClass(vm.getCost('SAME_SUNDAY_CLASS'))">
-					<p>主日學班同檯陪伴: {{vm.getCost('SAME_SUNDAY_CLASS') | number : 2}}</p>
+				<div class="col-xs-6" ng-if="vm.filter.sameSundayClass" ng-class="vm.displayAlertClass(vm.getCost('SAME_GROUP'))">
+					<p>同組同檯陪伴: {{vm.getCost('SAME_GROUP') | number : 2}}</p>
 				</div>
 			</div>
 			

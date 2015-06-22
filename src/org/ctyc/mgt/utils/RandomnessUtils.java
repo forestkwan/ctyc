@@ -1,5 +1,6 @@
 package org.ctyc.mgt.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
@@ -48,5 +49,35 @@ public class RandomnessUtils {
 		}
 		
 		return null;
+	}
+	
+	public static Collection<Participant> pickRandomMultiParticipant(Collection<Participant> participants, Random randomObj){
+		
+		if (CollectionUtils.isEmpty(participants) || participants.size() < 2|| randomObj == null){
+			return null;
+		}
+		
+		if (participants.size() == 3){
+			return participants;
+		}
+
+		int item1 = randomObj.nextInt(participants.size());
+		int item2 = item1;
+		do {
+			item2 = randomObj.nextInt(participants.size());
+		} while (item2 == item1);
+		
+		int i = 0;
+		
+		Collection<Participant> resultParticipants = new ArrayList<Participant>();
+		for(Participant participant : participants)
+		{
+			if (i == item1 || i == item2){
+				resultParticipants.add(participant);
+			}
+			i++;
+		}
+		
+		return resultParticipants;
 	}
 }

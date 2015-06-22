@@ -9,7 +9,7 @@ public class SameGroupCostFunction extends AbstractCostFunction {
 	public SameGroupCostFunction(int priority, double weight) {
 		super(priority, weight);
 		this.name = "";
-		this.code = "";
+		this.code = "SAME_GROUP";
 	}
 
 	@Override
@@ -21,6 +21,10 @@ public class SameGroupCostFunction extends AbstractCostFunction {
 		
 		int noSundayClassmateCount = 0;
 		for (Participant participant : dineTableGroup.getParticipants()){
+			
+			if (participant.getFamilyGroup() != null && !CollectionUtils.isEmpty(participant.getFamilyGroup().getBelieverIds())){
+				continue;
+			}
 			
 			boolean hasSundayClassmate = false;
 			for (Participant tempParticipant : dineTableGroup.getParticipants()){

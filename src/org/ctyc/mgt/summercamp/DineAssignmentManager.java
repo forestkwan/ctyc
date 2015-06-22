@@ -117,7 +117,7 @@ public class DineAssignmentManager {
 		assignSpecialGroupToTable(this.participants, assignedParticipants, specialDineTableGroups);
 		assignFamilyGroupToTable(this.participants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(this.participants, assignedParticipants, dineTableGroups);
-		assignThreeSundayClassmatesToTables(this.participants, assignedParticipants, dineTableGroups);
+		assignThreeSameGroupParticipantsToTables(this.participants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(this.participants, assignedParticipants, dineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
@@ -317,7 +317,7 @@ public class DineAssignmentManager {
 		
 	}
 	
-	private void assignThreeSundayClassmatesToTables(
+	private void assignThreeSameGroupParticipantsToTables(
 			Collection<Participant> participants,
 			Collection<Participant> assignedParticipants,
 			Collection<DineTableGroup> dineTableGroups) {
@@ -333,26 +333,82 @@ public class DineAssignmentManager {
 			}
 		}
 		
-		/* Create a map according to participants' Sunday class*/
-		Map<String, Collection<Participant>> sundayClassParticipantMap = new HashMap<String, Collection<Participant>>();
+		/* Create a map according to participants' Group Number*/
+		Map<Integer, Collection<Participant>> groupNumberParticipantMap = new HashMap<Integer, Collection<Participant>>();
 		for (Participant unassignedParticipant : unassignedParticipants){
 			
-			Collection<Participant> sundayClassParticipants = sundayClassParticipantMap.get(unassignedParticipant.getSundaySchoolClass());
-			if (sundayClassParticipants == null){
-				sundayClassParticipants = new ArrayList<Participant>();
-				sundayClassParticipants.add(unassignedParticipant);
-				sundayClassParticipantMap.put(unassignedParticipant.getSundaySchoolClass(), sundayClassParticipants);
+			Collection<Participant> groupNumberParticipants = groupNumberParticipantMap.get(unassignedParticipant.getGroupNumber());
+			if (groupNumberParticipants == null){
+				groupNumberParticipants = new ArrayList<Participant>();
+				groupNumberParticipants.add(unassignedParticipant);
+				groupNumberParticipantMap.put(unassignedParticipant.getGroupNumber(), groupNumberParticipants);
 			}else {
-				sundayClassParticipants.add(unassignedParticipant);
+				groupNumberParticipants.add(unassignedParticipant);
 			}
 		}
 		
-		Collection<DineTableGroup> oddTableGroups = new ArrayList<DineTableGroup>();
-		for (DineTableGroup dineTableGroup : dineTableGroups){
-			if (this.isEvenNumber(this.tableCapacity - dineTableGroup.getParticipants().size())){
-				continue;
+		/*
+		 * For each group of participant, randomly pick a table with enough vacancy
+		 * Randomly pick 2 or 3 participants from the group of participants
+		 * assign the participants to the table
+		 * Add the participants to assigned participant list
+		 * */
+		for (Entry<Integer, Collection<Participant>> entry : groupNumberParticipantMap.entrySet()){
+			int groupNumber = entry.getKey();
+			Collection<Participant> groupedParticipants = entry.getValue();
+			
+			while (!CollectionUtils.isEmpty(groupedParticipants)){
+				
+				Collection<Participant> selectedParticipants = RandomnessUtils.pickRandomMultiParticipant(groupedParticipants, this.randomObj);
+				if (selectedParticipants == null){
+					break;
+				}
+				
+				DineTableGroup selectedDineTable = randomPickTableForGroupPanticipantAssignment(dineTableGroups, groupNumber, selectedParticipants.size());
+				
+				if (selectedDineTable == null){
+					break;
+				}
+				
+				selectedDineTable.getParticipants().addAll(selectedParticipants);
+				assignedParticipants.addAll(selectedParticipants);
+				groupedParticipants.removeAll(selectedParticipants);
 			}
 		}
+	}
+	
+	private DineTableGroup randomPickTableForGroupPanticipantAssignment(
+			Collection<DineTableGroup> dineTableGroups,
+			int groupNumber,
+			int vacancyRequired){
+		
+		if (CollectionUtils.isEmpty(dineTableGroups)){
+			return null;
+		}
+		
+		Collection<DineTableGroup> candidateTables = new ArrayList<DineTableGroup>();
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			if (dineTableGroup.getParticipants().size() + vacancyRequired > this.tableCapacity){
+				continue;
+			}
+			
+			boolean hasSameGroupParticipant = false;
+			for (Participant participant : dineTableGroup.getParticipants()){
+				if (participant.getGroupNumber() == groupNumber){
+					hasSameGroupParticipant = true;
+					break;
+				}
+			}
+			
+			if (hasSameGroupParticipant){
+				continue;
+			}
+			
+			candidateTables.add(dineTableGroup);
+		}
+		
+		return RandomnessUtils.pickRandomDineTableGroup(candidateTables, this.randomObj);
+		
 	}
 
 	private void assignParticipantToTable(

@@ -20,6 +20,7 @@ import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.FamilyGroupCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.GenderBalanceCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.MentorInTableCostFunction;
+import org.ctyc.mgt.summercamp.costfunction.SameGroupCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
@@ -116,8 +117,8 @@ public class SummerCampService {
 			this.dineAssignmentPlanList = new ArrayList<DineAssignmentPlan>();
 			Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
 			costFunctions.add(new GenderBalanceCostFunction(1, 1));
-//			costFunctions.add(new SameGroupCostFunction(1, 1));
-			costFunctions.add(new SameSundayClassCostFunction(1, 1));
+			costFunctions.add(new SameGroupCostFunction(1, 1));
+//			costFunctions.add(new SameSundayClassCostFunction(1, 1));
 			
 			Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
 			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
@@ -426,7 +427,7 @@ public class SummerCampService {
 		
 		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
 		costFunctions.add(new GenderBalanceCostFunction(1, 1));
-		costFunctions.add(new SameSundayClassCostFunction(1, 1));
+		costFunctions.add(new SameGroupCostFunction(1, 1));
 		
 		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
 		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
