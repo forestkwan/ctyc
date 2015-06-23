@@ -2,9 +2,12 @@ package org.ctyc.mgt.summercamp;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -297,12 +300,21 @@ public class DineAssignmentManager {
 			return;
 		}
 		
-		Collection<Participant> groupMentors = new ArrayList<Participant>();
+		List<Participant> groupMentors = new ArrayList<Participant>();
 		for (Participant participant : participants){
-			if (participant.isGroupMentor() && !assignedParticipants.contains(participant)){
+			
+			if (assignedParticipants.contains(participant)){
+				continue;
+			}
+			
+			if (participant.isGroupMentor() || participant.isMentor() || StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
 				groupMentors.add(participant);
 			}
 		}
+		
+		GroupMentorComparator groupMentorComparator = new GroupMentorComparator(this.plan.getDay());
+		
+		Collections.sort(groupMentors, groupMentorComparator);
 		
 		for (Participant groupMentor : groupMentors){
 			DineTableGroup minimumMentorDineTable = this.randomlyPickMinimumGroupMentorTable(dineTableGroups);

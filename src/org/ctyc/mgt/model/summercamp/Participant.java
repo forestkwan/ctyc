@@ -64,5 +64,21 @@ public class Participant extends Believer {
 			}
 		}
 	}
+	
+	public int countAvailableDine(int day){
+		int count = 0;
+		
+		for (DineAvailability dineAvailability : this.dineAvailabilitys){
+			if (dineAvailability.getNumberOfDay() != day){
+				continue;
+			}
+			
+			if (dineAvailability.isJoin()){
+				count++;
+			}
+		}
+		
+		return count;
+	}
 
 }

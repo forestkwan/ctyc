@@ -1,9 +1,11 @@
 package org.ctyc.mgt.utils;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +29,7 @@ public class CsvReader {
 		Collection<Participant> participants = new ArrayList<Participant>();
 		try {
 
-			bufferedReader = new BufferedReader(new FileReader(filepath));
+			bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF-8"));
 			int count = 0;
 			Map<String, FamilyGroup> familyGroupMap = new HashMap<String, FamilyGroup>();
 			
