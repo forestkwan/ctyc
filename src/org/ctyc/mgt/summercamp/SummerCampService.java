@@ -331,7 +331,7 @@ public class SummerCampService {
 				|| data.get("camp") == null
 				|| data.get("day") == null
 				|| data.get("tableCapacity") == null
-				|| data.get("constraints") == null
+//				|| data.get("constraints") == null
 				|| data.get("seed") == null){
 			return null;
 		}
@@ -341,7 +341,7 @@ public class SummerCampService {
 		
 		int tableCapacity = Integer.valueOf(data.get("tableCapacity").toString());
 		int seed = Integer.valueOf(data.get("seed").toString());
-		Map<String, Object> constraintsMap = (Map<String, Object>)data.get("constraints");
+//		Map<String, Object> constraintsMap = (Map<String, Object>)data.get("constraints");
 		
 		System.out.println("Auto assign summer camp " + campName);
 		
@@ -350,8 +350,16 @@ public class SummerCampService {
 			return null;
 		}
 		
-		Collection<AbstractCostFunction> costFunctions = this.createCostFunctions(constraintsMap);
-		Collection<AbstractCostFunction> constraintFunctions = this.createConstraintFunctions(constraintsMap);
+//		Collection<AbstractCostFunction> costFunctions = this.createCostFunctions(constraintsMap);
+//		Collection<AbstractCostFunction> constraintFunctions = this.createConstraintFunctions(constraintsMap);
+		
+		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
+		costFunctions.add(new GenderBalanceCostFunction(1, 1));
+		costFunctions.add(new SameGroupCostFunction(1, 1));
+		
+		Collection<AbstractCostFunction> constraintFunctions = new ArrayList<AbstractCostFunction>();
+		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
+		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 		
 		DineAssignmentManager dineAssignmentManager =
 				new DineAssignmentManager(campName, day, campSite.getParticipants(), tableCapacity, costFunctions, constraintFunctions, seed);

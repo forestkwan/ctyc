@@ -1,5 +1,6 @@
 package org.ctyc.mgt.summercamp.costfunction;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.springframework.util.CollectionUtils;
@@ -20,7 +21,7 @@ public class MentorInTableCostFunction extends AbstractCostFunction {
 		}
 		
 		for (Participant participant : dineTableGroup.getParticipants()){
-			if (participant.isMentor()){
+			if (participant.isMentor() || participant.isGroupMentor() || StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
 				return 0;
 			}
 		}

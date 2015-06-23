@@ -36,7 +36,7 @@
 					camp : vm.camp,
 					day : day,
 					tableCapacity : vm.tableCapacity,
-					constraints : vm.constraints,
+					//constraints : vm.constraints,
 					seed : vm.seed
 			}
 			
