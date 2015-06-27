@@ -52,7 +52,7 @@ public class DineTableGroup implements Serializable{
 	public int getNoOfGroupMentor(){
 		int count = 0;
 		for (Participant participant : this.getParticipants()){
-			if (participant.isGroupMentor()){
+			if (participant.isGroupMentor() || participant.isMentor() || StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
 				count++;
 			}
 		}

@@ -65,7 +65,7 @@
 			
 			var ordered = [];
 			for (var i = 0 ; i < data.length; i++){
-				if (data[i].sundaySchoolClass === '導師'){
+				if (data[i].sundaySchoolClass.indexOf('導師') >= 0){
 					ordered.splice(0, 0, data[i]);
 				}else {
 					ordered.push(data[i]);
