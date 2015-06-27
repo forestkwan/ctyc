@@ -19,7 +19,7 @@
 				</div>
 			</div>
 			
-			<table class="table table-condensed" ui-on-Drop="vm.onParticipantDrop($event, $data, vm.dineTableData.participants)">
+			<table class="table table-condensed table-striped" ui-on-Drop="vm.onParticipantDrop($event, $data, vm.dineTableData.participants)">
 				<tr>
 					<th>姓名</th>
 					<th>性別</th>
@@ -35,18 +35,18 @@
 					<td>{{participant.name}}</td>
 					<td>{{participant.gender | GenderFilter}}</td>
 					<td>{{participant.sundaySchoolClass}}</td>
-					<td>{{participant.groupNumber}}</td>
+					<td>{{participant.groupNumber | GroupDisplayFilter}}</td>
 					<td>
-						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
-						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
+						<div ng-if="vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)">✓</div>
+						<div ng-if="!vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)">X</div>
 					</td>
 					<td>
-						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)"></i>
-						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)"></i>
+						<div ng-if="vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)">✓</div>
+						<div ng-if="!vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)">X</div>
 					</td>
 					<td>
-						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)"></i>
-						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)"></i>
+						<div ng-if="vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)">✓</div>
+						<div ng-if="!vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)">X</div>
 					</td>
 				</tr>
 			</table>

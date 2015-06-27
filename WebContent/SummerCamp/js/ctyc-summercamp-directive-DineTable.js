@@ -11,7 +11,23 @@
 			scope: {
 				dineTableData : '=',
 				filter : '=',
-				selectedDay : '=',
+				selectedDay : '='
+			}
+		};
+	});
+	
+	angular.module('ctyc-summercamp')
+	.directive('dineTablePrint', function(){
+		return {
+			restrict: 'EA',
+			replace : true,
+			controller: 'ctyc-summercamp-ctrl-DineTablePrintCtrl',
+			controllerAs: 'vm',
+			templateUrl: 'SummerCamp/DineTablePrint.html',
+			bindToController: true,
+			scope: {
+				dineTableGroup : '=',
+				selectedDay : '='
 			}
 		};
 	});

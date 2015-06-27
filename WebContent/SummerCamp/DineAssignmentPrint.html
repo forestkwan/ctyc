@@ -30,9 +30,17 @@
 				<button type="button" ng-click="vm.changeTimeOfDine('NIGHT')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NIGHT', 'btn btn-default': vm.selectedTimeOfDine!=='NIGHT'}">晚</button>
 			</div>
 		</div>
-
+		
 		<div ng-if="vm.selectedPrintType==='DINE'" ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
-			<table class="table table-condensed">
+			<div ng-if="$even" class="row">
+				<dine-table-print class="col-xs-6" dine-table-group="dineTableGroup" selected-day="vm.selectedDay"></dine-table-print>
+				<dine-table-print class="col-xs-6" ng-if="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]"
+				dine-table-group="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]" selected-day="vm.selectedDay"></dine-table-print>
+			</div>
+		</div>
+
+		<div ng-if="vm.selectedPrintType==='DINE' && false" ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
+			<table class="table table-condensed table-striped">
 				<tr><span style="color:#e32;font-size:110%">第 {{dineTableGroup.tableNumber}} 枱</span></tr>
 				<tr style="border-bottom: 2px solid black;">
 					<col width="10%">
@@ -44,7 +52,6 @@
 					<col width="10%">
 					<col width="10%">
 					<th></th>
-					<th>班別</th>
 					<th>姓名</th>
 					<th>性別</th>
 					<th>組別</th>
@@ -54,10 +61,9 @@
 				</tr>
 				<tr ng-repeat="participant in dineTableGroup.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
 					<td>{{$index+1}}</td>
-					<td>{{participant.sundaySchoolClass}}</td>
 					<td>{{participant.name}}</td>
 					<td>{{participant.gender | GenderFilter}}</td>
-					<td>{{participant.groupNumber}}</td>
+					<td>{{participant.groupNumber | GroupDisplayFilter}}</td>
 					<td>
 						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
 						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
@@ -76,7 +82,7 @@
 		
 		<div ng-if="vm.selectedPrintType==='GROUP'"
 		ng-repeat="groupAssignmentPlan in vm.groupAssignmentPlans | GroupAssignmentFilter:vm.selectedCamp | ToArray | orderBy:'groupNumber'">
-			<table class="table table-condensed">
+			<table class="table table-condensed table-striped">
 				<tr><span style="color:#e32;font-size:110%">第 {{groupAssignmentPlan.groupNumber}} 組</span></tr>
 				<tr style="border-bottom: 2px solid black;">
 					<col width="10%">
@@ -110,7 +116,7 @@
 		</div>
 		
 		<div ng-if="vm.selectedPrintType==='STATISTICS'">
-			<table class="table table-condensed">
+			<table class="table table-condensed table-striped">
 				<tr style="border-bottom: 2px solid black;">
 					<col width="20%">
 					<col width="20%">

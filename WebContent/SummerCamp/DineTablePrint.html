@@ -1,0 +1,45 @@
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="dine-table-panel">
+		
+			<table class="table table-condensed table-striped">
+				<tr><span style="color:#e32;font-size:110%">第 {{vm.dineTableGroup.tableNumber}} 枱</span></tr>
+				<tr style="border-bottom: 2px solid black;">
+					<col width="10%">
+					<col width="15%">
+					<col width="15%">
+					<col width="10%">
+					<col width="15%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<th></th>
+					<th style="text-align:center">姓名</th>
+					<th style="text-align:center">性別</th>
+					<th style="text-align:center">組別</th>
+					<th style="text-align:center">晚</th>
+					<th style="text-align:center">早</th>
+					<th style="text-align:center">午</th>
+				</tr>
+				<tr ng-repeat="participant in vm.dineTableGroup.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
+					<td align="center">{{$index+1}}</td>
+					<td align="center">{{participant.name}}</td>
+					<td align="center">{{participant.gender | GenderFilter}}</td>
+					<td align="center">{{participant.groupNumber | GroupDisplayFilter}}</td>
+					<td align="center">
+						<div ng-if="vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)">✓</div>
+						<div ng-if="!vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)">X</div>
+					</td>
+					<td align="center">
+						<div ng-if="vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)">✓</div>
+						<div ng-if="!vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)">X</div>
+					</td>
+					<td align="center">
+						<div ng-if="vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)">✓</div>
+						<div ng-if="!vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)">X</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
