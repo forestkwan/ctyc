@@ -376,7 +376,7 @@ public class DineAssignmentManager {
 					break;
 				}
 				
-				DineTableGroup selectedDineTable = randomPickTableForGroupPanticipantAssignment(dineTableGroups, groupNumber, selectedParticipants.size());
+				DineTableGroup selectedDineTable = randomPickTableForGroupPanticipantAssignment(dineTableGroups, groupNumber, selectedParticipants);
 				
 				if (selectedDineTable == null){
 					break;
@@ -392,13 +392,25 @@ public class DineAssignmentManager {
 	private DineTableGroup randomPickTableForGroupPanticipantAssignment(
 			Collection<DineTableGroup> dineTableGroups,
 			int groupNumber,
-			int vacancyRequired){
+			Collection<Participant> selectedParticipants){
 		
 		if (CollectionUtils.isEmpty(dineTableGroups)){
 			return null;
 		}
 		
+		int vacancyRequired = selectedParticipants.size();
 		Collection<DineTableGroup> candidateTables = new ArrayList<DineTableGroup>();
+		Collection<DineTableGroup> genderCompensatedTables = new ArrayList<DineTableGroup>();
+		
+		int genderNetBalance = 0;
+		for (Participant participant : selectedParticipants){
+			if (participant.getGender() == Gender.MALE){
+				genderNetBalance++;
+			}else {
+				genderNetBalance--;
+			}
+		}
+		
 		for (DineTableGroup dineTableGroup : dineTableGroups){
 			if (dineTableGroup.getParticipants().size() + vacancyRequired > this.tableCapacity){
 				continue;
@@ -416,11 +428,23 @@ public class DineAssignmentManager {
 				continue;
 			}
 			
+			/* Construct a table candidate list with gender balance */
+			int tableGenderBalance = dineTableGroup.getNetGenderBalance();
+			if ((genderNetBalance == 0 && tableGenderBalance == 0) ||
+					(genderNetBalance < 0 && tableGenderBalance > 0) ||
+					(genderNetBalance > 0 && tableGenderBalance < 0)){
+				genderCompensatedTables.add(dineTableGroup);
+			}
+			
 			candidateTables.add(dineTableGroup);
 		}
 		
-		return RandomnessUtils.pickRandomDineTableGroup(candidateTables, this.randomObj);
-		
+		DineTableGroup selectedTable = RandomnessUtils.pickRandomDineTableGroup(genderCompensatedTables, this.randomObj);
+		if (selectedTable != null){
+			return selectedTable;
+		}else {
+			return RandomnessUtils.pickRandomDineTableGroup(candidateTables, this.randomObj);
+		}
 	}
 
 	private void assignParticipantToTable(
