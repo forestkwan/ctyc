@@ -60,7 +60,7 @@ public class SummerCampService {
 		if (SystemUtils.IS_OS_WINDOWS){
 			
 			if (SAVE_HOME == null){
-				SAVE_HOME = "c:\\CTYCSAVE";
+				SAVE_HOME = "c:\\CTYCSave";
 			}
 			
 			CAMP_SITE_PATH = SAVE_HOME + "\\CampSite.txt";
@@ -69,7 +69,7 @@ public class SummerCampService {
 		}else if (SystemUtils.IS_OS_MAC){
 			
 			if (SAVE_HOME == null){
-				SAVE_HOME = "CTYCSAVE";
+				SAVE_HOME = "CTYCSave";
 			}
 			
 			CAMP_SITE_PATH = SAVE_HOME + "/CampSite.txt";
@@ -98,7 +98,7 @@ public class SummerCampService {
 				if (SystemUtils.IS_OS_WINDOWS){
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "\\camp" + campName + "_panticipants.csv"));
 				}else if (SystemUtils.IS_OS_MAC){
-					campSite.getParticipants().addAll(CsvReader.readParticipantCsv("CTYCSave/camp" + campName + "_panticipants.csv"));
+					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "/camp" + campName + "_panticipants.csv"));
 				}
 				
 				this.campSiteMap.put(campName, campSite);
