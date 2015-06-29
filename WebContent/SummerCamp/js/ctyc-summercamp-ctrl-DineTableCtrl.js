@@ -28,7 +28,14 @@
 		}
 		
 		function dropSuccessHandler($event, $index, participant){
-			vm.dineTableData.participants.splice($index, 1);
+			
+			for (var i=0 ; i < vm.dineTableData.participants.length; i++){
+				if (vm.dineTableData.participants[i].id === participant.id){
+					vm.dineTableData.participants.splice(i, 1);
+					break;
+				}
+			}
+			
 			$scope.$emit('DINE_ASSIGNMENT_CHANGE', vm.dineTableData.participants);
 		}
 		
