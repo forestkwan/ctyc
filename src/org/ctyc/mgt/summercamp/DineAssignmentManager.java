@@ -117,6 +117,7 @@ public class DineAssignmentManager {
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
 		assignPreassignedAssignment(this.participants, assignedParticipants, dineTableGroups);
+		assignMentorToSpecialGroupTable(this.participants, assignedParticipants, specialDineTableGroups);
 		assignSpecialGroupToTable(this.participants, assignedParticipants, specialDineTableGroups);
 		assignFamilyGroupToTable(this.participants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(this.participants, assignedParticipants, dineTableGroups);
@@ -212,6 +213,76 @@ public class DineAssignmentManager {
 			}
 		}
 	}
+	
+	private void assignMentorToSpecialGroupTable(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		Collection<Participant> specialGroupMentors = new ArrayList<Participant>();
+		for (Participant participant : participants){
+			if (participant.getSpecialGroup() == null || participant.getSpecialGroup() <= 0){
+				continue;
+			}
+			
+			if (participant.isGroupMentor() || participant.isMentor() || StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
+				specialGroupMentors.add(participant);
+			}
+			
+		}
+		
+		// Assign special group mentors to table
+		for (Participant participant : specialGroupMentors){
+			DineTableGroup dineTable = randomlyPickMinimumGroupMentorTable(dineTableGroups);
+			
+			if (dineTable == null){
+				continue;
+			}
+			
+			dineTable.getParticipants().add(participant);
+			assignedParticipants.add(participant);
+		}
+		
+		// Since there may not have enough special group mentor, then assign non-special group mentor to special group
+		Collection<DineTableGroup> noMentorDineTables = new ArrayList<DineTableGroup>();
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			if (dineTableGroup.getNoOfGroupMentor() <= 0){
+				noMentorDineTables.add(dineTableGroup);
+			}
+		}
+		
+		if (CollectionUtils.isEmpty(noMentorDineTables)){
+			return;
+		}
+		
+		Collection<Participant> normalMentors = new ArrayList<Participant>();
+		for (Participant participant : participants){
+			
+			if (!participant.isGroupMentor() || !participant.isMentor() || !StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
+				continue;
+			}
+			
+			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
+				continue;
+			}
+			
+			normalMentors.add(participant);
+		}
+		
+		for (DineTableGroup dineTableGroup : noMentorDineTables){
+			Participant participant = RandomnessUtils.pickRandomParticipant(normalMentors, this.randomObj);
+			if (participant != null){
+				dineTableGroup.getParticipants().add(participant);
+				assignedParticipants.add(participant);
+				normalMentors.remove(participant);
+			}
+		}
+		
+	}
 
 	private void assignSpecialGroupToTable(
 			Collection<Participant> participants,
@@ -229,10 +300,51 @@ public class DineAssignmentManager {
 			}
 		}
 		
-		for (Participant specialParticipant : specialParticipants){
-			DineTableGroup dineTable = this.randomlyPickTableWithGenderBalance(dineTableGroups, specialParticipant.getGender());
-			dineTable.getParticipants().add(specialParticipant);
-			assignedParticipants.add(specialParticipant);
+		if (CollectionUtils.isEmpty(specialParticipants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		/* Create a map according to participants' Group Number*/
+		Map<Integer, Collection<Participant>> groupNumberParticipantMap = new HashMap<Integer, Collection<Participant>>();
+		for (Participant unassignedParticipant : specialParticipants){
+			
+			Collection<Participant> groupNumberParticipants = groupNumberParticipantMap.get(unassignedParticipant.getGroupNumber());
+			if (groupNumberParticipants == null){
+				groupNumberParticipants = new ArrayList<Participant>();
+				groupNumberParticipants.add(unassignedParticipant);
+				groupNumberParticipantMap.put(unassignedParticipant.getGroupNumber(), groupNumberParticipants);
+			}else {
+				groupNumberParticipants.add(unassignedParticipant);
+			}
+		}
+		
+		/*
+		 * For each group of participant, randomly pick a table with enough vacancy
+		 * Randomly pick 2 or 3 participants from the group of participants
+		 * assign the participants to the table
+		 * Add the participants to assigned participant list
+		 * */
+		for (Entry<Integer, Collection<Participant>> entry : groupNumberParticipantMap.entrySet()){
+			int groupNumber = entry.getKey();
+			Collection<Participant> groupedParticipants = entry.getValue();
+			
+			while (!CollectionUtils.isEmpty(groupedParticipants)){
+				
+				Collection<Participant> selectedParticipants = RandomnessUtils.pickRandomMultiParticipant(groupedParticipants, this.randomObj);
+				if (selectedParticipants == null){
+					break;
+				}
+				
+				DineTableGroup selectedDineTable = randomPickTableForGroupPanticipantAssignment(dineTableGroups, groupNumber, selectedParticipants);
+				
+				if (selectedDineTable == null){
+					break;
+				}
+				
+				selectedDineTable.getParticipants().addAll(selectedParticipants);
+				assignedParticipants.addAll(selectedParticipants);
+				groupedParticipants.removeAll(selectedParticipants);
+			}
 		}
 	}
 
@@ -465,6 +577,9 @@ public class DineAssignmentManager {
 		
 		for (Participant unassignedParticipant : unassignedParticipants){
 			DineTableGroup dineTable = this.randomlyPickTableWithGenderBalance(dineTableGroups, unassignedParticipant.getGender());
+			if (dineTable == null){
+				dineTable = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
+			}
 			dineTable.getParticipants().add(unassignedParticipant);
 			assignedParticipants.add(unassignedParticipant);
 		}
