@@ -108,7 +108,8 @@ public class DineAssignmentManager {
 	
 	private void initAssignment(){
 		
-		removeLeftParticipants(this.participants);
+		System.out.println("Total Number of Participants: " + this.participants.size());
+		Collection<Participant> filteredParticipants = filterLeftParticipants(this.participants);
 		
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
 		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
@@ -116,23 +117,23 @@ public class DineAssignmentManager {
 		int specialTableStartingIndex = dineTableGroups.size();
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
-		assignPreassignedAssignment(this.participants, assignedParticipants, dineTableGroups);
-		assignMentorToSpecialGroupTable(this.participants, assignedParticipants, specialDineTableGroups);
-		assignSpecialGroupToTable(this.participants, assignedParticipants, specialDineTableGroups);
-		assignFamilyGroupToTable(this.participants, assignedParticipants, dineTableGroups);
-		assignGroupMentorToTable(this.participants, assignedParticipants, dineTableGroups);
-		assignThreeSameGroupParticipantsToTables(this.participants, assignedParticipants, dineTableGroups);
-		assignParticipantToTable(this.participants, assignedParticipants, dineTableGroups);
+		assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
+		assignMentorToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
+		assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
+		assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
+		assignParticipantToTable(filteredParticipants, assignedParticipants, dineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
 		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
 	}
 	
-	private void removeLeftParticipants(Collection<Participant> participants) {
+	private Collection<Participant> filterLeftParticipants(Collection<Participant> participants) {
 		
 		int day = this.getAssignmentPlan().getDay();
 		
-		Collection<Participant> leftParticipants = new ArrayList<Participant>();
+		Collection<Participant> filteredParticipants = new ArrayList<Participant>();
 		
 		for (Participant participant : participants){
 			
@@ -158,11 +159,13 @@ public class DineAssignmentManager {
 			}
 			
 			if (!isMorningJoin && !isNoonJoin && !isNightJoin){
-				leftParticipants.add(participant);
+				continue;
 			}
+			
+			filteredParticipants.add(participant);
 		}
 		
-		participants.removeAll(leftParticipants);
+		return filteredParticipants;
 		
 	}
 
@@ -295,7 +298,7 @@ public class DineAssignmentManager {
 		
 		Collection<Participant> specialParticipants = new ArrayList<Participant>();
 		for (Participant participant : participants){
-			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
+			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0 && !assignedParticipants.contains(participant)){
 				specialParticipants.add(participant);
 			}
 		}
@@ -831,5 +834,14 @@ public class DineAssignmentManager {
 	private boolean isEvenNumber(int number){
 		
 		return !this.isOddNumber(number);
+	}
+	
+	private void searchParticipantById(Collection<Participant> participants, String id){
+		for (Participant participant : participants){
+			if (StringUtils.equalsIgnoreCase(participant.getId(), id)){
+				System.out.printf("Participant ID %s-%s is Found.", id, participant.getName());
+				return;
+			}
+		}
 	}
 }

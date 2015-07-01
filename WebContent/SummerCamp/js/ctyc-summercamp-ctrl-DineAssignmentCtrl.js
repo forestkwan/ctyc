@@ -270,6 +270,10 @@
 		function countDayTotal(dineStatistics, att){	
 			var total = 0;
 			for (var i = 0; i < dineStatistics.length; i++){
+				
+				if (dineStatistics[i][att] < 0 ){
+					continue;
+				}
 				total += dineStatistics[i][att];
 			}
 			return total;
