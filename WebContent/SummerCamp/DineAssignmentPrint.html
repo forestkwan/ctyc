@@ -97,10 +97,10 @@
 					<th>班別</th>
 					<th>姓名</th>
 					<th>性別</th>
-					<th>第一天</th>
-					<th>第二天</th>
-					<th>第三天</th>
-					<th>第四天</th>
+					<th>{{vm.resolveDate(1)}}晚</th>
+					<th>{{vm.resolveDate(2)}}晚</th>
+					<th>{{vm.resolveDate(3)}}晚</th>
+					<th>{{vm.resolveDate(4)}}晚</th>
 				</tr>
 				<tr ng-repeat="participant in groupAssignmentPlan.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
 					<td>{{$index+1}}</td>
@@ -124,10 +124,10 @@
 					<col width="20%">
 					<col width="20%">
 					<th>枱號</th>
-					<th>第一天</th>
-					<th>第二天</th>
-					<th>第三天</th>
-					<th>第四天</th>
+					<th>{{vm.resolveDate(1) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
+					<th>{{vm.resolveDate(2) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
+					<th>{{vm.resolveDate(3) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
+					<th>{{vm.resolveDate(4) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
 				</tr>
 				<tr ng-repeat="statistics in vm.getSelectedDineStatistics() | orderBy:'tableNumber'">
 					<td>{{statistics.tableNumber}}</td>
@@ -135,6 +135,13 @@
 					<td>{{statistics.day2Count | CustomNumberFilter}}</td>
 					<td>{{statistics.day3Count | CustomNumberFilter}}</td>
 					<td>{{statistics.day4Count | CustomNumberFilter}}</td>
+				</tr>
+				<tr>
+					<td>總數</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day1Count')}}</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day2Count')}}</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day3Count')}}</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day4Count')}}</td>
 				</tr>
 			</table>
 		</div>

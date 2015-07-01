@@ -50,6 +50,9 @@
 		vm.getTableNumberForParticularDine = getTableNumberForParticularDine;
 		vm.displayPrintHeader = displayPrintHeader;
 		vm.getSelectedDineStatistics = getSelectedDineStatistics;
+		vm.countDayTotal = countDayTotal;
+		vm.resolveDate = resolveDate;
+		vm.resolveTimeOfDine = resolveTimeOfDine;
 		
 		init();
 		
@@ -262,6 +265,55 @@
 		function getSelectedDineStatistics(){
 			var statistics = vm.dineAssignmentStatistics[vm.selectedCamp][vm.selectedTimeOfDine].dineTableStatisticsList;
 			return statistics;
+		}
+		
+		function countDayTotal(dineStatistics, att){	
+			var total = 0;
+			for (var i = 0; i < dineStatistics.length; i++){
+				total += dineStatistics[i][att];
+			}
+			return total;
+		}
+		
+		function resolveDate(nthDay){
+			
+			var startDay = 1;
+			if (vm.selectedCamp === 'A'){
+				var startDay = 19;
+			}else if (vm.selectedCamp === 'B'){
+				var startDay = 26;
+			}
+			
+			var compensateDay = 0;
+			if (vm.selectedTimeOfDine !== 'NIGHT'){
+				compensateDay = 1;
+			}
+			
+			switch (nthDay) {
+			case 1:
+				return (startDay + nthDay - 1 + compensateDay) + '/7(日)';
+			case 2:
+				return (startDay + nthDay - 1 + compensateDay) + '/7(一)';
+			case 3:
+				return (startDay + nthDay - 1 + compensateDay) + '/7(二)';
+			case 4:
+				return (startDay + nthDay - 1 + compensateDay) + '/7(三)';
+			}
+			
+			return '';
+		}
+		
+		function resolveTimeOfDine(input){
+			if (input === 'NIGHT'){
+				return '晚';
+			}
+			if (input === 'MORNING'){
+				return '早';
+			}
+			if (input === 'NOON'){
+				return '午';
+			}
+			return '';
 		}
 	};
 })();
