@@ -120,19 +120,12 @@ public class DineAssignmentManager {
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
 		assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
-		checkTableOverCapacity(dineTableGroups);
 		assignMentorToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
-		checkTableOverCapacity(dineTableGroups);
 		assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
-		checkTableOverCapacity(dineTableGroups);
 		assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
-		checkTableOverCapacity(dineTableGroups);
 		assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
-		checkTableOverCapacity(dineTableGroups);
 		assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
-		checkTableOverCapacity(dineTableGroups);
 		assignParticipantToTable(filteredParticipants, assignedParticipants, dineTableGroups);
-		checkTableOverCapacity(dineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
 		this.plan.getDineTableGroups().addAll(specialDineTableGroups);

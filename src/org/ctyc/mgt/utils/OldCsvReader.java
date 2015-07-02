@@ -18,7 +18,7 @@ import org.ctyc.mgt.model.summercamp.DineAvailability;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
 
-public class CsvReader {
+public class OldCsvReader {
 
 	public static Collection<Participant> readParticipantCsv(String filepath){
 		
@@ -36,45 +36,43 @@ public class CsvReader {
 			while ((line = bufferedReader.readLine()) != null) {
 
 				count++;
+				if (count == 1){
+					continue;
+				}
 				
 				String[] tokens = line.split(separator);
 				
-				if (tokens.length <= 1){
-					break;
-				}
-				
 				Participant participant = new Participant();
-				participant.setId(tokens[1].replace("\"", ""));
-				participant.setName(tokens[2].replace("\"", ""));
+				participant.setId(tokens[0]);
+				participant.setName(tokens[1]);
 				
-				if (StringUtils.isNotBlank(tokens[3])){
-					Gender sex = (StringUtils.equals(tokens[3].replace("\"", ""), "M")) ? Gender.MALE : Gender.FEMALE;
+				if (StringUtils.isNotBlank(tokens[2])){
+					Gender sex = (StringUtils.equals(tokens[2], "男")) ? Gender.MALE : Gender.FEMALE;
 					participant.setGender(sex);
 				}
 				
-				if (StringUtils.isNotBlank(tokens[6])){
-					participant.setSundaySchoolClass(tokens[6].replace("\"", ""));
+				if (StringUtils.isNotBlank(tokens[5])){
+					participant.setSundaySchoolClass(tokens[5]);
 				}
 				
-				if (StringUtils.isNotBlank(tokens[7])){
-					boolean isGroupMentor = (StringUtils.equals(tokens[7].replace("\"", ""), "1")) ? true : false;
+				if (StringUtils.isNotBlank(tokens[6])){
+					boolean isGroupMentor = (StringUtils.equals(tokens[6], "Y")) ? true : false;
 					participant.setGroupMentor(isGroupMentor);
 					participant.setMentor(isGroupMentor);
 				}
 
-				if (StringUtils.isNotBlank(tokens[8])){
-					participant.setGroupNumber(convertToGroupNumber(tokens[8].replace("\"", "")));
+				if (StringUtils.isNotBlank(tokens[7])){
+					participant.setGroupNumber(convertToGroupNumber(tokens[7]));
 				}
 				
-				if (StringUtils.isNotBlank(tokens[35]) && StringUtils.contains(tokens[35], "family")){
+				if (StringUtils.isNotBlank(tokens[13])){
 					
-					String familyKey = tokens[35].replace("\"", "");
-					FamilyGroup familyGroup = familyGroupMap.get(familyKey);
+					FamilyGroup familyGroup = familyGroupMap.get(tokens[13]);
 					
 					if (familyGroup == null){
-						familyGroup = new FamilyGroup(familyKey);
+						familyGroup = new FamilyGroup(tokens[13]);
 						familyGroup.getBelieverIds().add(participant.getId());
-						familyGroupMap.put(familyKey, familyGroup);
+						familyGroupMap.put(tokens[13], familyGroup);
 						
 						participant.setFamilyGroup(familyGroup);
 					}else {
@@ -85,67 +83,67 @@ public class CsvReader {
 				}
 				
 				if (StringUtils.isNotBlank(tokens[16])){
-					boolean isDine = (StringUtils.equals(tokens[16].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[16], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(1, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[17])){
-					boolean isDine = (StringUtils.equals(tokens[17].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[17], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(1, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[18])){
-					boolean isDine = (StringUtils.equals(tokens[18].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[18], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(1, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[19])){
-					boolean isDine = (StringUtils.equals(tokens[19].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[19], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(2, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[20])){
-					boolean isDine = (StringUtils.equals(tokens[20].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[20], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(2, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[21])){
-					boolean isDine = (StringUtils.equals(tokens[21].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[21], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(2, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[22])){
-					boolean isDine = (StringUtils.equals(tokens[22].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[22], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(3, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[23])){
-					boolean isDine = (StringUtils.equals(tokens[23].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[23], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(3, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[24])){
-					boolean isDine = (StringUtils.equals(tokens[24].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[24], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(3, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[25])){
-					boolean isDine = (StringUtils.equals(tokens[25].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[25], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[26])){
-					boolean isDine = (StringUtils.equals(tokens[26].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[26], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.MORNING.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[27])){
-					boolean isDine = (StringUtils.equals(tokens[27].replace("\"", ""), "1")) ? true : false;
+					boolean isDine = (StringUtils.equals(tokens[27], "Y")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
 				}
 				
 				if (StringUtils.isNotBlank(tokens[34])){
-					Integer specialGroup = Integer.parseInt(tokens[34].replace("grp-", "").replace("\"", ""));
+					Integer specialGroup = Integer.parseInt(tokens[34]);
 					participant.setSpecialGroup(specialGroup);
 				}
 				
