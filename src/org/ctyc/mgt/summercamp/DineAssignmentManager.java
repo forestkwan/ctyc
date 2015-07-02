@@ -109,6 +109,8 @@ public class DineAssignmentManager {
 	private void initAssignment(){
 		
 		System.out.println("Total Number of Participants: " + this.participants.size());
+		printCurrentAssignmentInfo();
+		
 		Collection<Participant> filteredParticipants = filterLeftParticipants(this.participants);
 		
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
@@ -117,9 +119,21 @@ public class DineAssignmentManager {
 		int specialTableStartingIndex = dineTableGroups.size();
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
+		searchParticipantById(filteredParticipants, "B003", "Filtered");
+		searchParticipantById(assignedParticipants, "B003", "Assigned");
+		
 		assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
+		searchParticipantById(filteredParticipants, "B003", "Filtered");
+		searchParticipantById(assignedParticipants, "B003", "Assigned");
+		
 		assignMentorToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
+		searchParticipantById(filteredParticipants, "B003", "Filtered");
+		searchParticipantById(assignedParticipants, "B003", "Assigned");
+		
 		assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
+		searchParticipantById(filteredParticipants, "B003", "Filtered");
+		searchParticipantById(assignedParticipants, "B003", "Assigned");
+		
 		assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
 		assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
@@ -232,6 +246,10 @@ public class DineAssignmentManager {
 				continue;
 			}
 			
+			if (assignedParticipants.contains(participant)){
+				continue;
+			}
+			
 			if (participant.isGroupMentor() || participant.isMentor() || StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
 				specialGroupMentors.add(participant);
 			}
@@ -239,15 +257,19 @@ public class DineAssignmentManager {
 		}
 		
 		// Assign special group mentors to table
-		for (Participant participant : specialGroupMentors){
+		for (Participant mentor : specialGroupMentors){
 			DineTableGroup dineTable = randomlyPickMinimumGroupMentorTable(dineTableGroups);
 			
 			if (dineTable == null){
 				continue;
 			}
 			
-			dineTable.getParticipants().add(participant);
-			assignedParticipants.add(participant);
+			if (dineTable.getNoOfGroupMentor() < 1){
+				mentorTableMap.put(mentor.getId(), dineTable.getTableNumber());
+			}
+			
+			dineTable.getParticipants().add(mentor);
+			assignedParticipants.add(mentor);
 		}
 		
 		// Since there may not have enough special group mentor, then assign non-special group mentor to special group
@@ -269,6 +291,10 @@ public class DineAssignmentManager {
 				continue;
 			}
 			
+			if (assignedParticipants.contains(participant)){
+				continue;
+			}
+			
 			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
 				continue;
 			}
@@ -277,11 +303,16 @@ public class DineAssignmentManager {
 		}
 		
 		for (DineTableGroup dineTableGroup : noMentorDineTables){
-			Participant participant = RandomnessUtils.pickRandomParticipant(normalMentors, this.randomObj);
-			if (participant != null){
-				dineTableGroup.getParticipants().add(participant);
-				assignedParticipants.add(participant);
-				normalMentors.remove(participant);
+			Participant mentor = RandomnessUtils.pickRandomParticipant(normalMentors, this.randomObj);
+			if (mentor != null){
+				
+				if (dineTableGroup.getNoOfGroupMentor() < 1){
+					mentorTableMap.put(mentor.getId(), dineTableGroup.getTableNumber());
+				}
+				
+				dineTableGroup.getParticipants().add(mentor);
+				assignedParticipants.add(mentor);
+				normalMentors.remove(mentor);
 			}
 		}
 		
@@ -298,6 +329,11 @@ public class DineAssignmentManager {
 		
 		Collection<Participant> specialParticipants = new ArrayList<Participant>();
 		for (Participant participant : participants){
+			
+			if (assignedParticipants.contains(participant)){
+				continue;
+			}
+			
 			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0 && !assignedParticipants.contains(participant)){
 				specialParticipants.add(participant);
 			}
@@ -434,7 +470,7 @@ public class DineAssignmentManager {
 		for (Participant groupMentor : groupMentors){
 			DineTableGroup minimumMentorDineTable = this.randomlyPickMinimumGroupMentorTable(dineTableGroups);
 			
-			if (minimumMentorDineTable.getNoOfGroupMentor() < 1){
+			if (minimumMentorDineTable != null && minimumMentorDineTable.getNoOfGroupMentor() < 1){
 				mentorTableMap.put(groupMentor.getId(), minimumMentorDineTable.getTableNumber());
 			}
 			
@@ -836,12 +872,16 @@ public class DineAssignmentManager {
 		return !this.isOddNumber(number);
 	}
 	
-	private void searchParticipantById(Collection<Participant> participants, String id){
+	private void searchParticipantById(Collection<Participant> participants, String id, String type){
 		for (Participant participant : participants){
 			if (StringUtils.equalsIgnoreCase(participant.getId(), id)){
-				System.out.printf("Participant ID %s-%s is Found.", id, participant.getName());
+				System.out.printf("%s Participant ID %s-%s is Found.\n", type, id, participant.getName());
 				return;
 			}
 		}
+	}
+	
+	private void printCurrentAssignmentInfo(){
+		System.out.printf("Current Assignment: [Camp=%s][Day=%d]", this.plan.getCampName(), this.plan.getDay());
 	}
 }
