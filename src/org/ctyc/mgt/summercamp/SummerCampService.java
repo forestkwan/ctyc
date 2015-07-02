@@ -160,8 +160,6 @@ public class SummerCampService {
 			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
 				for (Participant participant : dineTableGroup.getParticipants()){
 					
-					System.out.printf("Table Number: %s\n", dineTableGroup.getTableNumber());
-					
 					participant.setDineTableNumber(
 							dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString(), dineTableGroup.getTableNumber());
 					participant.setDineTableNumber(

@@ -119,25 +119,20 @@ public class DineAssignmentManager {
 		int specialTableStartingIndex = dineTableGroups.size();
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
-		searchParticipantById(filteredParticipants, "B003", "Filtered");
-		searchParticipantById(assignedParticipants, "B003", "Assigned");
-		
 		assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
-		searchParticipantById(filteredParticipants, "B003", "Filtered");
-		searchParticipantById(assignedParticipants, "B003", "Assigned");
-		
+		checkTableOverCapacity(dineTableGroups);
 		assignMentorToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
-		searchParticipantById(filteredParticipants, "B003", "Filtered");
-		searchParticipantById(assignedParticipants, "B003", "Assigned");
-		
+		checkTableOverCapacity(dineTableGroups);
 		assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
-		searchParticipantById(filteredParticipants, "B003", "Filtered");
-		searchParticipantById(assignedParticipants, "B003", "Assigned");
-		
+		checkTableOverCapacity(dineTableGroups);
 		assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		checkTableOverCapacity(dineTableGroups);
 		assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		checkTableOverCapacity(dineTableGroups);
 		assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
+		checkTableOverCapacity(dineTableGroups);
 		assignParticipantToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		checkTableOverCapacity(dineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
 		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
@@ -427,7 +422,7 @@ public class DineAssignmentManager {
 				
 				int emptySeat = this.tableCapacity - tempTableGroup.getParticipants().size();
 				
-				if (familyGroup.getBelieverIds().size() > emptySeat){
+				if (familyGroup.getBelieverIds().size() + 2 > emptySeat){
 					continue;
 				}
 				
@@ -882,6 +877,14 @@ public class DineAssignmentManager {
 	}
 	
 	private void printCurrentAssignmentInfo(){
-		System.out.printf("Current Assignment: [Camp=%s][Day=%d]", this.plan.getCampName(), this.plan.getDay());
+		System.out.printf("Current Assignment: [Camp=%s][Day=%d]\n", this.plan.getCampName(), this.plan.getDay());
+	}
+	
+	private void checkTableOverCapacity(Collection<DineTableGroup> dineTableGroups){
+		for (DineTableGroup dineTable : dineTableGroups){
+			if (dineTable.getParticipants().size() > this.tableCapacity){
+				System.out.printf("Table %d is over capacity.\n", dineTable.getTableNumber());
+			}
+		}
 	}
 }
