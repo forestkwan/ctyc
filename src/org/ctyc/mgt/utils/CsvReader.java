@@ -24,7 +24,7 @@ public class CsvReader {
 		
 		BufferedReader bufferedReader = null;
 		String line = "";
-		String separator = ",";
+		String separator = "::";
 
 		Collection<Participant> participants = new ArrayList<Participant>();
 		try {
