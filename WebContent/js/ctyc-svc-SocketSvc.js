@@ -13,7 +13,22 @@
 		return {
 			webSocket : null,
 			initWebSocket : function(){
-				var wsUrl = 'ws://' + $location.host() + ':' + $location.port() + '/ctyc';
+				var host = $location.host();
+				var port = $location.port();
+				var modulePath = '/CTYCManagement/ctyc';
+				
+				console.log('host: ' + host);
+				console.log('port: ' + port);
+				
+				if (host == 'summercamp-ctyc.rhcloud.com') {
+					// hardcode the port to 8000 for rhc host, and remove the app name from module path
+					port = 8000;
+					modulePath = '/ctyc';
+				}
+				
+				var wsUrl = 'ws://' + host + ':' + port + modulePath;
+				console.log('wsUrl: ' + wsUrl);
+				
 				this.webSocket = new WebSocket(wsUrl);
 				
 				this.webSocket.onopen = function(event) {
