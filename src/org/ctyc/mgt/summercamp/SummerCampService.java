@@ -1,5 +1,6 @@
 package org.ctyc.mgt.summercamp;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class SummerCampService {
 			CAMP_SITE_PATH = SAVE_HOME + "\\CampSite.txt";
 			DINE_ASSIGNMENT_PLAN_PATH = SAVE_HOME + "\\DineAssignmentPlan.txt";
 			
-		}else if (SystemUtils.IS_OS_MAC){
+		} else {
 			
 			if (SAVE_HOME == null){
 				SAVE_HOME = "CTYCSave";
@@ -85,8 +86,11 @@ public class SummerCampService {
 	}
 	
 	private void initCampSiteMap(){
+		String resourcePath = "main/resources/CampSite.txt";
+		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
 		
-		this.campSiteMap = FileUtils.readFileToObject(CAMP_SITE_PATH);
+//		this.campSiteMap = FileUtils.readFileToObject(CAMP_SITE_PATH);
+		this.campSiteMap = FileUtils.readInputStreamToObject(inputStream);
 		
 		if (this.campSiteMap == null){
 			this.campSiteMap = new HashMap<String, CampSite>();
@@ -95,11 +99,16 @@ public class SummerCampService {
 				CampSite campSite = new CampSite();
 				campSite.setName(campName);
 				
-				if (SystemUtils.IS_OS_WINDOWS){
-					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "\\camp" + campName + "_panticipants.csv"));
-				}else if (SystemUtils.IS_OS_MAC){
-					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "/camp" + campName + "_panticipants.csv"));
-				}
+//				if (SystemUtils.IS_OS_WINDOWS){
+//					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "\\camp" + campName + "_panticipants.csv"));
+//				}else if (SystemUtils.IS_OS_MAC){
+//					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "/camp" + campName + "_panticipants.csv"));
+//				}
+				String fileName = "camp" + campName + "_panticipants.csv";
+				String resourcePathForParticipant = "main/resources/" + fileName;
+				InputStream inputStreamForParticipant = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePathForParticipant);
+				
+				campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(inputStreamForParticipant));
 				
 				this.campSiteMap.put(campName, campSite);
 			}
@@ -109,8 +118,12 @@ public class SummerCampService {
 	}
 	
 	private void initDineAssignmentPlanMap(){
+		String resourcePath = "main/resources/DineAssignmentPlan.txt";
+		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
 		
-		this.dineAssignmentPlanList = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
+		this.dineAssignmentPlanList = FileUtils.readInputStreamToObject(inputStream);
+		
+//		this.dineAssignmentPlanList = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
 		
 		if (this.dineAssignmentPlanList == null){
 			
@@ -146,7 +159,7 @@ public class SummerCampService {
 			}
 		}
 		
-		this.saveDineTableAssignmentToFile();
+//		this.saveDineTableAssignmentToFile();
 	}
 	
 	private void initParticipantMap(){
@@ -369,7 +382,7 @@ public class SummerCampService {
 			this.dineAssignmentPlanList.add(dineAssignmentPlan);
 		}
 		
-		this.saveDineTableAssignmentToFile();
+//		this.saveDineTableAssignmentToFile();
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();
 		responseData.put("dineAssignmentPlan", dineAssignmentPlan);
