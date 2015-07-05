@@ -13,7 +13,7 @@
 		return {
 			webSocket : null,
 			initWebSocket : function(){
-				var wsUrl = 'ws://' + $location.host() + ':' + $location.port() + '/CTYCManagement/ctyc';
+				var wsUrl = 'ws://' + $location.host() + ':' + $location.port() + '/ctyc';
 				this.webSocket = new WebSocket(wsUrl);
 				
 				this.webSocket.onopen = function(event) {
