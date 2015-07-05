@@ -105,7 +105,7 @@ public class SummerCampService {
 //					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "/camp" + campName + "_panticipants.csv"));
 //				}
 				String fileName = "camp" + campName + "_panticipants.csv";
-				String resourcePathForParticipant = "main/resources/" + fileName;
+				String resourcePathForParticipant = "/" + fileName;
 				InputStream inputStreamForParticipant = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePathForParticipant);
 				
 				campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(inputStreamForParticipant));
@@ -113,7 +113,7 @@ public class SummerCampService {
 				this.campSiteMap.put(campName, campSite);
 			}
 			
-			this.saveCampSiteToFile();
+//			this.saveCampSiteToFile();
 		}
 	}
 	
