@@ -1,21 +1,23 @@
 package org.ctyc.mgt.summercamp;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
-import org.ctyc.mgt.model.summercamp.DineTimeStatistics;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
+import org.ctyc.mgt.model.summercamp.DineTimeStatistics;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.FamilyGroupCostFunction;
@@ -26,7 +28,6 @@ import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 import org.ctyc.mgt.websocket.Message;
-import org.springframework.util.CollectionUtils;
 
 public class SummerCampService {
 	
@@ -86,29 +87,40 @@ public class SummerCampService {
 	}
 	
 	private void initCampSiteMap(){
-		String resourcePath = "main/resources/CampSite.txt";
-		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
-		
-//		this.campSiteMap = FileUtils.readFileToObject(CAMP_SITE_PATH);
-		this.campSiteMap = FileUtils.readInputStreamToObject(inputStream);
+		// force refreshing camp site data
+//		String resourcePath = "/CampSite.txt";
+//		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+//		this.campSiteMap = FileUtils.readInputStreamToObject(inputStream);
 		
 		if (this.campSiteMap == null){
 			this.campSiteMap = new HashMap<String, CampSite>();
+			
+			Authenticator.setDefault(new Authenticator() {
+			    protected PasswordAuthentication getPasswordAuthentication() {
+			        return new PasswordAuthentication ("admin", "ctycAug08".toCharArray());
+			    }
+			});
 			
 			for (String campName : campNames){
 				CampSite campSite = new CampSite();
 				campSite.setName(campName);
 				
-//				if (SystemUtils.IS_OS_WINDOWS){
-//					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "\\camp" + campName + "_panticipants.csv"));
-//				}else if (SystemUtils.IS_OS_MAC){
-//					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "/camp" + campName + "_panticipants.csv"));
-//				}
-				String fileName = "camp" + campName + "_panticipants.csv";
-				String resourcePathForParticipant = "/" + fileName;
-				InputStream inputStreamForParticipant = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePathForParticipant);
-				
-				campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(inputStreamForParticipant));
+				try {
+					URL url = null;
+					if (campName.equals("A")) {
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=8");
+					} else if (campName.equals("B")) {
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=9");
+					}
+					
+					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				this.campSiteMap.put(campName, campSite);
 			}
@@ -117,14 +129,12 @@ public class SummerCampService {
 		}
 	}
 	
-	private void initDineAssignmentPlanMap(){
-		String resourcePath = "main/resources/DineAssignmentPlan.txt";
-		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
-		
-		this.dineAssignmentPlanList = FileUtils.readInputStreamToObject(inputStream);
-		
-//		this.dineAssignmentPlanList = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
-		
+	private void initDineAssignmentPlanMap() {
+		// force refreshing dine assignment
+//		String resourcePath = "/DineAssignmentPlan.txt";
+//		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+//		this.dineAssignmentPlanList = FileUtils.readInputStreamToObject(inputStream);
+				
 		if (this.dineAssignmentPlanList == null){
 			
 			this.dineAssignmentPlanList = new ArrayList<DineAssignmentPlan>();
