@@ -1,4 +1,0 @@
-AuthUserFile /var/lib/openshift/5596ba5ce0b8cd823c000066/app-root/data/current/.htpasswd
-AuthType Basic
-AuthName "User Authentication"
-Require valid-user
