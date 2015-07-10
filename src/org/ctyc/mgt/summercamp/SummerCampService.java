@@ -1,12 +1,17 @@
 package org.ctyc.mgt.summercamp;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +86,10 @@ public class SummerCampService {
 
 	protected SummerCampService(){
 		// Load saved camp site
+		init();
+	}
+	
+	private void init() {
 		this.initCampSiteMap();
 		this.initDineAssignmentPlanMap();
 		this.initParticipantMap();
@@ -91,6 +100,9 @@ public class SummerCampService {
 //		String resourcePath = "/CampSite.txt";
 //		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
 //		this.campSiteMap = FileUtils.readInputStreamToObject(inputStream);
+		
+		// force refreshing camp site data
+		this.campSiteMap = null;
 		
 		if (this.campSiteMap == null){
 			this.campSiteMap = new HashMap<String, CampSite>();
@@ -113,6 +125,8 @@ public class SummerCampService {
 						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=9");
 					}
 					
+					print(url.openStream());
+					
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
@@ -129,12 +143,39 @@ public class SummerCampService {
 		}
 	}
 	
+	private void print(InputStream inputStream) {
+		String line = null;
+		int count = 0;
+		
+		BufferedReader bufferedReader;
+		try {
+			bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+			while ((line = bufferedReader.readLine()) != null) {
+				System.out.println(line);
+				count++;
+			}
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("Loading time: " + new Date().toString());
+		System.out.println("Head count: " + count);
+		System.out.println();
+	}
+	
 	private void initDineAssignmentPlanMap() {
 		// force refreshing dine assignment
 //		String resourcePath = "/DineAssignmentPlan.txt";
 //		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
 //		this.dineAssignmentPlanList = FileUtils.readInputStreamToObject(inputStream);
 				
+		// force refreshing dine assignment
+		this.dineAssignmentPlanList = null;
+		
 		if (this.dineAssignmentPlanList == null){
 			
 			this.dineAssignmentPlanList = new ArrayList<DineAssignmentPlan>();
@@ -347,6 +388,7 @@ public class SummerCampService {
 	}
 	
 	private Message autoDineAssignment(Map<String, Object> data){
+		init();
 		
 		if (data == null
 				|| data.get("camp") == null
