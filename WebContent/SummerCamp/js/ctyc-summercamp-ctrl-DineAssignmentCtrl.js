@@ -71,7 +71,7 @@
 				var message = JSON.parse(jsonMessage);
 				
 				if (message.type === 'DINE_ASSIGNMENT_DATA'){
-					notify('Loading completed');
+					notify('Loading completed. Last data fetch time: ' + message.data.lastDataFetchTime);
 					vm.dineAssignmentPlans = message.data.dineAssignmentPlans;
 					vm.groupAssignmentPlans = message.data.groupAssignmentPlans;
 					vm.dineAssignmentStatistics = message.data.dineAssignmentStatistics;

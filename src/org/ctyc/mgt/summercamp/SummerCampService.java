@@ -9,6 +9,7 @@ import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -60,6 +61,14 @@ public class SummerCampService {
 	private Map<String, CampSite> campSiteMap = null;
 	private Collection<DineAssignmentPlan> dineAssignmentPlanList = null;
 	private Map<String, Participant> participantMap = null;
+	private Date lastDataFetchTime = null;
+	
+	private static final ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
+		@Override
+		protected SimpleDateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		}
+	};
 	
 	static {
 		SAVE_HOME = System.getenv("SAVE_HOME");
@@ -105,6 +114,9 @@ public class SummerCampService {
 		this.campSiteMap = null;
 		
 		if (this.campSiteMap == null){
+			// capture data fetch time
+			lastDataFetchTime = new Date();
+			
 			this.campSiteMap = new HashMap<String, CampSite>();
 			
 			Authenticator.setDefault(new Authenticator() {
@@ -125,7 +137,7 @@ public class SummerCampService {
 						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=9");
 					}
 					
-					print(url.openStream());
+//					print(url.openStream());
 					
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
 				} catch (MalformedURLException e) {
@@ -271,9 +283,7 @@ public class SummerCampService {
 	}
 	
 	public static SummerCampService getInstance() {
-		if(instance == null) {
-			instance = new SummerCampService();
-		}
+		instance = new SummerCampService();
 		return instance;
 	}
 	
@@ -294,6 +304,7 @@ public class SummerCampService {
 			data.put("dineAssignmentPlans", this.dineAssignmentPlanList);
 			data.put("groupAssignmentPlans", this.constructGroupAssignmentPlan());
 			data.put("dineAssignmentStatistics", this.generateDineAssignmentStatistics());
+			data.put("lastDataFetchTime", (this.lastDataFetchTime == null)? "N/A" : dateFormat.get().format(this.lastDataFetchTime));
 			responseMessage = new Message(DINE_ASSIGNMENT_DATA, data);
 		}
 		
@@ -388,8 +399,6 @@ public class SummerCampService {
 	}
 	
 	private Message autoDineAssignment(Map<String, Object> data){
-		init();
-		
 		if (data == null
 				|| data.get("camp") == null
 				|| data.get("day") == null
