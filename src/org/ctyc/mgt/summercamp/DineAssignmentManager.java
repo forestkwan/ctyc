@@ -114,12 +114,13 @@ public class DineAssignmentManager {
 		Collection<Participant> filteredParticipants = filterLeftParticipants(this.participants);
 		
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();		
-		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList();
+		Collection<DineTableGroup> dineTableGroups = this.createEmptyTableGroupList(filteredParticipants);
 		
 		int specialTableStartingIndex = dineTableGroups.size();
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
 		assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
+		assignFamilyGroupToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
 		assignMentorToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
 		assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
 		assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
@@ -217,6 +218,85 @@ public class DineAssignmentManager {
 				}
 			}
 		}
+	}
+	
+	private void assignFamilyGroupToSpecialGroupTable(
+			Collection<Participant> participants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		Map<String, FamilyGroup> familyGroupMap = new HashMap<String, FamilyGroup>();
+		for (Participant participant : participants){
+			
+			if (participant.getFamilyGroup() == null){
+				continue;
+			}
+			
+			if (participant.getSpecialGroup() == null || participant.getSpecialGroup() <= 0){
+				continue;
+			}
+			
+			if (assignedParticipants.contains(participant)){
+				continue;
+			}
+			
+			familyGroupMap.put(participant.getFamilyGroup().getFamilyId(), participant.getFamilyGroup());
+		}
+		
+		for (Entry<String, FamilyGroup> entry : familyGroupMap.entrySet()){
+			FamilyGroup familyGroup = entry.getValue();
+			
+			DineTableGroup tempTableGroup = null;
+			
+			Collection<DineTableGroup> availableTables = new ArrayList<DineTableGroup>();
+			for (DineTableGroup dineTableGroup : dineTableGroups){
+				
+				if (dineTableGroup.getParticipants().size() > 0){
+					continue;
+				}
+				
+				int emptySeat = this.tableCapacity - dineTableGroup.getParticipants().size();
+				
+				if (familyGroup.getBelieverIds().size() + 2 > emptySeat){
+					continue;
+				}
+				
+				availableTables.add(dineTableGroup);
+			}
+			
+			if (availableTables.size() == 0){
+				for (DineTableGroup dineTableGroup : dineTableGroups){
+					
+					int emptySeat = this.tableCapacity - dineTableGroup.getParticipants().size();
+					
+					if (familyGroup.getBelieverIds().size()  + 2 > emptySeat){
+						continue;
+					}
+					
+					availableTables.add(dineTableGroup);
+				}
+			}
+			
+			tempTableGroup = RandomnessUtils.pickRandomDineTableGroup(availableTables, this.randomObj);
+			if (tempTableGroup == null){
+				tempTableGroup = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
+			}
+			
+			for (String believerId : familyGroup.getBelieverIds()){
+				Participant tempParticipant = this.participantMap.get(believerId);
+				
+				if (assignedParticipants.contains(tempParticipant)){
+					continue;
+				}
+				
+				tempTableGroup.getParticipants().add(tempParticipant);
+				assignedParticipants.add(tempParticipant);
+			}
+		}		
 	}
 	
 	private void assignMentorToSpecialGroupTable(
@@ -322,7 +402,7 @@ public class DineAssignmentManager {
 				continue;
 			}
 			
-			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0 && !assignedParticipants.contains(participant)){
+			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
 				specialParticipants.add(participant);
 			}
 		}
@@ -351,6 +431,8 @@ public class DineAssignmentManager {
 		 * assign the participants to the table
 		 * Add the participants to assigned participant list
 		 * */
+		Collection<Participant> remainingParticipants = new ArrayList<Participant>();
+		
 		for (Entry<Integer, Collection<Participant>> entry : groupNumberParticipantMap.entrySet()){
 			int groupNumber = entry.getKey();
 			Collection<Participant> groupedParticipants = entry.getValue();
@@ -362,15 +444,37 @@ public class DineAssignmentManager {
 					break;
 				}
 				
+				for (Participant p : selectedParticipants){
+					System.out.print(p.getId());
+				}
+				
 				DineTableGroup selectedDineTable = randomPickTableForGroupPanticipantAssignment(dineTableGroups, groupNumber, selectedParticipants);
 				
 				if (selectedDineTable == null){
+					remainingParticipants.addAll(selectedParticipants);
 					break;
 				}
 				
 				selectedDineTable.getParticipants().addAll(selectedParticipants);
 				assignedParticipants.addAll(selectedParticipants);
 				groupedParticipants.removeAll(selectedParticipants);
+			}
+		}
+		
+		for (Participant remainingParticipant : remainingParticipants){
+
+			Collection<DineTableGroup> availableTableGroups = new ArrayList<DineTableGroup>();
+			for (DineTableGroup dineTableGroup : dineTableGroups){
+				if (!this.isTableFull(dineTableGroup)){
+					availableTableGroups.add(dineTableGroup);
+				}
+			}
+			
+			DineTableGroup dineTable = RandomnessUtils.pickRandomDineTableGroup(availableTableGroups, this.randomObj);
+			
+			if (dineTable != null){
+				dineTable.getParticipants().add(remainingParticipant);
+				assignedParticipants.add(remainingParticipant);
 			}
 		}
 	}
@@ -391,39 +495,59 @@ public class DineAssignmentManager {
 				continue;
 			}
 			
+			if (assignedParticipants.contains(participant)){
+				continue;
+			}
+			
 			familyGroupMap.put(participant.getFamilyGroup().getFamilyId(), participant.getFamilyGroup());
 		}
 		
 		for (Entry<String, FamilyGroup> entry : familyGroupMap.entrySet()){
 			FamilyGroup familyGroup = entry.getValue();
 			
-			boolean hasEnoughCapacity = false;
 			DineTableGroup tempTableGroup = null;
 			
-			int noOfIteration = 0;
-			while (hasEnoughCapacity == false){
+			Collection<DineTableGroup> availableTables = new ArrayList<DineTableGroup>();
+			for (DineTableGroup dineTableGroup : dineTableGroups){
 				
-				noOfIteration++;
-				
-				tempTableGroup = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
-				
-				/* Try not to assign the family group to a table with another family group 
-				 * Unless there is a significant try */
-				if (tempTableGroup.getParticipants().size() > 0 && noOfIteration < 100){
+				if (dineTableGroup.getParticipants().size() > 0){
 					continue;
 				}
 				
-				int emptySeat = this.tableCapacity - tempTableGroup.getParticipants().size();
+				int emptySeat = this.tableCapacity - dineTableGroup.getParticipants().size();
 				
 				if (familyGroup.getBelieverIds().size() + 2 > emptySeat){
 					continue;
 				}
 				
-				hasEnoughCapacity = true;
+				availableTables.add(dineTableGroup);
+			}
+			
+			if (availableTables.size() == 0){
+				for (DineTableGroup dineTableGroup : dineTableGroups){
+					
+					int emptySeat = this.tableCapacity - dineTableGroup.getParticipants().size();
+					
+					if (familyGroup.getBelieverIds().size() + 2 > emptySeat){
+						continue;
+					}
+					
+					availableTables.add(dineTableGroup);
+				}
+			}
+			
+			tempTableGroup = RandomnessUtils.pickRandomDineTableGroup(availableTables, this.randomObj);
+			if (tempTableGroup == null){
+				tempTableGroup = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
 			}
 			
 			for (String believerId : familyGroup.getBelieverIds()){
 				Participant tempParticipant = this.participantMap.get(believerId);
+				
+				if (assignedParticipants.contains(tempParticipant)){
+					continue;
+				}
+				
 				tempTableGroup.getParticipants().add(tempParticipant);
 				assignedParticipants.add(tempParticipant);
 			}
@@ -603,9 +727,23 @@ public class DineAssignmentManager {
 		}
 		
 		for (Participant unassignedParticipant : unassignedParticipants){
+			
 			DineTableGroup dineTable = this.randomlyPickTableWithGenderBalance(dineTableGroups, unassignedParticipant.getGender());
+			
 			if (dineTable == null){
-				dineTable = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
+				
+				Collection<DineTableGroup> availableTables = new ArrayList<DineTableGroup>();
+				for (DineTableGroup dineTableGroup : dineTableGroups){
+					if (!this.isTableFull(dineTableGroup)){
+						availableTables.add(dineTableGroup);
+					}
+				}
+				
+				dineTable = RandomnessUtils.pickRandomDineTableGroup(availableTables, this.randomObj);
+				
+				if (dineTable == null){
+					dineTable = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
+				}
 			}
 			dineTable.getParticipants().add(unassignedParticipant);
 			assignedParticipants.add(unassignedParticipant);
@@ -694,8 +832,8 @@ public class DineAssignmentManager {
 		this.evaluator.evaluatePlan(this.plan);
 	}
 	
-	private Collection<DineTableGroup> createEmptyTableGroupList(){
-		if (CollectionUtils.isEmpty(this.participants)){
+	private Collection<DineTableGroup> createEmptyTableGroupList(Collection<Participant> participants){
+		if (CollectionUtils.isEmpty(participants)){
 			return new ArrayList<DineTableGroup>();
 		}
 		
@@ -705,7 +843,7 @@ public class DineAssignmentManager {
 		}
 		
 		int participantCount = 0;
-		for (Participant participant : this.participants){
+		for (Participant participant : participants){
 			if (participant.getSpecialGroup() == null || participant.getSpecialGroup() == 0){
 				participantCount++;
 			}
