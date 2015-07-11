@@ -440,6 +440,17 @@ public class SummerCampService {
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 		
 		if (dineAssignmentPlan != null){
+			
+			DineAssignmentPlan removedPlan = null;
+			for (DineAssignmentPlan plan : this.dineAssignmentPlanList){
+				if (StringUtils.equalsIgnoreCase(campName, plan.getCampName()) &&
+						day == plan.getDay()){
+					removedPlan = plan;
+					break;
+				}
+			}
+			
+			this.dineAssignmentPlanList.remove(removedPlan);
 			this.dineAssignmentPlanList.add(dineAssignmentPlan);
 		}
 		
