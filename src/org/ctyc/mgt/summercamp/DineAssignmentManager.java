@@ -3,10 +3,10 @@ package org.ctyc.mgt.summercamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -119,13 +119,51 @@ public class DineAssignmentManager {
 		int specialTableStartingIndex = dineTableGroups.size();
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
-		assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
-		assignMentorToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
-		assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
-		assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
-		assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
-		assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
-		assignParticipantToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		boolean isApplyGA = false;
+		boolean isApplySA = true;
+		if (isApplyGA) {
+			/******* apply GA ********/
+			Collection<Participant> solution = GeneticAlgorithm.applyGA(filteredParticipants);
+			Iterator<Participant> it = solution.iterator();
+			for (DineTableGroup dineTableGroup : dineTableGroups) {
+				if (!it.hasNext()) {
+					break;
+				}
+				
+				while (dineTableGroup.getParticipants().size() < 8) {
+					if (it.hasNext()) {
+						dineTableGroup.getParticipants().add(it.next());
+					} else {
+						break;
+					}
+				}		
+			}
+			/*************************/
+		} else if (isApplySA) {
+			Collection<Participant> solution = SimulatedAnnealing.execute((ArrayList<Participant>) filteredParticipants);
+			Iterator<Participant> it = solution.iterator();
+			for (DineTableGroup dineTableGroup : dineTableGroups) {
+				if (!it.hasNext()) {
+					break;
+				}
+				
+				while (dineTableGroup.getParticipants().size() < 8) {
+					if (it.hasNext()) {
+						dineTableGroup.getParticipants().add(it.next());
+					} else {
+						break;
+					}
+				}		
+			}
+		} else {
+			assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
+			assignMentorToSpecialGroupTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
+			assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
+			assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+			assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+			assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
+			assignParticipantToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		}
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
 		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
