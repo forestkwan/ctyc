@@ -154,6 +154,7 @@ public class DineAssignmentManager {
 		assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
 		assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		assignParticipantToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
 		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
@@ -788,11 +789,12 @@ public class DineAssignmentManager {
 				}
 				
 				dineTable = RandomnessUtils.pickRandomDineTableGroup(availableTables, this.randomObj);
-				
-				if (dineTable == null){
-					dineTable = RandomnessUtils.pickRandomDineTableGroup(dineTableGroups, this.randomObj);
-				}
 			}
+			
+			if (dineTable == null){
+				continue;
+			}
+			
 			dineTable.getParticipants().add(unassignedParticipant);
 			assignedParticipants.add(unassignedParticipant);
 		}
@@ -890,20 +892,30 @@ public class DineAssignmentManager {
 			return new ArrayList<DineTableGroup>();
 		}
 		
-		int participantCount = 0;
+		int normalParticipantCount = 0;
+		int specialParticipantCount = 0;
 		for (Participant participant : participants){
 			if (participant.getSpecialGroup() == null || participant.getSpecialGroup() == 0){
-				participantCount++;
+				normalParticipantCount++;
+			}else {
+				specialParticipantCount++;
 			}
 		}
 		
-		int numberOfTable = participantCount / this.tableCapacity;
-		if ((participantCount % this.tableCapacity) > 0){
-			numberOfTable++;
+		int totalTableNeeded = (normalParticipantCount + specialParticipantCount) / this.tableCapacity;
+		if (((normalParticipantCount + specialParticipantCount) % this.tableCapacity) > 0){
+			totalTableNeeded++;
 		}
 		
+		int specialTableNeeded = specialParticipantCount / this.tableCapacity;
+		if ((specialParticipantCount % this.tableCapacity) > 0){
+			specialTableNeeded++;
+		}
+		
+		int normalTableNeeded = totalTableNeeded - specialTableNeeded;
+		
 		Collection<DineTableGroup> emptyTableGroupList = new ArrayList<DineTableGroup>();
-		for (int i=0; i< numberOfTable; i++){
+		for (int i=0; i< normalTableNeeded; i++){
 			DineTableGroup dineTableGroup = new DineTableGroup();
 			dineTableGroup.setTableNumber(i + 1);
 			emptyTableGroupList.add(dineTableGroup);
