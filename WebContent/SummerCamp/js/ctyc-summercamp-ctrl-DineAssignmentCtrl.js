@@ -58,7 +58,9 @@
 		
 		//////////////////
 		
-		SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});		
+		setTimeout(function(){
+			SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});
+		}, 1000);
 		
 		function init(){
 			
