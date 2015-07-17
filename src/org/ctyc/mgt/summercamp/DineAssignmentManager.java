@@ -223,6 +223,7 @@ public class DineAssignmentManager {
 		Collection<DineTableGroup> specialDineTableGroups = this.createSpecialEmptyTableGroupList(specialTableStartingIndex);
 		
 		assignPreassignedAssignment(filteredParticipants, assignedParticipants, dineTableGroups);
+		assignPreassignedAssignment(filteredParticipants, assignedParticipants, specialDineTableGroups);
 		
 //		assignTableMentor(filteredParticipants, assignedParticipants, dineTableGroups);
 //		assignTableMentor(filteredParticipants, assignedParticipants, specialDineTableGroups);
