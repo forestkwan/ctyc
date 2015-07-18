@@ -239,17 +239,6 @@ public class DineAssignmentManager {
 		
 		this.plan.getDineTableGroups().addAll(dineTableGroups);
 		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
-		
-//		if (campTableMentorMap == null){
-//			campTableMentorMap = new HashMap<String, Map<Integer, String>>();
-//		}
-//		
-//		if (campTableMentorMap.get(this.plan.getCampName()) == null){
-//			Map<Integer, String> tableMentorMap = constructTableMentorMap();
-//			campTableMentorMap.put(this.plan.getCampName(), tableMentorMap);
-//			
-//			FileUtils.writeObjectToFile(campTableMentorMap, MENTOR_TABLE_PATH);
-//		}
 	}
 
 	private Collection<Participant> filterLeftParticipants(Collection<Participant> participants) {
@@ -584,11 +573,12 @@ public class DineAssignmentManager {
 					System.out.print(p.getId());
 				}
 				
-				DineTableGroup selectedDineTable = randomPickTableForGroupParticipantAssignment(dineTableGroups, groupNumber, selectedParticipants);
+				DineTableGroup selectedDineTable = randomPickTableForGroupParticipantAssignment(dineTableGroups, groupNumber, selectedParticipants, true);
 				
 				if (selectedDineTable == null){
 					remainingParticipants.addAll(selectedParticipants);
-					break;
+					groupedParticipants.removeAll(selectedParticipants);
+					continue;
 				}
 				
 				selectedDineTable.getParticipants().addAll(selectedParticipants);
@@ -771,7 +761,7 @@ public class DineAssignmentManager {
 					break;
 				}
 				
-				DineTableGroup selectedDineTable = randomPickTableForGroupParticipantAssignment(dineTableGroups, groupNumber, selectedParticipants);
+				DineTableGroup selectedDineTable = randomPickTableForGroupParticipantAssignment(dineTableGroups, groupNumber, selectedParticipants, false);
 				
 				if (selectedDineTable == null){
 					break;
@@ -787,7 +777,8 @@ public class DineAssignmentManager {
 	private DineTableGroup randomPickTableForGroupParticipantAssignment(
 			Collection<DineTableGroup> dineTableGroups,
 			int groupNumber,
-			Collection<Participant> selectedParticipants){
+			Collection<Participant> selectedParticipants,
+			boolean allowSameGroup){
 		
 		if (CollectionUtils.isEmpty(dineTableGroups)){
 			return null;
@@ -819,7 +810,7 @@ public class DineAssignmentManager {
 				}
 			}
 			
-			if (hasSameGroupParticipant){
+			if (hasSameGroupParticipant && !allowSameGroup){
 				continue;
 			}
 			
