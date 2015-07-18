@@ -4,6 +4,7 @@
 	.filter('GroupAssignmentFilter', groupAssignmentFilter)
 	.filter('CustomNumberFilter', customNumberFilter)
 	.filter('GroupMentorOnTop', groupMentorOnTop)
+	.filter('MaidAtBottom', maidAtBottom)
 	.filter('GroupDisplayFilter', groupDisplayFilter);
 	
 	genderFilter.$inject = [];
@@ -83,6 +84,32 @@
 			return ordered;
 			
 		};
+	}
+	
+	maidAtBottom.$inject = [];
+	
+	function maidAtBottom() {
+		return function(data) {
+			if (!_.isArray(data)) {
+				return data;
+			}
+			
+			var ordered = [];
+			var maid = null;
+			for (var i = 0; i < data.length; i++) {
+				if (data[i].sundaySchoolClass.indexOf('外傭') >= 0) {
+					maid = data[i];
+				} else {
+					ordered.push(data[i]);
+				}
+			}
+
+			if (maid) {
+				ordered.push(maid);
+			}
+
+			return ordered;
+		}
 	}
 	
 	groupDisplayFilter.$inject = [];
