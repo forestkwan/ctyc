@@ -1,5 +1,6 @@
 package org.ctyc.mgt.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,6 +41,27 @@ public class FileUtils {
 		  
 	}
 	
+	public static void deleteFile(String filePath){
+		
+		if (StringUtils.isBlank(filePath)){
+			return;
+		}
+		
+		try {
+			
+			File file = new File(filePath);
+			
+			if (file.delete()) {
+				System.out.println(file.getName() + " is deleted!");
+			} else {
+				System.out.println("Delete operation is failed.");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static <T> T readFileToObject(String filePath){
 		
 		if (StringUtils.isBlank(filePath)){

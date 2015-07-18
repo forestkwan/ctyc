@@ -50,6 +50,8 @@ public class SummerCampService {
 	private static String AUTO_ASSIGN_COMPLETE = "AUTO_ASSIGN_COMPLETE";
 	private static String CALCULATE_COST = "CALCULATE_COST";
 	private static String CALCULATE_COST_COMPLETE = "CALCULATE_COST_COMPLETE";
+	private static String RELOAD_DATA = "RELOAD_DATA";
+	private static String RELOAD_DATA_COMPLETE = "RELOAD_DATA_COMPLETE";
 	
 	private static String CAMP_SITE_PATH = "CTYCSave/CampSite.txt";
 	private static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
@@ -105,13 +107,8 @@ public class SummerCampService {
 	}
 	
 	private void initCampSiteMap(){
-		// force refreshing camp site data
-//		String resourcePath = "/CampSite.txt";
-//		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
-//		this.campSiteMap = FileUtils.readInputStreamToObject(inputStream);
 		
-		// force refreshing camp site data
-		this.campSiteMap = null;
+		this.campSiteMap = FileUtils.readFileToObject(CAMP_SITE_PATH);
 		
 		if (this.campSiteMap == null){
 			// capture data fetch time
@@ -137,8 +134,6 @@ public class SummerCampService {
 						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=9");
 					}
 					
-//					print(url.openStream());
-					
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
@@ -151,42 +146,13 @@ public class SummerCampService {
 				this.campSiteMap.put(campName, campSite);
 			}
 			
-//			this.saveCampSiteToFile();
+			this.saveCampSiteToFile();
 		}
-	}
-	
-	private void print(InputStream inputStream) {
-		String line = null;
-		int count = 0;
-		
-		BufferedReader bufferedReader;
-		try {
-			bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-			while ((line = bufferedReader.readLine()) != null) {
-				System.out.println(line);
-				count++;
-			}
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		System.out.println("Loading time: " + new Date().toString());
-		System.out.println("Head count: " + count);
-		System.out.println();
 	}
 	
 	private void initDineAssignmentPlanMap() {
-		// force refreshing dine assignment
-//		String resourcePath = "/DineAssignmentPlan.txt";
-//		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
-//		this.dineAssignmentPlanList = FileUtils.readInputStreamToObject(inputStream);
-				
-		// force refreshing dine assignment
-		this.dineAssignmentPlanList = null;
+		
+		this.dineAssignmentPlanList = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
 		
 		if (this.dineAssignmentPlanList == null){
 			
@@ -220,9 +186,9 @@ public class SummerCampService {
 					}
 				}
 			}
+			
+			this.saveDineTableAssignmentToFile();
 		}
-		
-//		this.saveDineTableAssignmentToFile();
 	}
 	
 	private void initParticipantMap(){
@@ -283,7 +249,9 @@ public class SummerCampService {
 	}
 	
 	public static SummerCampService getInstance() {
-		instance = new SummerCampService();
+		if (instance == null){
+			instance = new SummerCampService();
+		}
 		return instance;
 	}
 	
@@ -322,6 +290,10 @@ public class SummerCampService {
 		
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), CALCULATE_COST)){
 			responseMessage = this.calculateCost(requestMessage.getData());
+		}
+		
+		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), RELOAD_DATA)){
+			responseMessage = this.reloadData();
 		}
 		
 		return responseMessage;
@@ -454,7 +426,7 @@ public class SummerCampService {
 			this.dineAssignmentPlanList.add(dineAssignmentPlan);
 		}
 		
-//		this.saveDineTableAssignmentToFile();
+		this.saveDineTableAssignmentToFile();
 		
 		Map<String, Object> responseData = new HashMap<String, Object>();
 		responseData.put("dineAssignmentPlan", dineAssignmentPlan);
@@ -533,6 +505,22 @@ public class SummerCampService {
 		responseData.put("day", day);
 		responseData.put("isSuccess", true);
 		return new Message(CALCULATE_COST_COMPLETE, responseData);
+	}
+	
+	private Message reloadData() {
+
+		this.campSiteMap = null;
+		this.dineAssignmentPlanList = null;
+		this.participantMap = null;
+		
+		FileUtils.deleteFile(CAMP_SITE_PATH);
+		FileUtils.deleteFile(DINE_ASSIGNMENT_PLAN_PATH);
+		
+		this.init();
+
+		Map<String, Object> responseData = new HashMap<String, Object>();
+		responseData.put("isSuccess", true);
+		return new Message(RELOAD_DATA_COMPLETE, responseData);
 	}
 	
 	private DineAssignmentPlan findDineAssignmentPlan(String campSiteName, int day){
