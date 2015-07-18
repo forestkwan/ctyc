@@ -87,16 +87,12 @@
 				<tr style="border-bottom: 2px solid black;">
 					<col width="10%">
 					<col width="15%">
-					<col width="15%">
-					<col width="15%">
 					<col width="10%">
 					<col width="10%">
 					<col width="10%">
 					<col width="10%">
 					<th></th>
-					<th>班別</th>
 					<th>姓名</th>
-					<th>性別</th>
 					<th>{{vm.resolveDate(1)}}晚</th>
 					<th>{{vm.resolveDate(2)}}晚</th>
 					<th>{{vm.resolveDate(3)}}晚</th>
@@ -104,9 +100,7 @@
 				</tr>
 				<tr ng-repeat="participant in groupAssignmentPlan.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
 					<td>{{$index+1}}</td>
-					<td>{{participant.sundaySchoolClass}}</td>
 					<td>{{participant.name}}</td>
-					<td>{{participant.gender | GenderFilter}}</td>
 					<td>{{vm.getTableNumberForParticularDine(1, 'NIGHT', participant.dineAvailabilitys)}}</td>
 					<td>{{vm.getTableNumberForParticularDine(2, 'NIGHT', participant.dineAvailabilitys)}}</td>
 					<td>{{vm.getTableNumberForParticularDine(3, 'NIGHT', participant.dineAvailabilitys)}}</td>
