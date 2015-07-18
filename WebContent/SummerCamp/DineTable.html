@@ -29,7 +29,7 @@
 					<th>早</th>
 					<th>午</th>
 				</tr>
-				<tr ng-repeat="participant in vm.dineTableData.participants | orderBy:['groupNumber','sundaySchoolClass','-gender'] | GroupMentorOnTop"
+				<tr ng-repeat="participant in vm.dineTableData.participants | orderBy:['groupNumber','id'] | GroupMentorOnTop | MaidAtBottom"
 				ui-draggable="true" drag="participant"
 				on-drop-success="vm.dropSuccessHandler($event, $index, participant)">
 					<td>{{participant.name}}</td>

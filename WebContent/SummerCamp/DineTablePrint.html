@@ -21,7 +21,7 @@
 					<th style="text-align:center">早</th>
 					<th style="text-align:center">午</th>
 				</tr>
-				<tr ng-repeat="participant in vm.dineTableGroup.participants | orderBy:['groupNumber','sundaySchoolClass','-gender'] | GroupMentorOnTop">
+				<tr ng-repeat="participant in vm.dineTableGroup.participants | orderBy:['groupNumber','id'] | GroupMentorOnTop | MaidAtBottom">
 					<td align="center">{{$index+1}}</td>
 					<td align="center">{{participant.name}}</td>
 					<td align="center">{{participant.gender | GenderFilter}}</td>
