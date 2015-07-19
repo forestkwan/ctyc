@@ -61,6 +61,7 @@
 		SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});		
 		
 		function init(){
+			notify('Data loading...');
 			
 			$scope.$on('DINE_ASSIGNMENT_CHANGE', function(event, data){
 				calculateCost();
@@ -70,6 +71,7 @@
 				var message = JSON.parse(jsonMessage);
 				
 				if (message.type === 'DINE_ASSIGNMENT_DATA'){
+					notify('Loading completed');
 					vm.dineAssignmentPlans = message.data.dineAssignmentPlans;
 					vm.groupAssignmentPlans = message.data.groupAssignmentPlans;
 					vm.dineAssignmentStatistics = message.data.dineAssignmentStatistics;
