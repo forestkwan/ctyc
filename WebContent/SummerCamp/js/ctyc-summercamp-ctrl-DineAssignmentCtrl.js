@@ -252,20 +252,28 @@
 			return false;
 		}
 		
-		function getTableNumberForParticularDine(numberOfDay, timeOfDay, dineAvailabilitys){
-			var targetDineAvailability = null;
+		function getTableNumberForParticularDine(numberOfDay, dineAvailabilitys){
+			var targetDineAvailabilities = [];
 			for (var i=0; i<dineAvailabilitys.length; i++){
-				if (dineAvailabilitys[i].numberOfDay === numberOfDay &&
-						dineAvailabilitys[i].timeOfDay === timeOfDay){
-					targetDineAvailability = dineAvailabilitys[i];
+				if (dineAvailabilitys[i].numberOfDay === numberOfDay){
+					targetDineAvailabilities.push(dineAvailabilitys[i]);
 				}
 			}
 			
-			if (!targetDineAvailability || targetDineAvailability.join === false || !targetDineAvailability.assignedTableNumber){
+			if (_.isEmpty(targetDineAvailabilities)){
 				return '-';
 			}
 			
-			return targetDineAvailability.assignedTableNumber;
+			var isJoin = false;
+			for (var i = 0; i < targetDineAvailabilities.length; i++){
+				isJoin = (isJoin || targetDineAvailabilities[i].join);
+			}
+			
+			if (isJoin){
+				return targetDineAvailabilities[0].assignedTableNumber;
+			} else {
+				return '-';
+			}
 		}
 		
 		function displayPrintHeader(){
