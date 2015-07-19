@@ -15,7 +15,8 @@
 			notify){
 	
 		return {
-			autoDineAssignment : autoDineAssignment
+			autoDineAssignment : autoDineAssignment,
+			reloadData : reloadData
 			};
 		
 		function autoDineAssignment(camp, day){
@@ -39,6 +40,11 @@
 		function autoAssignment(data){
 			SocketSvc.sendMessage(MESSAGE_TYPE.AUTO_ASSIGN, data);
 			notify('Auto Assignment in progress...');
+		}
+		
+		function reloadData(){
+			SocketSvc.sendMessage(MESSAGE_TYPE.RELOAD_DATA, {});
+			notify('Reload Data in progress...');
 		}
 	};
 })();

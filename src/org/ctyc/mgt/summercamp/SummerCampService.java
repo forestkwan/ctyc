@@ -1,20 +1,29 @@
 package org.ctyc.mgt.summercamp;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
-import org.ctyc.mgt.model.summercamp.DineTimeStatistics;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
+import org.ctyc.mgt.model.summercamp.DineTimeStatistics;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.FamilyGroupCostFunction;
@@ -25,7 +34,6 @@ import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 import org.ctyc.mgt.websocket.Message;
-import org.springframework.util.CollectionUtils;
 
 public class SummerCampService {
 	
@@ -42,6 +50,8 @@ public class SummerCampService {
 	private static String AUTO_ASSIGN_COMPLETE = "AUTO_ASSIGN_COMPLETE";
 	private static String CALCULATE_COST = "CALCULATE_COST";
 	private static String CALCULATE_COST_COMPLETE = "CALCULATE_COST_COMPLETE";
+	private static String RELOAD_DATA = "RELOAD_DATA";
+	private static String RELOAD_DATA_COMPLETE = "RELOAD_DATA_COMPLETE";
 	
 	private static String CAMP_SITE_PATH = "CTYCSave/CampSite.txt";
 	private static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
@@ -53,6 +63,14 @@ public class SummerCampService {
 	private Map<String, CampSite> campSiteMap = null;
 	private Collection<DineAssignmentPlan> dineAssignmentPlanList = null;
 	private Map<String, Participant> participantMap = null;
+	private Date lastDataFetchTime = null;
+	
+	private static final ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
+		@Override
+		protected SimpleDateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		}
+	};
 	
 	static {
 		SAVE_HOME = System.getenv("SAVE_HOME");
@@ -70,7 +88,7 @@ public class SummerCampService {
 			CAMP_SITE_PATH = SAVE_HOME + "\\CampSite.txt";
 			DINE_ASSIGNMENT_PLAN_PATH = SAVE_HOME + "\\DineAssignmentPlan.txt";
 			
-		}else {
+		} else {
 			
 			if (SAVE_HOME == null){
 				SAVE_HOME = "CTYCSave";
@@ -83,6 +101,10 @@ public class SummerCampService {
 
 	protected SummerCampService(){
 		// Load saved camp site
+		init();
+	}
+	
+	private void init() {
 		this.initCampSiteMap();
 		this.initDineAssignmentPlanMap();
 		this.initParticipantMap();
@@ -93,16 +115,36 @@ public class SummerCampService {
 		this.campSiteMap = FileUtils.readFileToObject(CAMP_SITE_PATH);
 		
 		if (this.campSiteMap == null){
+			// capture data fetch time
+			lastDataFetchTime = new Date();
+			
 			this.campSiteMap = new HashMap<String, CampSite>();
+			
+			Authenticator.setDefault(new Authenticator() {
+			    protected PasswordAuthentication getPasswordAuthentication() {
+			        return new PasswordAuthentication ("admin", "ctycAug08".toCharArray());
+			    }
+			});
 			
 			for (String campName : campNames){
 				CampSite campSite = new CampSite();
 				campSite.setName(campName);
 				
-				if (SystemUtils.IS_OS_WINDOWS){
-					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "\\camp" + campName + "_panticipants.csv"));
-				}else {
-					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "/camp" + campName + "_panticipants.csv"));
+				try {
+					URL url = null;
+					if (campName.equals("A")) {
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=8");
+					} else if (campName.equals("B")) {
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=9");
+					}
+					
+					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				
 				this.campSiteMap.put(campName, campSite);
@@ -112,7 +154,7 @@ public class SummerCampService {
 		}
 	}
 	
-	private void initDineAssignmentPlanMap(){
+	private void initDineAssignmentPlanMap() {
 		
 		this.dineAssignmentPlanList = FileUtils.readFileToObject(DINE_ASSIGNMENT_PLAN_PATH);
 		
@@ -148,9 +190,9 @@ public class SummerCampService {
 					}
 				}
 			}
+			
+			this.saveDineTableAssignmentToFile();
 		}
-		
-		this.saveDineTableAssignmentToFile();
 	}
 	
 	private void initParticipantMap(){
@@ -211,7 +253,7 @@ public class SummerCampService {
 	}
 	
 	public static SummerCampService getInstance() {
-		if(instance == null) {
+		if (instance == null){
 			instance = new SummerCampService();
 		}
 		return instance;
@@ -234,6 +276,7 @@ public class SummerCampService {
 			data.put("dineAssignmentPlans", this.dineAssignmentPlanList);
 			data.put("groupAssignmentPlans", this.constructGroupAssignmentPlan());
 			data.put("dineAssignmentStatistics", this.generateDineAssignmentStatistics());
+			data.put("lastDataFetchTime", (this.lastDataFetchTime == null)? "N/A" : dateFormat.get().format(this.lastDataFetchTime));
 			responseMessage = new Message(DINE_ASSIGNMENT_DATA, data);
 		}
 		
@@ -251,6 +294,10 @@ public class SummerCampService {
 		
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), CALCULATE_COST)){
 			responseMessage = this.calculateCost(requestMessage.getData());
+		}
+		
+		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), RELOAD_DATA)){
+			responseMessage = this.reloadData();
 		}
 		
 		return responseMessage;
@@ -328,7 +375,6 @@ public class SummerCampService {
 	}
 	
 	private Message autoDineAssignment(Map<String, Object> data){
-		
 		if (data == null
 				|| data.get("camp") == null
 				|| data.get("day") == null
@@ -463,6 +509,22 @@ public class SummerCampService {
 		responseData.put("day", day);
 		responseData.put("isSuccess", true);
 		return new Message(CALCULATE_COST_COMPLETE, responseData);
+	}
+	
+	private Message reloadData() {
+
+		this.campSiteMap = null;
+		this.dineAssignmentPlanList = null;
+		this.participantMap = null;
+		
+		FileUtils.deleteFile(CAMP_SITE_PATH);
+		FileUtils.deleteFile(DINE_ASSIGNMENT_PLAN_PATH);
+		
+		this.init();
+
+		Map<String, Object> responseData = new HashMap<String, Object>();
+		responseData.put("isSuccess", true);
+		return new Message(RELOAD_DATA_COMPLETE, responseData);
 	}
 	
 	private DineAssignmentPlan findDineAssignmentPlan(String campSiteName, int day){

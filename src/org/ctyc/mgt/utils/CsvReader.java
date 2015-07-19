@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +22,16 @@ import org.ctyc.mgt.model.summercamp.Participant;
 public class CsvReader {
 
 	public static Collection<Participant> readParticipantCsv(String filepath){
+		try {
+			return readParticipantCsvFromStream(new FileInputStream(filepath));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static Collection<Participant> readParticipantCsvFromStream(InputStream inputStream){
 		
 		BufferedReader bufferedReader = null;
 		String line = "";
@@ -29,7 +40,7 @@ public class CsvReader {
 		Collection<Participant> participants = new ArrayList<Participant>();
 		try {
 
-			bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF-8"));
+			bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 			int count = 0;
 			Map<String, FamilyGroup> familyGroupMap = new HashMap<String, FamilyGroup>();
 			

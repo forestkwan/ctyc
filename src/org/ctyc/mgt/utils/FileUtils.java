@@ -1,13 +1,14 @@
 package org.ctyc.mgt.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
@@ -40,6 +41,27 @@ public class FileUtils {
 		  
 	}
 	
+	public static void deleteFile(String filePath){
+		
+		if (StringUtils.isBlank(filePath)){
+			return;
+		}
+		
+		try {
+			
+			File file = new File(filePath);
+			
+			if (file.delete()) {
+				System.out.println(file.getName() + " is deleted!");
+			} else {
+				System.out.println("Delete operation is failed.");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static <T> T readFileToObject(String filePath){
 		
 		if (StringUtils.isBlank(filePath)){
@@ -49,7 +71,19 @@ public class FileUtils {
 		try {
 
 			FileInputStream fileInputStream = new FileInputStream(filePath);
-			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+			return readInputStreamToObject(fileInputStream);
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	public static <T> T readInputStreamToObject(InputStream inputStream){
+		if (inputStream == null) {
+			return null;
+		}
+		
+		try {
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 			T object = (T) objectInputStream.readObject();
 			objectInputStream.close();
 			return object;

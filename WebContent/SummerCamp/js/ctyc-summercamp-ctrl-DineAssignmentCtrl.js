@@ -53,6 +53,7 @@
 		vm.countDayTotal = countDayTotal;
 		vm.resolveDate = resolveDate;
 		vm.resolveTimeOfDine = resolveTimeOfDine;
+		vm.reloadData = reloadData;
 		
 		init();
 		
@@ -63,7 +64,7 @@
 		}, 1000);
 		
 		function init(){
-			notify('Data loading...');
+//			notify('Data loading...');
 			
 			$scope.$on('DINE_ASSIGNMENT_CHANGE', function(event, data){
 				calculateCost();
@@ -73,7 +74,7 @@
 				var message = JSON.parse(jsonMessage);
 				
 				if (message.type === 'DINE_ASSIGNMENT_DATA'){
-					notify('Loading completed');
+					//notify('Loading completed. Last data fetch time: ' + message.data.lastDataFetchTime);
 					vm.dineAssignmentPlans = message.data.dineAssignmentPlans;
 					vm.groupAssignmentPlans = message.data.groupAssignmentPlans;
 					vm.dineAssignmentStatistics = message.data.dineAssignmentStatistics;
@@ -119,6 +120,17 @@
 						notify.closeAll();
 						notify('Calculate Complete');
 						vm.isLoading = false;
+					}
+				}
+				
+				if (message.type === 'RELOAD_DATA_COMPLETE'){
+					if (message.data.isSuccess === true){
+						
+						notify.closeAll();
+						notify('Reload Data Complete');
+						vm.isLoading = false;
+						
+						SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});
 					}
 				}
 
@@ -184,6 +196,10 @@
 		
 		function autoAssign(){
 			DineAssignmentSvc.autoDineAssignment(vm.selectedCamp, vm.selectedDay);
+		}
+		
+		function reloadData(){
+			DineAssignmentSvc.reloadData();
 		}
 		
 		function calculateCost(){
