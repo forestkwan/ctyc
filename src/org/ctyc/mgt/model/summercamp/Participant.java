@@ -80,5 +80,18 @@ public class Participant extends Believer {
 		
 		return count;
 	}
+	
+	public int countTotalAvailableDine(){
+		int count = 0;
+		
+		for (DineAvailability dineAvailability : this.dineAvailabilitys){
+			
+			if (dineAvailability.isJoin()){
+				count++;
+			}
+		}
+		
+		return count;
+	}
 
 }

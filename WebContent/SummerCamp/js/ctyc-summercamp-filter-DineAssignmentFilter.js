@@ -65,13 +65,21 @@
 			}
 			
 			var ordered = [];
+			var drWong = null;
 			for (var i = 0 ; i < data.length; i++){
-				if (data[i].sundaySchoolClass.indexOf('導師') >= 0){
+				if (data[i].name.indexOf('黃耀銓') >= 0){
+					drWong = data[i];
+				}else if (data[i].sundaySchoolClass.indexOf('導師') >= 0){
 					ordered.splice(0, 0, data[i]);
 				}else {
 					ordered.push(data[i]);
 				}
 			}
+			
+			if (drWong){
+				ordered.splice(0, 0, drWong);
+			}
+			
 			return ordered;
 			
 		};
