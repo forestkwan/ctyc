@@ -41,7 +41,6 @@ public class DineAssignmentManager {
 	private static Map<String, Map<Integer, String>> campTableMentorMap;
 	private static Map<String, Integer> campAPreassignedMap;
 	private static Map<String, Integer> campBPreassignedMap;
-	private static String MENTOR_TABLE_PATH = "CTYCSave/MentorTableMap.txt";
 	private static String SAVE_HOME;
 	
 	// Private calculation object
@@ -77,18 +76,12 @@ public class DineAssignmentManager {
 				SAVE_HOME = "c:\\CTYCSave";
 			}
 			
-			MENTOR_TABLE_PATH = SAVE_HOME + "\\MentorTableMap.txt";
-			
 		}else if (SystemUtils.IS_OS_MAC){
 			
 			if (SAVE_HOME == null){
 				SAVE_HOME = "CTYCSave";
 			}
-			
-			MENTOR_TABLE_PATH = SAVE_HOME + "/MentorTableMap.txt";
 		}
-		
-//		campTableMentorMap = FileUtils.readFileToObject(MENTOR_TABLE_PATH);
 		
 		campAPreassignedMap = new HashMap<String, Integer>();
 		campAPreassignedMap.put("黃耀銓", 1);
@@ -233,6 +226,9 @@ public class DineAssignmentManager {
 		assignSpecialGroupToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
 		assignFamilyGroupToTable(filteredParticipants, assignedParticipants, dineTableGroups);
 		assignGroupMentorToTable(filteredParticipants, assignedParticipants, dineTableGroups);
+		
+		assignGroupMemberWithMentor(filteredParticipants, assignedParticipants, dineTableGroups);
+		
 		assignThreeSameGroupParticipantsToTables(filteredParticipants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(filteredParticipants, assignedParticipants, dineTableGroups);
 		assignParticipantToTable(filteredParticipants, assignedParticipants, specialDineTableGroups);
@@ -710,6 +706,53 @@ public class DineAssignmentManager {
 			
 			minimumMentorDineTable.getParticipants().add(groupMentor);
 			assignedParticipants.add(groupMentor);
+		}
+		
+	}
+	
+	private void assignGroupMemberWithMentor(
+			Collection<Participant> filteredParticipants,
+			Collection<Participant> assignedParticipants,
+			Collection<DineTableGroup> dineTableGroups) {
+		
+		Map<String, Integer> campPreassignedMap = new HashMap<String, Integer>();
+		if (StringUtils.equalsIgnoreCase(this.plan.getCampName(), "A")){
+			campPreassignedMap = campAPreassignedMap;
+		} else if (StringUtils.equalsIgnoreCase(this.plan.getCampName(), "B")){
+			campPreassignedMap = campBPreassignedMap;
+		}
+		
+		
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			
+			Collection<Participant> participantsToBeAdded = new ArrayList<Participant>();
+			
+			for (Participant participant : dineTableGroup.getParticipants()){
+				if (campPreassignedMap.get(participant.getName()) == null){
+					continue;
+				}
+				
+				Participant groupMentor = participant;
+				
+				/* Create a map according to participants' Group Number*/
+				Collection<Participant> groupMembers = new ArrayList<Participant>();
+				for (Participant unassignedParticipant : filteredParticipants){
+					
+					if (!assignedParticipants.contains(unassignedParticipant) &&
+							groupMentor.getGroupNumber() == unassignedParticipant.getGroupNumber()){
+						groupMembers.add(unassignedParticipant);
+					}
+				}
+				
+				Collection<Participant> selectedParticipants = RandomnessUtils.pickRandomMultiParticipant(groupMembers, this.randomObj);
+				if (!CollectionUtils.isEmpty(selectedParticipants) &&
+						dineTableGroup.getParticipants().size() + participantsToBeAdded.size() + selectedParticipants.size() <= this.tableCapacity){
+					participantsToBeAdded.addAll(selectedParticipants);
+				}
+			}
+			
+			dineTableGroup.getParticipants().addAll(participantsToBeAdded);
+			assignedParticipants.addAll(participantsToBeAdded);
 		}
 		
 	}
