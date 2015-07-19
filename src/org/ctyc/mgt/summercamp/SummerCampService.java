@@ -56,6 +56,10 @@ public class SummerCampService {
 	
 	static {
 		SAVE_HOME = System.getenv("SAVE_HOME");
+
+		if (SAVE_HOME == null) {
+			SAVE_HOME = System.getenv("OPENSHIFT_DATA_DIR");
+		}
 		
 		if (SystemUtils.IS_OS_WINDOWS){
 			
@@ -66,7 +70,7 @@ public class SummerCampService {
 			CAMP_SITE_PATH = SAVE_HOME + "\\CampSite.txt";
 			DINE_ASSIGNMENT_PLAN_PATH = SAVE_HOME + "\\DineAssignmentPlan.txt";
 			
-		}else if (SystemUtils.IS_OS_MAC){
+		}else {
 			
 			if (SAVE_HOME == null){
 				SAVE_HOME = "CTYCSave";
@@ -97,7 +101,7 @@ public class SummerCampService {
 				
 				if (SystemUtils.IS_OS_WINDOWS){
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "\\camp" + campName + "_panticipants.csv"));
-				}else if (SystemUtils.IS_OS_MAC){
+				}else {
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsv(SAVE_HOME + "/camp" + campName + "_panticipants.csv"));
 				}
 				
