@@ -1,10 +1,6 @@
 package org.ctyc.mgt.summercamp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
@@ -129,12 +125,13 @@ public class SummerCampService {
 				try {
 					URL url = null;
 					if (campName.equals("A")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=8");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=10");
 					} else if (campName.equals("B")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=9");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=11");
 					}
 					
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
+					campSite.getCampPreassignedMap().putAll(CsvReader.readPreassignedTable(url.openStream()));
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -177,7 +174,7 @@ public class SummerCampService {
 				for (int i=0; i<4; i++){
 					
 					DineAssignmentManager dineAssignmentManager =
-							new DineAssignmentManager(campName, i + 1, campSite.getParticipants(), 8, costFunctions, constraintFunctions, i);
+							new DineAssignmentManager(campName, i + 1, campSite, 8, costFunctions, constraintFunctions, i);
 					dineAssignmentManager.doAssignment();
 					DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 					
@@ -406,7 +403,7 @@ public class SummerCampService {
 		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 		
 		DineAssignmentManager dineAssignmentManager =
-				new DineAssignmentManager(campName, day, campSite.getParticipants(), tableCapacity, costFunctions, constraintFunctions, seed);
+				new DineAssignmentManager(campName, day, campSite, tableCapacity, costFunctions, constraintFunctions, seed);
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();

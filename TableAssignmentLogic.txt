@@ -1,0 +1,10 @@
+How to assign summer camp participants to dine table?
+
+1. Some participants have pre-assigned table. Assign these participants to corresponding tables (e.g. Dr.Wong is pre-assigned to table 1)
+2. Group the remaining participants according to special requirement (e.g. Form 1 to 4 into one group. The remaining are in another group)
+3. For each group of participants, randomly assign the whole family into one table. Try to prevent two families assign to same table.
+4. For each group of participants, randomly assign the mentor into a table which doesn't have mentor yet. Try to prevent assign more than one mentor to the same table unless the # of mentors > # of tables
+5. For the remaining participants, randomly assign them to tables these have vacancy with the following considerations:
+	i. The table has same summer camp groupmates
+	ii. Female and male ratio try to be balance
+	iii. Prevent assign low attendence participants to same table

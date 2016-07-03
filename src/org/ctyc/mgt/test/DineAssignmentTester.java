@@ -11,10 +11,6 @@ import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.summercamp.DineAssignmentManager;
 import org.ctyc.mgt.summercamp.DineAssignmentPlan;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
-import org.ctyc.mgt.summercamp.costfunction.FamilyGroupCostFunction;
-import org.ctyc.mgt.summercamp.costfunction.MentorInTableCostFunction;
-import org.ctyc.mgt.summercamp.costfunction.GenderBalanceCostFunction;
-import org.ctyc.mgt.summercamp.costfunction.SameGroupCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
@@ -33,6 +29,7 @@ public class DineAssignmentTester extends TestCase {
 		FileUtils.writeObjectToFile(campSite, "CTYCSave/CampSite.ser");
 		
 		Collection<Participant> campAParticipants = CsvReader.readParticipantCsv("CTYCSave/campA_panticipants.csv");
+		campSite.getParticipants().addAll(campAParticipants);
 		
 		Collection<AbstractCostFunction> costFunctions = new ArrayList<AbstractCostFunction>();
 //		costFunctions.add(new GenderBalanceCostFunction(1, 1));
@@ -43,7 +40,7 @@ public class DineAssignmentTester extends TestCase {
 //		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 //		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 		
-		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager("A", 1, campAParticipants, 8, costFunctions, constraintFunctions, 1);
+		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager("A", 1, campSite, 8, costFunctions, constraintFunctions, 1);
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();

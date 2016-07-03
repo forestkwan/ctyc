@@ -3,7 +3,6 @@ package org.ctyc.mgt.utils;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,13 +40,10 @@ public class CsvReader {
 		try {
 
 			bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-			int count = 0;
 			Map<String, FamilyGroup> familyGroupMap = new HashMap<String, FamilyGroup>();
 			
 			while ((line = bufferedReader.readLine()) != null) {
 
-				count++;
-				
 				String[] tokens = line.split(separator);
 				
 				if (tokens.length <= 1){
@@ -178,6 +174,49 @@ public class CsvReader {
 		}
 
 		return participants;
+	}
+	
+	public static Map<String, Integer> readPreassignedTable(InputStream inputStream) {
+		BufferedReader bufferedReader = null;
+		String line = "";
+		String separator = "::";
+		
+		Map<String, Integer> result = new HashMap<String, Integer>();
+
+		try {
+
+			bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+			while ((line = bufferedReader.readLine()) != null) {
+				
+				String[] tokens = line.split(separator);
+				
+				if (tokens.length <= 1){
+					break;
+				}
+				String id = tokens[1].replace("\"", "");
+				
+				if (StringUtils.isNotBlank(tokens[36]) && StringUtils.isNumeric(tokens[36].replace("\"", ""))){
+					Integer preassignedTableNumebr = Integer.parseInt(tokens[36].replace("\"", ""));
+					result.put(id, preassignedTableNumebr);
+				}
+				
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return result;
 	}
 	
 	private static int convertToGroupNumber(String name){
