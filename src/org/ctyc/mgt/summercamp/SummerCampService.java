@@ -165,9 +165,9 @@ public class SummerCampService {
 			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 			
-			String[] testCampNames = {"A"};
-//			for (String campName : campNames){
-			for (String campName : testCampNames){
+			String[] testCampNames = {"B"};
+			for (String campName : campNames){
+//			for (String campName : testCampNames){
 				
 				CampSite campSite = this.campSiteMap.get(campName);
 				if (campSite == null){
@@ -177,9 +177,9 @@ public class SummerCampService {
 				// Generate 4 days of dine assignment plan
 				Collection<Integer> executedDays = new ArrayList<Integer>();
 				executedDays.add(1);
-//				executedDays.add(2);
-//				executedDays.add(3);
-//				executedDays.add(4);
+				executedDays.add(2);
+				executedDays.add(3);
+				executedDays.add(4);
 				
 				for (Integer executedDay : executedDays){
 					

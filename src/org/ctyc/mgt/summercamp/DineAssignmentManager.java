@@ -131,54 +131,53 @@ public class DineAssignmentManager {
 		Collection<Participant> unassignedParticipants = filterLeftParticipants(this.participants);
 		Collection<Participant> assignedParticipants = new HashSet<Participant>();
 		
-		Collection<DineTableGroup> specialDineTableGroups = this.createDineTableGroupList(unassignedParticipants, 1, true);
-		Collection<DineTableGroup> dineTableGroups = this.createDineTableGroupList(unassignedParticipants, specialDineTableGroups.size() + 1, false);
+		/* Create all dine tables */
+		List<DineTableGroup> allDineTableGroups = new ArrayList<DineTableGroup>();
+		int totalTableNeeded = unassignedParticipants.size() / this.tableCapacity;
+		if ((unassignedParticipants.size() % this.tableCapacity) > 0){
+			totalTableNeeded++;
+		}
+		
+		for (int i=0; i< totalTableNeeded; i++){
+			DineTableGroup dineTableGroup = new DineTableGroup();
+			dineTableGroup.setTableNumber(i + 1);
+			allDineTableGroups.add(dineTableGroup);
+		}
+		/* End of create all dine tables */
 		
 		listOutParticipants(unassignedParticipants);
 		
 		printOutAssignmentStatus("Before preassigning special group", unassignedParticipants, assignedParticipants);
-		assignPreassignedAssignmentAndFamily(unassignedParticipants, assignedParticipants, dineTableGroups);
+		assignPreassignedAssignmentAndFamily(unassignedParticipants, assignedParticipants, allDineTableGroups);
 		printOutAssignmentStatus("After preassigning special group", unassignedParticipants, assignedParticipants);
 		
-		printOutAssignmentStatus("Before preassigning normal group", unassignedParticipants, assignedParticipants);
-		assignPreassignedAssignmentAndFamily(unassignedParticipants, assignedParticipants, specialDineTableGroups);
-		printOutAssignmentStatus("After preassigning normal group", unassignedParticipants, assignedParticipants);
+		Collection<DineTableGroup> specialDineTableGroups = this.getSpecialDineTables(allDineTableGroups, unassignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group family", unassignedParticipants, assignedParticipants);
 		assignFamilyGroupToSpecialGroupTable(unassignedParticipants, assignedParticipants, specialDineTableGroups);
 		printOutAssignmentStatus("After assigning special group family", unassignedParticipants, assignedParticipants);
 		
-		printOutAssignmentStatus("Before assigning normal group family", unassignedParticipants, assignedParticipants);
-		assignFamilyGroupToTable(unassignedParticipants, assignedParticipants, dineTableGroups);
-		printOutAssignmentStatus("After assigning normal group family", unassignedParticipants, assignedParticipants);
-		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
 		assignSpecialGroupToTable2(unassignedParticipants, assignedParticipants, specialDineTableGroups);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
+		Collection<DineTableGroup> normalDineTableGroups = allDineTableGroups.subList(specialDineTableGroups.size(), allDineTableGroups.size());
+		
+		printOutAssignmentStatus("Before assigning normal group family", unassignedParticipants, assignedParticipants);
+		assignFamilyGroupToTable(unassignedParticipants, assignedParticipants, normalDineTableGroups);
+		printOutAssignmentStatus("After assigning normal group family", unassignedParticipants, assignedParticipants);
+		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignParticipantToTable2(unassignedParticipants, assignedParticipants, dineTableGroups);
+		assignParticipantToTable2(unassignedParticipants, assignedParticipants, normalDineTableGroups);
+		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
+		
+		/* Assign unassigned Participants to any table with empty seat regardless of their type */
+		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
+		assignParticipantToTable2(unassignedParticipants, assignedParticipants, allDineTableGroups);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		listOutParticipants(assignedParticipants);
-		
-//		assignTableMentor(filteredParticipants, assignedParticipants, dineTableGroups);
-//		assignTableMentor(filteredParticipants, assignedParticipants, specialDineTableGroups);
-		
-//		assignFamilyGroupToSpecialGroupTable(unassignedParticipants, assignedParticipants, specialDineTableGroups);
-//		assignMentorToSpecialGroupTable(unassignedParticipants, assignedParticipants, specialDineTableGroups);
-
-		
-//		assignGroupMentorToTable(unassignedParticipants, assignedParticipants, dineTableGroups);
-		
-//		assignGroupMemberWithMentor(unassignedParticipants, assignedParticipants, dineTableGroups);
-		
-//		assignThreeSameGroupParticipantsToTables(unassignedParticipants, assignedParticipants, dineTableGroups);
-//		assignParticipantToTable(unassignedParticipants, assignedParticipants, dineTableGroups);
-//		assignParticipantToTable(unassignedParticipants, assignedParticipants, specialDineTableGroups);
-		
-		this.plan.getDineTableGroups().addAll(specialDineTableGroups);
-		this.plan.getDineTableGroups().addAll(dineTableGroups);
+		this.plan.getDineTableGroups().addAll(allDineTableGroups);
 	}
 
 	private Collection<Participant> filterLeftParticipants(Collection<Participant> participants) {
@@ -261,40 +260,6 @@ public class DineAssignmentManager {
 		
 		unassignedParticipants.removeAll(operatedParticipant);
 		assignedParticipants.addAll(operatedParticipant);
-	}
-	
-	private void assignTableMentor(
-			Collection<Participant> participants,
-			Collection<Participant> assignedParticipants,
-			Collection<DineTableGroup> dineTableGroups) {
-		
-		if (campTableMentorMap != null && campTableMentorMap.get(this.plan.getCampName()) != null){
-			
-			Map<Integer, String> tableMentorMap = campTableMentorMap.get(this.plan.getCampName());
-			
-			for (DineTableGroup dineTableGroup : dineTableGroups){
-				
-				String tableMentorId = tableMentorMap.get(dineTableGroup.getTableNumber());
-				if (tableMentorId == null){
-					continue;
-				}
-				
-				Participant tableMentor = this.participantMap.get(tableMentorId);
-				if (tableMentor == null || assignedParticipants.contains(tableMentor)){
-					continue;
-				}
-				
-				dineTableGroup.getParticipants().add(tableMentor);
-				assignedParticipants.add(tableMentor);
-				
-				Collection<Participant> familyMembers = findFamilyMembers(tableMentor);
-				if (!CollectionUtils.isEmpty(familyMembers)){
-					dineTableGroup.getParticipants().addAll(familyMembers);
-					assignedParticipants.addAll(familyMembers);
-				}
-				
-			}
-		}
 	}
 	
 	private void assignFamilyGroupToSpecialGroupTable(
@@ -381,93 +346,6 @@ public class DineAssignmentManager {
 		assignedParticipants.addAll(operatedParticipants);
 	}
 	
-	private void assignMentorToSpecialGroupTable(
-			Collection<Participant> unassignedParticipants,
-			Collection<Participant> assignedParticipants,
-			Collection<DineTableGroup> dineTableGroups) {
-		
-		if (CollectionUtils.isEmpty(unassignedParticipants) || CollectionUtils.isEmpty(dineTableGroups)){
-			return;
-		}
-		
-		Collection<Participant> operatedParticipants = new HashSet<Participant>();
-		
-		Collection<Participant> specialGroupMentors = new ArrayList<Participant>();
-		for (Participant participant : unassignedParticipants){
-			if (participant.getSpecialGroup() == null || participant.getSpecialGroup() <= 0){
-				continue;
-			}
-			
-			if (assignedParticipants.contains(participant)){
-				continue;
-			}
-			
-			if (participant.isGroupMentor() || participant.isMentor() || StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
-				specialGroupMentors.add(participant);
-			}
-			
-		}
-		
-		// Assign special group mentors to table
-		for (Participant mentor : specialGroupMentors){
-			DineTableGroup dineTable = randomlyPickMinimumGroupMentorTable(dineTableGroups);
-			
-			if (dineTable == null){
-				continue;
-			}
-			
-			dineTable.getParticipants().add(mentor);
-			operatedParticipants.add(mentor);
-		}
-		
-		unassignedParticipants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
-		
-		// Since there may not have enough special group mentor, then assign non-special group mentor to special group
-		Collection<DineTableGroup> noMentorDineTables = new ArrayList<DineTableGroup>();
-		for (DineTableGroup dineTableGroup : dineTableGroups){
-			if (dineTableGroup.getNoOfGroupMentor() <= 0){
-				noMentorDineTables.add(dineTableGroup);
-			}
-		}
-		
-		if (CollectionUtils.isEmpty(noMentorDineTables)){
-			return;
-		}
-		
-		Collection<Participant> normalMentors = new ArrayList<Participant>();
-		for (Participant participant : unassignedParticipants){
-			
-			if (!participant.isGroupMentor() || !participant.isMentor() || !StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
-				continue;
-			}
-			
-			if (assignedParticipants.contains(participant)){
-				continue;
-			}
-			
-			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
-				continue;
-			}
-			
-			normalMentors.add(participant);
-		}
-		
-		for (DineTableGroup dineTableGroup : noMentorDineTables){
-			Participant mentor = RandomnessUtils.pickRandomParticipant(normalMentors, this.randomObj);
-			if (mentor != null){
-				
-				dineTableGroup.getParticipants().add(mentor);
-				operatedParticipants.add(mentor);
-				normalMentors.remove(mentor);
-			}
-		}
-		
-		unassignedParticipants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
-		
-	}
-
 	private void assignSpecialGroupToTable(
 			Collection<Participant> unassignedParticipants,
 			Collection<Participant> assignedParticipants,
@@ -748,160 +626,6 @@ public class DineAssignmentManager {
 		assignedParticipants.addAll(operatedParticipants);
 	}
 	
-	private void assignGroupMentorToTable(
-			Collection<Participant> unassignedParticipants,
-			Collection<Participant> assignedParticipants,
-			Collection<DineTableGroup> dineTableGroups) {
-		
-		if (CollectionUtils.isEmpty(unassignedParticipants) || CollectionUtils.isEmpty(dineTableGroups)){
-			return;
-		}
-		
-		Collection<Participant> operatedParticipants = new HashSet<Participant>();
-		
-		List<Participant> groupMentors = new ArrayList<Participant>();
-		for (Participant participant : unassignedParticipants){
-			
-			if (assignedParticipants.contains(participant)){
-				continue;
-			}
-			
-			if (participant.isGroupMentor() || participant.isMentor() || StringUtils.contains(participant.getSundaySchoolClass(), "導師")){
-				groupMentors.add(participant);
-			}
-		}
-		
-		GroupMentorComparator groupMentorComparator = new GroupMentorComparator(this.plan.getDay());
-		
-		Collections.sort(groupMentors, groupMentorComparator);
-		
-		for (Participant groupMentor : groupMentors){
-			DineTableGroup minimumMentorDineTable = this.randomlyPickMinimumGroupMentorTable(dineTableGroups);
-			
-			minimumMentorDineTable.getParticipants().add(groupMentor);
-			operatedParticipants.add(groupMentor);
-		}
-		
-		unassignedParticipants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
-	}
-	
-	private void assignGroupMemberWithMentor(
-			Collection<Participant> unassignedParticipants,
-			Collection<Participant> assignedParticipants,
-			Collection<DineTableGroup> dineTableGroups) {
-		
-//		Map<String, Integer> campPreassignedMap = new HashMap<String, Integer>();
-//		if (StringUtils.equalsIgnoreCase(this.plan.getCampName(), "A")){
-//			campPreassignedMap = campAPreassignedMap;
-//		} else if (StringUtils.equalsIgnoreCase(this.plan.getCampName(), "B")){
-//			campPreassignedMap = campBPreassignedMap;
-//		}
-		
-		Collection<Participant> operatedParticipants = new HashSet<Participant>();
-		
-		for (DineTableGroup dineTableGroup : dineTableGroups){
-			
-			Collection<Participant> participantsToBeAdded = new ArrayList<Participant>();
-			
-			for (Participant participant : dineTableGroup.getParticipants()){
-//				if (campPreassignedMap.get(participant.getName()) == null){
-//					continue;
-//				}
-				
-				Participant groupMentor = participant;
-				
-				/* Create a map according to participants' Group Number*/
-				Collection<Participant> groupMembers = new ArrayList<Participant>();
-				for (Participant unassignedParticipant : unassignedParticipants){
-					
-					if (!assignedParticipants.contains(unassignedParticipant) &&
-							groupMentor.getGroupNumber() == unassignedParticipant.getGroupNumber()){
-						groupMembers.add(unassignedParticipant);
-					}
-				}
-				
-				Collection<Participant> selectedParticipants = RandomnessUtils.pickRandomMultiParticipant(groupMembers, this.randomObj);
-				if (!CollectionUtils.isEmpty(selectedParticipants) &&
-						dineTableGroup.getParticipants().size() + participantsToBeAdded.size() + selectedParticipants.size() <= this.tableCapacity){
-					participantsToBeAdded.addAll(selectedParticipants);
-				}
-			}
-			
-			dineTableGroup.getParticipants().addAll(participantsToBeAdded);
-			operatedParticipants.addAll(participantsToBeAdded);
-		}
-		
-		unassignedParticipants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
-		
-	}
-	
-	private void assignThreeSameGroupParticipantsToTables(
-			Collection<Participant> participants,
-			Collection<Participant> assignedParticipants,
-			Collection<DineTableGroup> dineTableGroups) {
-		
-		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
-			return;
-		}
-		
-		Collection<Participant> operatedParticipants = new HashSet<Participant>();
-		
-		Collection<Participant> unassignedParticipants = new ArrayList<Participant>();
-		for (Participant participant : participants){
-			if (!assignedParticipants.contains(participant)){
-				unassignedParticipants.add(participant);
-			}
-		}
-		
-		/* Create a map according to participants' Group Number*/
-		Map<Integer, Collection<Participant>> groupNumberParticipantMap = new HashMap<Integer, Collection<Participant>>();
-		for (Participant unassignedParticipant : unassignedParticipants){
-			
-			Collection<Participant> groupNumberParticipants = groupNumberParticipantMap.get(unassignedParticipant.getGroupNumber());
-			if (groupNumberParticipants == null){
-				groupNumberParticipants = new ArrayList<Participant>();
-				groupNumberParticipants.add(unassignedParticipant);
-				groupNumberParticipantMap.put(unassignedParticipant.getGroupNumber(), groupNumberParticipants);
-			}else {
-				groupNumberParticipants.add(unassignedParticipant);
-			}
-		}
-		
-		/*
-		 * For each group of participant, randomly pick a table with enough vacancy
-		 * Randomly pick 2 or 3 participants from the group of participants
-		 * assign the participants to the table
-		 * Add the participants to assigned participant list
-		 * */
-		for (Entry<Integer, Collection<Participant>> entry : groupNumberParticipantMap.entrySet()){
-			int groupNumber = entry.getKey();
-			Collection<Participant> groupedParticipants = entry.getValue();
-			
-			while (!CollectionUtils.isEmpty(groupedParticipants)){
-				
-				Collection<Participant> selectedParticipants = RandomnessUtils.pickRandomMultiParticipant(groupedParticipants, this.randomObj);
-				if (selectedParticipants == null){
-					break;
-				}
-				
-				DineTableGroup selectedDineTable = randomPickTableForGroupParticipantAssignment(dineTableGroups, groupNumber, selectedParticipants, false);
-				
-				if (selectedDineTable == null){
-					break;
-				}
-				
-				selectedDineTable.getParticipants().addAll(selectedParticipants);
-				operatedParticipants.addAll(selectedParticipants);
-				groupedParticipants.removeAll(selectedParticipants);
-			}
-		}
-		
-		participants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
-	}
-	
 	private DineTableGroup randomPickTableForGroupParticipantAssignment(
 			Collection<DineTableGroup> dineTableGroups,
 			int groupNumber,
@@ -959,52 +683,6 @@ public class DineAssignmentManager {
 		}else {
 			return RandomnessUtils.pickRandomDineTableGroup(candidateTables, this.randomObj);
 		}
-	}
-
-	private void assignParticipantToTable(
-			Collection<Participant> participants,
-			Collection<Participant> assignedParticipants,
-			Collection<DineTableGroup> dineTableGroups) {
-		
-		if (CollectionUtils.isEmpty(participants) || CollectionUtils.isEmpty(dineTableGroups)){
-			return;
-		}
-		
-		Collection<Participant> operatedParticipants = new HashSet<Participant>();
-		
-		Collection<Participant> unassignedParticipants = new ArrayList<Participant>();
-		for (Participant participant : participants){
-			if (!assignedParticipants.contains(participant)){
-				unassignedParticipants.add(participant);
-			}
-		}
-		
-		for (Participant unassignedParticipant : unassignedParticipants){
-			
-			DineTableGroup dineTable = this.randomlyPickTableWithGenderBalance(dineTableGroups, unassignedParticipant.getGender());
-			
-			if (dineTable == null){
-				
-				Collection<DineTableGroup> availableTables = new ArrayList<DineTableGroup>();
-				for (DineTableGroup dineTableGroup : dineTableGroups){
-					if (!this.isTableFull(dineTableGroup)){
-						availableTables.add(dineTableGroup);
-					}
-				}
-				
-				dineTable = RandomnessUtils.pickRandomDineTableGroup(availableTables, this.randomObj);
-			}
-			
-			if (dineTable == null){
-				continue;
-			}
-			
-			dineTable.getParticipants().add(unassignedParticipant);
-			operatedParticipants.add(unassignedParticipant);
-		}
-		
-		participants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
 	}
 	
 	private void assignParticipantToTable2(
@@ -1195,13 +873,11 @@ public class DineAssignmentManager {
 		this.evaluator.evaluatePlan(this.plan);
 	}
 	
-	private Collection<DineTableGroup> createDineTableGroupList(Collection<Participant> unassignedParticipants, int startIndex, boolean isForSpecial){
-		if (CollectionUtils.isEmpty(unassignedParticipants)){
-			return new ArrayList<DineTableGroup>();
-		}
+	private Collection<DineTableGroup> getSpecialDineTables(
+			Collection<DineTableGroup> dineTableGroups,
+			Collection<Participant> unassignedParticipants){
 		
-		if (this.tableCapacity <= 0){
-			System.out.println("No table capacity");
+		if (CollectionUtils.isEmpty(unassignedParticipants)){
 			return new ArrayList<DineTableGroup>();
 		}
 		
@@ -1209,17 +885,7 @@ public class DineAssignmentManager {
 		
 		for (Participant participant : unassignedParticipants){
 			
-			if (participant.isSpecialParticipant()){
-				if (!isForSpecial){
-					continue;
-				}
-			}else {
-				if (isForSpecial){
-					continue;
-				}
-			}
-			
-			if (participant.countAvailableDine(this.plan.getDay()) <= 0){
+			if (participant.isNormalParticipant() || participant.countAvailableDine(this.plan.getDay()) <= 0){
 				continue;
 			}
 			
@@ -1245,39 +911,23 @@ public class DineAssignmentManager {
 		}
 		
 		countedParticipants.retainAll(unassignedParticipants);
-		this.listOutParticipants(countedParticipants);
-		int totalTableNeeded = 0;
+		System.out.printf("Special Participant Count: %d\n", countedParticipants.size());
 		
-		if (isForSpecial){
-			System.out.printf("Special Participant Count: %d\n", countedParticipants.size());
-		}else {
-			System.out.printf("Normal Participant Count: %d\n", countedParticipants.size());
-		}
+		int unassignedSpecialParticipantCount = countedParticipants.size();
+		Collection<DineTableGroup> specialDineTables = new ArrayList<DineTableGroup>();
 		
-		
-		if (isForSpecial){
-			totalTableNeeded = countedParticipants.size() / this.tableCapacity;
-			if ((countedParticipants.size() % this.tableCapacity) > 0){
-				totalTableNeeded++;
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			int emptySeat = this.tableCapacity - dineTableGroup.getParticipants().size();
+			
+			specialDineTables.add(dineTableGroup);
+			unassignedSpecialParticipantCount -= emptySeat;
+			
+			if (unassignedSpecialParticipantCount <= 0){
+				break;
 			}
-		}else {
-			totalTableNeeded = unassignedParticipants.size() / this.tableCapacity;
-			if ((unassignedParticipants.size() % this.tableCapacity) > 0){
-				totalTableNeeded++;
-			}
-			totalTableNeeded -= (startIndex - 1);
 		}
 		
-		
-		Collection<DineTableGroup> emptyTableGroups = new ArrayList<DineTableGroup>();
-		for (int i=0; i< totalTableNeeded; i++){
-			DineTableGroup dineTableGroup = new DineTableGroup();
-			dineTableGroup.setTableNumber(i + startIndex);
-			emptyTableGroups.add(dineTableGroup);
-		}
-		
-		return emptyTableGroups;
-		
+		return specialDineTables;
 	}
 	
 	private Collection<DineTableGroup> createEmptyTableGroupList(Collection<Participant> participants){
