@@ -86,11 +86,11 @@ public class RandomnessUtils {
 	
 	public static Collection<Participant> pickRandomMultiParticipant(Collection<Participant> participants, int numberOfPick, Random randomObj){
 		
-		if (CollectionUtils.isEmpty(participants) || participants.size() < numberOfPick || randomObj == null){
+		if (CollectionUtils.isEmpty(participants) || randomObj == null){
 			return new HashSet<Participant>();
 		}
 		
-		if (participants.size() == numberOfPick){
+		if (participants.size() <= numberOfPick){
 			return participants;
 		}
 		

@@ -48,6 +48,8 @@ public class SummerCampService {
 	private static String CALCULATE_COST_COMPLETE = "CALCULATE_COST_COMPLETE";
 	private static String RELOAD_DATA = "RELOAD_DATA";
 	private static String RELOAD_DATA_COMPLETE = "RELOAD_DATA_COMPLETE";
+	private static String DELETE_AND_RELOAD_DATA = "DELETE_AND_RELOAD_DATA";
+	private static String DELETE_AND_RELOAD_DATA_COMPLETE = "DELETE_AND_RELOAD_DATA_COMPLETE";
 	
 	private static String CAMP_SITE_PATH = "CTYCSave/CampSite.txt";
 	private static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
@@ -163,7 +165,9 @@ public class SummerCampService {
 			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 			
-			for (String campName : campNames){
+			String[] testCampNames = {"A"};
+//			for (String campName : campNames){
+			for (String campName : testCampNames){
 				
 				CampSite campSite = this.campSiteMap.get(campName);
 				if (campSite == null){
@@ -171,10 +175,16 @@ public class SummerCampService {
 				}
 				
 				// Generate 4 days of dine assignment plan
-				for (int i=0; i<4; i++){
+				Collection<Integer> executedDays = new ArrayList<Integer>();
+				executedDays.add(1);
+//				executedDays.add(2);
+//				executedDays.add(3);
+//				executedDays.add(4);
+				
+				for (Integer executedDay : executedDays){
 					
 					DineAssignmentManager dineAssignmentManager =
-							new DineAssignmentManager(campName, i + 1, campSite, 8, costFunctions, constraintFunctions, i);
+							new DineAssignmentManager(campName, executedDay, campSite, 8, costFunctions, constraintFunctions, executedDay);
 					dineAssignmentManager.doAssignment();
 					DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 					
@@ -291,6 +301,10 @@ public class SummerCampService {
 		
 		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), RELOAD_DATA)){
 			responseMessage = this.reloadData();
+		}
+		
+		if (StringUtils.equalsIgnoreCase(requestMessage.getType(), DELETE_AND_RELOAD_DATA)){
+			responseMessage = this.deleteAndReloadData();
 		}
 		
 		return responseMessage;
@@ -518,6 +532,11 @@ public class SummerCampService {
 		Map<String, Object> responseData = new HashMap<String, Object>();
 		responseData.put("isSuccess", true);
 		return new Message(RELOAD_DATA_COMPLETE, responseData);
+	}
+	
+	private Message deleteAndReloadData() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	private DineAssignmentPlan findDineAssignmentPlan(String campSiteName, int day){

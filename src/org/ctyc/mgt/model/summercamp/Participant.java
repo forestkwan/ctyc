@@ -1,9 +1,6 @@
 package org.ctyc.mgt.model.summercamp;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +89,17 @@ public class Participant extends Believer {
 		}
 		
 		return count;
+	}
+	
+	public boolean isSpecialParticipant(){
+		if (this.getSpecialGroup() != null && this.getSpecialGroup().intValue() >= 1){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isNormalParticipant(){
+		return !this.isSpecialParticipant();
 	}
 
 }
