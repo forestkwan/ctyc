@@ -49,6 +49,10 @@ public class DineTableGroup implements Serializable{
 		this.specialGroup = specialGroup;
 	}
 	
+	public boolean isForSpecialGroup(){
+		return (this.specialGroup != null && this.specialGroup > 0);
+	}
+	
 	public int getNoOfGroupMentor(){
 		int count = 0;
 		for (Participant participant : this.getParticipants()){
@@ -59,25 +63,41 @@ public class DineTableGroup implements Serializable{
 		return count;
 	}
 	
+	public Collection<Participant> getMaleParticipants(){
+		Collection<Participant> maleParticipants = new ArrayList<Participant>();
+		for (Participant participant : this.getParticipants()){
+			if (participant.getGender() == Gender.MALE){
+				maleParticipants.add(participant);
+			}
+		}
+		return maleParticipants;
+	}
+	
+	public Collection<Participant> getFemaleParticipants(){
+		Collection<Participant> femaleParticipants = new ArrayList<Participant>();
+		for (Participant participant : this.getParticipants()){
+			if (participant.getGender() == Gender.FEMALE){
+				femaleParticipants.add(participant);
+			}
+		}
+		return femaleParticipants;
+	}
+	
+	public int countMale(){
+		return this.getMaleParticipants().size();
+	}
+	
+	public int countFemale(){
+		return this.getFemaleParticipants().size();
+	}
+	
 	public int getNetGenderBalance(){
 		
 		/*
 		 * If return positive, it means male is more than female 
 		 * If return negative, it means female is more than male
 		 * If return zero, it means the numbers of male and female are the same*/
-		
-		int numberOfMale = 0;
-		int numberOfFemale = 0;
-		
-		for (Participant participant : this.getParticipants()){
-			if (participant.getGender() == Gender.MALE){
-				numberOfMale ++;
-			}else {
-				numberOfFemale++;
-			}
-		}
-		
-		return numberOfMale - numberOfFemale;
+		return this.countMale() - this.countFemale();
 	}
 	
 	public boolean removeParticipant(String id){

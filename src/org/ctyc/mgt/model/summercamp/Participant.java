@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.Believer;
+import org.springframework.util.CollectionUtils;
 
 public class Participant extends Believer {
 
@@ -100,6 +101,14 @@ public class Participant extends Believer {
 	
 	public boolean isNormalParticipant(){
 		return !this.isSpecialParticipant();
+	}
+	
+	public boolean hasFamilyGroup(){
+		if (this.getFamilyGroup() == null || CollectionUtils.isEmpty(this.getFamilyGroup().getBelieverIds())
+				|| StringUtils.isBlank(this.getFamilyGroup().getFamilyId())){
+			return false;
+		}
+		return true;
 	}
 
 }

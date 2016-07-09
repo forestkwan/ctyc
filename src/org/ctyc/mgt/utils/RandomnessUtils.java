@@ -33,22 +33,22 @@ public class RandomnessUtils {
 		return target;
 	}
 	
-	public static Participant pickRandomParticipant(Collection<Participant> participants, Random randomObj){
+	public static <E> E ramdomPickFromCollection(Collection<E> collection, Random randomObj){
 		
-		if (CollectionUtils.isEmpty(participants) || randomObj == null){
+		if (CollectionUtils.isEmpty(collection) || randomObj == null){
 			return null;
 		}
 
-		int item = randomObj.nextInt(participants.size());
+		int item = randomObj.nextInt(collection.size());
 		int i = 0;
 		
-		for(Participant participant : participants)
+		for(E candidate : collection)
 		{
 			if (i != item){
 				i = i + 1;
 				continue;
 			}
-			return participant;
+			return candidate;
 		}
 		
 		return null;

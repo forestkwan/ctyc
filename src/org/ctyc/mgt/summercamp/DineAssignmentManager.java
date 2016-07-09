@@ -15,11 +15,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.Gender;
+import org.ctyc.mgt.model.Pair;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.DineAvailability;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
+import org.ctyc.mgt.model.summercamp.TableAndParticipant;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.utils.RandomnessUtils;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +30,7 @@ public class DineAssignmentManager {
 	
 	// Static constant
 	private static Collection<DineTimeSlot> ALL_DINE_TIME_SLOT = createAllDineTimeSlot();
+	private final static int GENDER_SWAP_TRY_NUM = 100;
 	
 	// Dine Assignment Object
 	private DineAssignmentPlan plan;
@@ -158,7 +161,7 @@ public class DineAssignmentManager {
 		printOutAssignmentStatus("After assigning special group family", unassignedParticipants, assignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignSpecialGroupToTable2(unassignedParticipants, assignedParticipants, specialDineTableGroups);
+		assignSpecialGroupToTable(unassignedParticipants, assignedParticipants, specialDineTableGroups);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		Collection<DineTableGroup> normalDineTableGroups = allDineTableGroups.subList(specialDineTableGroups.size(), allDineTableGroups.size());
@@ -168,16 +171,181 @@ public class DineAssignmentManager {
 		printOutAssignmentStatus("After assigning normal group family", unassignedParticipants, assignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignParticipantToTable2(unassignedParticipants, assignedParticipants, normalDineTableGroups);
+		assignParticipantToTable(unassignedParticipants, assignedParticipants, normalDineTableGroups);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		/* Assign unassigned Participants to any table with empty seat regardless of their type */
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignParticipantToTable2(unassignedParticipants, assignedParticipants, allDineTableGroups);
+		assignParticipantToTable(unassignedParticipants, assignedParticipants, allDineTableGroups);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		listOutParticipants(assignedParticipants);
 		this.plan.getDineTableGroups().addAll(allDineTableGroups);
+	}
+	
+	private void fineTuneInitialAssignment() {
+		
+		this.fineTuneGenderBalance();
+		
+		
+	}
+	
+	private void fineTuneGenderBalance(){
+		
+		List<DineTableGroup> genderDominatedTables = new ArrayList<DineTableGroup>();
+		List<DineTableGroup> genderBalancedTables = new ArrayList<DineTableGroup>();
+		
+		for (DineTableGroup dineTableGroup : this.plan.getDineTableGroups()){
+			if (Math.abs(dineTableGroup.getNetGenderBalance()) > 0){
+				genderDominatedTables.add(dineTableGroup);
+				continue;
+			}
+			
+			genderBalancedTables.add(dineTableGroup);
+		}
+		
+		Collections.sort(genderDominatedTables, new DineTableGenderBalanceComparator());
+		
+		for (int i = 0 ; i < GENDER_SWAP_TRY_NUM ; i++){
+			
+			DineTableGroup dominatedTable = genderDominatedTables.iterator().next();
+			
+			this.swapAndBalanceGender(dominatedTable);
+			
+			Collections.sort(genderDominatedTables, new DineTableGenderBalanceComparator());
+		}
+		
+	}
+
+	private void swapAndBalanceGender(DineTableGroup domainatedTable) {
+		
+		if (domainatedTable == null || CollectionUtils.isEmpty(domainatedTable.getParticipants())){
+			return;
+		}
+		
+		int domainatedNetGender = domainatedTable.getNetGenderBalance();
+		
+		if (domainatedNetGender == 0){
+			return;
+		}
+		
+		Collection<Pair<TableAndParticipant, TableAndParticipant>> sameGroupSwapPairs =
+				new ArrayList<Pair<TableAndParticipant, TableAndParticipant>>();
+		
+		Collection<Pair<TableAndParticipant, TableAndParticipant>> sameSundayClassSwapPairs =
+				new ArrayList<Pair<TableAndParticipant, TableAndParticipant>>();
+		
+		/* Construct potential swap pairs */
+		for (DineTableGroup potentialSwappedTable : this.plan.getDineTableGroups()){
+			/* Find Potential Swappable tables */
+			
+			if (potentialSwappedTable.isForSpecialGroup() || CollectionUtils.isEmpty(potentialSwappedTable.getParticipants())){
+				/* Does not swap if the potential table is for special group or no participant*/
+				continue;
+			}
+			
+			if (domainatedNetGender > 0 && potentialSwappedTable.getNetGenderBalance() > 0){
+				/* Does not swap if both tables are male dominating */
+				continue;
+			}
+			
+			if (domainatedNetGender < 0 && potentialSwappedTable.getNetGenderBalance() < 0){
+				/* Does not swap if both tables are female dominating */
+				continue;
+			}
+			
+			for (Participant swappingParticipant : domainatedTable.getParticipants()){
+				
+				if (domainatedNetGender > 0 && Gender.FEMALE == swappingParticipant.getGender()){
+					continue;
+				}
+				
+				if (domainatedNetGender < 0 && Gender.MALE == swappingParticipant.getGender()){
+					continue;
+				}
+				
+				if (swappingParticipant.isSpecialParticipant()){
+					continue;
+				}
+				
+				if (swappingParticipant.hasFamilyGroup()){
+					continue;
+				}
+				
+				if (swappingParticipant.isMentor()
+						|| swappingParticipant.isGroupMentor()
+						|| StringUtils.contains(swappingParticipant.getSundaySchoolClass(), "導師")){
+					continue;
+				}
+				
+				for (Participant swappedParticipant : potentialSwappedTable.getParticipants()){
+					
+					if (swappedParticipant.isSpecialParticipant()){
+						continue;
+					}
+					
+					if (swappedParticipant.hasFamilyGroup()){
+						continue;
+					}
+					
+					if (swappingParticipant.getGender() == swappedParticipant.getGender()){
+						continue;
+					}
+					
+					if (swappedParticipant.isMentor()
+							|| swappedParticipant.isGroupMentor()
+							|| StringUtils.contains(swappedParticipant.getSundaySchoolClass(), "導師")){
+						continue;
+					}
+					
+					if (swappingParticipant.getGroupNumber() == swappedParticipant.getGroupNumber()){
+						
+						TableAndParticipant swappingTableAndParticipant = new TableAndParticipant(domainatedTable, swappingParticipant);
+						TableAndParticipant swappedTableAndParticipant = new TableAndParticipant(potentialSwappedTable, swappedParticipant);
+						
+						sameGroupSwapPairs.add(new Pair<TableAndParticipant, TableAndParticipant>(swappingTableAndParticipant, swappedTableAndParticipant));
+						
+						continue;
+					}
+					
+					if (StringUtils.equalsIgnoreCase(swappingParticipant.getSundaySchoolClass(), swappedParticipant.getSundaySchoolClass())){
+						
+						TableAndParticipant swappingTableAndParticipant = new TableAndParticipant(domainatedTable, swappingParticipant);
+						TableAndParticipant swappedTableAndParticipant = new TableAndParticipant(potentialSwappedTable, swappedParticipant);
+						
+						sameSundayClassSwapPairs.add(new Pair<TableAndParticipant, TableAndParticipant>(swappingTableAndParticipant, swappedTableAndParticipant));
+						
+						continue;
+					}
+				}
+			}
+		}
+		
+		Pair<TableAndParticipant, TableAndParticipant> swapPair = RandomnessUtils.ramdomPickFromCollection(sameGroupSwapPairs, this.randomObj);
+		if (swapPair == null){
+			swapPair = RandomnessUtils.ramdomPickFromCollection(sameSundayClassSwapPairs, this.randomObj);
+		}
+		
+		if (swapPair == null){
+			return;
+		}
+		
+		this.swapTable(swapPair.getLeft().getDineTableGroup(), swapPair.getRight().getDineTableGroup(),
+				swapPair.getLeft().getParticipant(), swapPair.getRight().getParticipant());
+	}
+	
+	private void swapTable(
+			DineTableGroup dineTableGroup1,
+			DineTableGroup dineTableGroup2,
+			Participant participant1,
+			Participant participant2){
+		
+		dineTableGroup1.getParticipants().remove(participant1);
+		dineTableGroup2.getParticipants().remove(participant2);
+		
+		dineTableGroup1.getParticipants().add(participant2);
+		dineTableGroup2.getParticipants().add(participant1);
+		
 	}
 
 	private Collection<Participant> filterLeftParticipants(Collection<Participant> participants) {
@@ -347,108 +515,6 @@ public class DineAssignmentManager {
 	}
 	
 	private void assignSpecialGroupToTable(
-			Collection<Participant> unassignedParticipants,
-			Collection<Participant> assignedParticipants,
-			Collection<DineTableGroup> dineTableGroups) {
-		
-		if (CollectionUtils.isEmpty(unassignedParticipants) || CollectionUtils.isEmpty(dineTableGroups)){
-			return;
-		}
-		
-		Collection<Participant> operatedParticipants = new HashSet<Participant>();
-		
-		Collection<Participant> specialParticipants = new ArrayList<Participant>();
-		for (Participant participant : unassignedParticipants){
-			
-			if (assignedParticipants.contains(participant)){
-				continue;
-			}
-			
-			if (participant.getSpecialGroup() != null && participant.getSpecialGroup() > 0){
-				specialParticipants.add(participant);
-			}
-		}
-		
-		if (CollectionUtils.isEmpty(specialParticipants) || CollectionUtils.isEmpty(dineTableGroups)){
-			return;
-		}
-		
-		/* Create a map according to participants' Group Number*/
-		Map<Integer, Collection<Participant>> groupNumberParticipantMap = new HashMap<Integer, Collection<Participant>>();
-		for (Participant unassignedParticipant : specialParticipants){
-			
-			Collection<Participant> groupNumberParticipants = groupNumberParticipantMap.get(unassignedParticipant.getGroupNumber());
-			if (groupNumberParticipants == null){
-				groupNumberParticipants = new ArrayList<Participant>();
-				groupNumberParticipants.add(unassignedParticipant);
-				groupNumberParticipantMap.put(unassignedParticipant.getGroupNumber(), groupNumberParticipants);
-			}else {
-				groupNumberParticipants.add(unassignedParticipant);
-			}
-		}
-		
-		/*
-		 * For each group of participant, randomly pick a table with enough vacancy
-		 * Randomly pick 2 or 3 participants from the group of participants
-		 * assign the participants to the table
-		 * Add the participants to assigned participant list
-		 * */
-		Collection<Participant> remainingParticipants = new ArrayList<Participant>();
-		
-		for (Entry<Integer, Collection<Participant>> entry : groupNumberParticipantMap.entrySet()){
-			int groupNumber = entry.getKey();
-			Collection<Participant> groupedParticipants = entry.getValue();
-			
-			while (!CollectionUtils.isEmpty(groupedParticipants)){
-				
-				Collection<Participant> selectedParticipants = RandomnessUtils.pickRandomMultiParticipant(groupedParticipants, this.randomObj);
-				if (selectedParticipants == null){
-					break;
-				}
-				
-				for (Participant p : selectedParticipants){
-					System.out.print(p.getId());
-				}
-				
-				DineTableGroup selectedDineTable = randomPickTableForGroupParticipantAssignment(dineTableGroups, groupNumber, selectedParticipants, true);
-				
-				if (selectedDineTable == null){
-					remainingParticipants.addAll(selectedParticipants);
-					groupedParticipants.removeAll(selectedParticipants);
-					continue;
-				}
-				
-				selectedDineTable.getParticipants().addAll(selectedParticipants);
-				operatedParticipants.addAll(selectedParticipants);
-				groupedParticipants.removeAll(selectedParticipants);
-			}
-		}
-		
-		unassignedParticipants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
-		
-		for (Participant remainingParticipant : remainingParticipants){
-
-			Collection<DineTableGroup> availableTableGroups = new ArrayList<DineTableGroup>();
-			for (DineTableGroup dineTableGroup : dineTableGroups){
-				if (!this.isTableFull(dineTableGroup)){
-					availableTableGroups.add(dineTableGroup);
-				}
-			}
-			
-			DineTableGroup dineTable = RandomnessUtils.pickRandomDineTableGroup(availableTableGroups, this.randomObj);
-			
-			if (dineTable != null){
-				dineTable.getParticipants().add(remainingParticipant);
-				operatedParticipants.add(remainingParticipant);
-			}
-		}
-		
-		unassignedParticipants.removeAll(operatedParticipants);
-		assignedParticipants.addAll(operatedParticipants);
-	}
-	
-	private void assignSpecialGroupToTable2(
 			Collection<Participant> unassignedParticipants,
 			Collection<Participant> assignedParticipants,
 			Collection<DineTableGroup> dineTableGroups) {
@@ -685,7 +751,7 @@ public class DineAssignmentManager {
 		}
 	}
 	
-	private void assignParticipantToTable2(
+	private void assignParticipantToTable(
 			Collection<Participant> unassignedParticipants,
 			Collection<Participant> assignedParticipants,
 			Collection<DineTableGroup> dineTableGroups) {
@@ -793,6 +859,7 @@ public class DineAssignmentManager {
 		System.out.printf("-->Start initial assignment\n");
 		long startTime = new Date().getTime();
 		this.initAssignment();
+		this.fineTuneInitialAssignment();
 		long timeStamp1 = new Date().getTime();
 		System.out.printf("-->End of initial assignment [Time span: %dms]\n", (timeStamp1 - startTime));
 		
@@ -811,7 +878,7 @@ public class DineAssignmentManager {
 		System.out.printf("-->End of re-assignment [Time span: %dms]\n", (endTime - timeStamp1));
 		System.out.printf("-->Total time span: %dms]\n", (endTime - startTime));
 	}
-	
+
 	private void reAssignment(){
 		if (this.plan == null || this.plan.getDineTableGroups() == null || this.plan.getDineTableGroups().size() < 2){
 			return;
@@ -826,8 +893,8 @@ public class DineAssignmentManager {
 			dineTableGroup1 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getDineTableGroups(), this.randomObj);
 			dineTableGroup2 = RandomnessUtils.pickRandomDineTableGroup(this.plan.getDineTableGroups(), this.randomObj);
 			
-			participant1 = RandomnessUtils.pickRandomParticipant(dineTableGroup1.getParticipants(), randomObj);
-			participant2 = RandomnessUtils.pickRandomParticipant(dineTableGroup2.getParticipants(), randomObj);
+			participant1 = RandomnessUtils.ramdomPickFromCollection(dineTableGroup1.getParticipants(), randomObj);
+			participant2 = RandomnessUtils.ramdomPickFromCollection(dineTableGroup2.getParticipants(), randomObj);
 		}
 		
 		double originCost1 = dineTableGroup1.getCost();
@@ -853,20 +920,6 @@ public class DineAssignmentManager {
 			this.evaluator.evaluateTable(dineTableGroup1);
 			this.evaluator.evaluateTable(dineTableGroup2);
 		}
-	}
-	
-	private void swapTable(
-			DineTableGroup dineTableGroup1,
-			DineTableGroup dineTableGroup2,
-			Participant participant1,
-			Participant participant2){
-		
-		dineTableGroup1.getParticipants().remove(participant1);
-		dineTableGroup2.getParticipants().remove(participant2);
-		
-		dineTableGroup1.getParticipants().add(participant2);
-		dineTableGroup2.getParticipants().add(participant1);
-		
 	}
 	
 	public void doPlanEvaluation(){
@@ -919,6 +972,7 @@ public class DineAssignmentManager {
 		for (DineTableGroup dineTableGroup : dineTableGroups){
 			int emptySeat = this.tableCapacity - dineTableGroup.getParticipants().size();
 			
+			dineTableGroup.setSpecialGroup(1);
 			specialDineTables.add(dineTableGroup);
 			unassignedSpecialParticipantCount -= emptySeat;
 			
@@ -1297,6 +1351,20 @@ public class DineAssignmentManager {
 		
 		for (Participant participant : sortedParticipants){
 			System.out.printf("[ID:%s][Name:%s][GroupNumber:%d]\n", participant.getId(), participant.getName(), participant.getGroupNumber());
+		}
+	}
+	
+	private void listOutDineTables(Collection<DineTableGroup> dineTableGroups) {
+		if (CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			System.out.printf("[Table Number:%d][Participant:%d][Male:%d][Female:%d]\n",
+					dineTableGroup.getTableNumber(),
+					dineTableGroup.getParticipants().size(),
+					dineTableGroup.countMale(),
+					dineTableGroup.countFemale());
 		}
 	}
 }
