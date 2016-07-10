@@ -165,7 +165,7 @@ public class SummerCampService {
 			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 			
-			String[] testCampNames = {"B"};
+			String[] testCampNames = {"A"};
 			for (String campName : campNames){
 //			for (String campName : testCampNames){
 				

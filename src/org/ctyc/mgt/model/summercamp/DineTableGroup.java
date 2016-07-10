@@ -143,4 +143,28 @@ public class DineTableGroup implements Serializable{
 		
 		return count;
 	}
+	
+	public int countSundaySchoolClass(String sundayClass){
+		int count = 0;
+		
+		for (Participant participant : this.getParticipants()){
+			if (StringUtils.equalsIgnoreCase(participant.getSundaySchoolClass(), sundayClass)){
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	public int countGroupNumber(int groupNumber){
+		int count = 0;
+		
+		for (Participant participant : this.getParticipants()){
+			if (groupNumber == participant.getGroupNumber()){
+				count++;
+			}
+		}
+		
+		return count;
+	}
 }

@@ -30,11 +30,14 @@ public class DineAssignmentManager {
 	
 	// Static constant
 	private static Collection<DineTimeSlot> ALL_DINE_TIME_SLOT = createAllDineTimeSlot();
-	private final static int GENDER_SWAP_TRY_NUM = 100;
+	private final static int FUNE_TUNE_TRIAL = 100;
 	
 	// Dine Assignment Object
 	private DineAssignmentPlan plan;
 	private DineAssignmentEvaluator evaluator;
+	
+	private Collection<DineTableGroup> specialDineTableGroups;
+	private Collection<DineTableGroup> normalDineTableGroups;
 	
 	// Input Object
 	private CampSite campSite;
@@ -148,30 +151,44 @@ public class DineAssignmentManager {
 		}
 		/* End of create all dine tables */
 		
+		/*
+		 * Sequence of Assignment
+		 * 1. Assign the preassigned participants and their family
+		 * 2. Assign the Family Group to special table
+		 * 3. Assign the special group participants to special table
+		 * 4. Assign the Family Group to normal table
+		 * 5. Assign the normal participant to special table to fill up the space
+		 * 6. Assign the normal participant to normal table
+		 * 7. Assign the remaining participant (if any) to any table with space */
+		
 		listOutParticipants(unassignedParticipants);
 		
 		printOutAssignmentStatus("Before preassigning special group", unassignedParticipants, assignedParticipants);
 		assignPreassignedAssignmentAndFamily(unassignedParticipants, assignedParticipants, allDineTableGroups);
 		printOutAssignmentStatus("After preassigning special group", unassignedParticipants, assignedParticipants);
 		
-		Collection<DineTableGroup> specialDineTableGroups = this.getSpecialDineTables(allDineTableGroups, unassignedParticipants);
+		this.specialDineTableGroups = this.getSpecialDineTables(allDineTableGroups, unassignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group family", unassignedParticipants, assignedParticipants);
-		assignFamilyGroupToSpecialGroupTable(unassignedParticipants, assignedParticipants, specialDineTableGroups);
+		assignFamilyGroupToSpecialGroupTable(unassignedParticipants, assignedParticipants, this.specialDineTableGroups);
 		printOutAssignmentStatus("After assigning special group family", unassignedParticipants, assignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignSpecialGroupToTable(unassignedParticipants, assignedParticipants, specialDineTableGroups);
+		assignSpecialGroupToTable(unassignedParticipants, assignedParticipants, this.specialDineTableGroups);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
-		Collection<DineTableGroup> normalDineTableGroups = allDineTableGroups.subList(specialDineTableGroups.size(), allDineTableGroups.size());
+		this.normalDineTableGroups = allDineTableGroups.subList(0, allDineTableGroups.size() - this.specialDineTableGroups.size());
 		
 		printOutAssignmentStatus("Before assigning normal group family", unassignedParticipants, assignedParticipants);
-		assignFamilyGroupToTable(unassignedParticipants, assignedParticipants, normalDineTableGroups);
+		assignFamilyGroupToTable(unassignedParticipants, assignedParticipants, this.normalDineTableGroups);
 		printOutAssignmentStatus("After assigning normal group family", unassignedParticipants, assignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignParticipantToTable(unassignedParticipants, assignedParticipants, normalDineTableGroups);
+		assignParticipantToTable(unassignedParticipants, assignedParticipants, this.specialDineTableGroups);
+		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
+		
+		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
+		assignParticipantToTable(unassignedParticipants, assignedParticipants, this.normalDineTableGroups);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		/* Assign unassigned Participants to any table with empty seat regardless of their type */
@@ -185,9 +202,11 @@ public class DineAssignmentManager {
 	
 	private void fineTuneInitialAssignment() {
 		
+		for (int i = 0 ; i < this.FUNE_TUNE_TRIAL; i++){
+			this.fineTuneTableParticipantNumber();
+		}
+		
 		this.fineTuneGenderBalance();
-		
-		
 	}
 	
 	private void fineTuneGenderBalance(){
@@ -206,7 +225,7 @@ public class DineAssignmentManager {
 		
 		Collections.sort(genderDominatedTables, new DineTableGenderBalanceComparator());
 		
-		for (int i = 0 ; i < GENDER_SWAP_TRY_NUM ; i++){
+		for (int i = 0 ; i < FUNE_TUNE_TRIAL ; i++){
 			
 			DineTableGroup dominatedTable = genderDominatedTables.iterator().next();
 			
@@ -334,6 +353,116 @@ public class DineAssignmentManager {
 				swapPair.getLeft().getParticipant(), swapPair.getRight().getParticipant());
 	}
 	
+	private void fineTuneTableParticipantNumber(){
+		
+		Collection<DineTableGroup> deficitTables = new ArrayList<DineTableGroup>();
+		
+		/* Find table needs to add participant */
+		for (DineTableGroup dineTableGroup : this.plan.getDineTableGroups()){
+			if (this.tableCapacity - dineTableGroup.getParticipants().size() <= 1 ){
+				continue;
+			}
+			
+			if (dineTableGroup.isForSpecialGroup()){
+				continue;
+			}
+			
+			deficitTables.add(dineTableGroup);
+		}
+		
+		if (CollectionUtils.isEmpty(deficitTables)){
+			return;
+		}
+		
+		/* Random pick a table */
+		DineTableGroup deficitTable = RandomnessUtils.ramdomPickFromCollection(deficitTables, this.randomObj);
+		Collection<TableAndParticipant> sameSundayClassTableAndParticipants =	new ArrayList<TableAndParticipant>();
+		Collection<TableAndParticipant> sameGroupTableAndParticipants =	new ArrayList<TableAndParticipant>();
+		Collection<TableAndParticipant> lessPreferredTableAndParticipants =	new ArrayList<TableAndParticipant>();
+		
+		/* Find a participant that is able to move to the picked table */
+		for (DineTableGroup potentialTable : this.plan.getDineTableGroups()){
+			
+			if (potentialTable.getTableNumber() == deficitTable.getTableNumber()){
+				continue;
+			}
+			
+			if (potentialTable.getParticipants().size() < this.tableCapacity){
+				continue;
+			}
+			
+			if (potentialTable.isForSpecialGroup()){
+				continue;
+			}
+			
+			int potentialTableNetGenderBalance = potentialTable.getNetGenderBalance();
+			
+			for (Participant potentialParticipant : potentialTable.getParticipants()){
+				
+				if (potentialTableNetGenderBalance > 0 && Gender.MALE == potentialParticipant.getGender()){
+					continue;
+				}
+				
+				if (potentialTableNetGenderBalance < 0 && Gender.FEMALE == potentialParticipant.getGender()){
+					continue;
+				}
+				
+				if (potentialParticipant.isSpecialParticipant()){
+					continue;
+				}
+				
+				if (potentialParticipant.hasFamilyGroup()){
+					continue;
+				}
+				
+				if (potentialParticipant.isMentor()
+						|| potentialParticipant.isGroupMentor()
+						|| StringUtils.contains(potentialParticipant.getSundaySchoolClass(), "導師")){
+					continue;
+				}
+				
+				/* Do not move this participant if the movement causes his/her groupmate alone */
+				if (potentialTable.countGroupNumber(potentialParticipant.getGroupNumber()) <= 2
+						&& potentialTable.countSundaySchoolClass(potentialParticipant.getSundaySchoolClass()) <= 2){
+					continue;
+				}
+				
+				String sundaySchoolClass = potentialParticipant.getSundaySchoolClass();
+				int groupNumber = potentialParticipant.getGroupNumber();
+				
+				for (Participant deficitTableParticipant : deficitTable.getParticipants()){
+					
+					if (deficitTableParticipant.getGroupNumber() == groupNumber){
+						sameGroupTableAndParticipants.add(new TableAndParticipant(potentialTable, potentialParticipant));
+						break;
+					}
+					
+					if (StringUtils.equalsIgnoreCase(deficitTableParticipant.getSundaySchoolClass(), sundaySchoolClass)){
+						sameSundayClassTableAndParticipants.add(new TableAndParticipant(potentialTable, potentialParticipant));
+						break;
+					}
+				}
+				
+				lessPreferredTableAndParticipants.add(new TableAndParticipant(potentialTable, potentialParticipant));
+			}
+		}
+		
+		TableAndParticipant migratedTableAndParticipant = RandomnessUtils.ramdomPickFromCollection(sameGroupTableAndParticipants, this.randomObj);
+		if (migratedTableAndParticipant == null){
+			migratedTableAndParticipant = RandomnessUtils.ramdomPickFromCollection(sameSundayClassTableAndParticipants, this.randomObj);
+		}
+		
+		if (migratedTableAndParticipant == null){
+			migratedTableAndParticipant = RandomnessUtils.ramdomPickFromCollection(lessPreferredTableAndParticipants, this.randomObj);
+		}
+		
+		if (migratedTableAndParticipant == null){
+			return;
+		}
+		
+		this.moveParticipantToAnotherTable(migratedTableAndParticipant.getDineTableGroup(), deficitTable, migratedTableAndParticipant.getParticipant());
+	}
+	
 	private void swapTable(
 			DineTableGroup dineTableGroup1,
 			DineTableGroup dineTableGroup2,
@@ -346,6 +475,15 @@ public class DineAssignmentManager {
 		dineTableGroup1.getParticipants().add(participant2);
 		dineTableGroup2.getParticipants().add(participant1);
 		
+	}
+	
+	private void moveParticipantToAnotherTable(
+			DineTableGroup originalTable,
+			DineTableGroup newTable,
+			Participant participant){
+		
+		originalTable.getParticipants().remove(participant);
+		newTable.getParticipants().add(participant);
 	}
 
 	private Collection<Participant> filterLeftParticipants(Collection<Participant> participants) {
@@ -967,9 +1105,14 @@ public class DineAssignmentManager {
 		System.out.printf("Special Participant Count: %d\n", countedParticipants.size());
 		
 		int unassignedSpecialParticipantCount = countedParticipants.size();
-		Collection<DineTableGroup> specialDineTables = new ArrayList<DineTableGroup>();
+		List<DineTableGroup> specialDineTables = new ArrayList<DineTableGroup>();
 		
-		for (DineTableGroup dineTableGroup : dineTableGroups){
+		List<DineTableGroup> allDineTableList = new ArrayList<DineTableGroup>();
+		allDineTableList.addAll(dineTableGroups);
+		
+		for (int i = allDineTableList.size() - 1 ; i > 0; i--){
+			DineTableGroup dineTableGroup = allDineTableList.get(i);
+			
 			int emptySeat = this.tableCapacity - dineTableGroup.getParticipants().size();
 			
 			dineTableGroup.setSpecialGroup(1);
@@ -980,6 +1123,8 @@ public class DineAssignmentManager {
 				break;
 			}
 		}
+		
+		Collections.sort(specialDineTables, new DineTableNumberComparator());
 		
 		return specialDineTables;
 	}
