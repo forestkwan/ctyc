@@ -22,6 +22,7 @@
 	
 		var vm = this;
 		
+		vm.websocketStatus = true;
 		vm.selectedPrintType = 'DINE';
 		vm.selectedCamp = 'A';
 		vm.selectedTimeOfDine = 'NIGHT';
@@ -54,6 +55,7 @@
 		vm.resolveDate = resolveDate;
 		vm.resolveTimeOfDine = resolveTimeOfDine;
 		vm.reloadData = reloadData;
+		vm.getConnectionClass = getConnectionClass;
 		
 		init();
 		
@@ -68,6 +70,7 @@
 			
 			$scope.$on('DINE_ASSIGNMENT_CHANGE', function(event, data){
 				calculateCost();
+				saveAssignment();
 			});
 			
 			$scope.$on('websocket-message', function(event, jsonMessage){
@@ -136,6 +139,17 @@
 
 				$scope.$digest();
 			});
+			
+			$scope.$on('websocket-connected', function(event, data){
+				vm.websocketStatus = true;
+				$scope.$digest();
+			});
+			
+			$scope.$on('websocket-closed', function(event, data){
+				vm.websocketStatus = false;
+				$scope.$digest();
+			});
+			
 		}
 		
 		function changePrintType(printType){
@@ -346,6 +360,17 @@
 				return '午';
 			}
 			return '';
+		}
+		
+		function getConnectionClass(){
+			
+			var ws = SocketSvc.getWebSocket();
+			
+			if (vm.websocketStatus){
+				return "green";
+			}
+			
+			return "red";
 		}
 	};
 })();

@@ -33,10 +33,12 @@
 				
 				this.webSocket.onopen = function(event) {
 					console.log('WebSocket open');
+					$rootScope.$broadcast('websocket-connected', '{type:"WEBSOCKET_CONNECTED"}');
 			    };
 			    
 			    this.webSocket.onclose = function(event) {
 					console.log('WebSocket close');
+					$rootScope.$broadcast('websocket-closed', '{type:"WEBSOCKET_CLOSE"}');
 			    };
 			    
 			    this.webSocket.onerror = function(event) {
