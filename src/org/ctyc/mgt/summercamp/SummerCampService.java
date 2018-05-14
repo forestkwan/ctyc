@@ -127,9 +127,9 @@ public class SummerCampService {
 				try {
 					URL url = null;
 					if (campName.equals("A")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=10");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=12");
 					} else if (campName.equals("B")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=11");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=13");
 					}
 					
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
@@ -147,6 +147,14 @@ public class SummerCampService {
 			
 			this.saveCampSiteToFile();
 		}
+	}
+	
+	public CampSite getCampSite(String campSiteCode){
+		
+		if (this.campSiteMap != null){
+			return this.campSiteMap.get(campSiteCode);
+		}
+		return null;
 	}
 	
 	private void initDineAssignmentPlanMap() {

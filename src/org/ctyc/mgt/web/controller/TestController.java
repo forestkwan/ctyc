@@ -9,7 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.ctyc.mgt.model.summercamp.AccommodationContact;
 import org.ctyc.mgt.test.DineAssignmentTester;
+
+import com.google.gson.Gson;
 
 @WebServlet("/test")
 public class TestController extends HttpServlet {
@@ -31,4 +34,5 @@ public class TestController extends HttpServlet {
 				+ "<body bgcolor=\"#fdf5e6\">\n" + "<h1>Test</h1>\n" + "<p>Simple servlet for testing. HAHAHA</p>\n"
 				+ "</body></html>");
 	}
+	
 }

@@ -37,6 +37,16 @@
 			controller : 'ctyc-summercamp-ctrl-DineAssignmentCtrl',
 			controllerAs : 'vm'
 		})
+		.when('/Accommodation', {
+			templateUrl : 'SummerCamp/Accommodation.html',
+			controller : 'ctyc-summercamp-ctrl-AccommodationCtrl',
+			controllerAs : 'vm'
+		})
+		.when('/AccommodationContact', {
+			templateUrl : 'SummerCamp/AccommodationContact.html',
+			controller : 'ctyc-summercamp-ctrl-AccommodationContactCtrl',
+			controllerAs : 'vm'
+		})
 		.otherwise({
 			redirectTo : '/'
 		});

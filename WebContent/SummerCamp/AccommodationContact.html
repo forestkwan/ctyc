@@ -1,0 +1,147 @@
+<div class="row">
+	<div class="col-lg-12">
+		<h2 class="page-header">{{vm.displayPrintHeader()}}</h2>
+	</div>
+	
+	<div>
+		<div class="form-group no-print">
+			<label class="inline">顯示方式:</label>
+			<div class="btn-group" role="group">
+				<button type="button" ng-click="vm.changePrintType('DINE')" ng-class="{'btn btn-default active': vm.selectedPrintType==='DINE', 'btn btn-default': vm.selectedPrintType!=='DINE'}">按每餐</button>
+				<button type="button" ng-click="vm.changePrintType('GROUP')" ng-class="{'btn btn-default active': vm.selectedPrintType==='GROUP', 'btn btn-default': vm.selectedPrintType!=='GROUP'}">按組別</button>
+				<button type="button" ng-click="vm.changePrintType('STATISTICS')" ng-class="{'btn btn-default active': vm.selectedPrintType==='STATISTICS', 'btn btn-default': vm.selectedPrintType!=='STATISTICS'}">統計</button>
+			</div>
+			<label class="inline">Camp:</label>
+			<div class="btn-group" role="group">
+				<button type="button" ng-click="vm.changeCampSite('A')" ng-class="{'btn btn-default active': vm.selectedCamp==='A', 'btn btn-default': vm.selectedCamp!=='A'}">A</button>
+				<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
+			</div>
+			<label class="inline" ng-if="vm.selectedPrintType==='DINE'">Day:</label>
+			<div class="btn-group" role="group" ng-if="vm.selectedPrintType==='DINE'">
+				<button type="button" ng-click="vm.changeDineDay(1)" ng-class="{'btn btn-default active': vm.selectedDay===1, 'btn btn-default': vm.selectedDay!==1}">1</button>
+				<button type="button" ng-click="vm.changeDineDay(2)" ng-class="{'btn btn-default active': vm.selectedDay===2, 'btn btn-default': vm.selectedDay!==2}">2</button>
+				<button type="button" ng-click="vm.changeDineDay(3)" ng-class="{'btn btn-default active': vm.selectedDay===3, 'btn btn-default': vm.selectedDay!==3}">3</button>
+				<button type="button" ng-click="vm.changeDineDay(4)" ng-class="{'btn btn-default active': vm.selectedDay===4, 'btn btn-default': vm.selectedDay!==4}">4</button>
+			</div>
+			<label class="inline" ng-if="vm.selectedPrintType==='STATISTICS'">Day:</label>
+			<div class="btn-group" role="group" ng-if="vm.selectedPrintType==='STATISTICS'">
+				<button type="button" ng-click="vm.changeTimeOfDine('MORNING')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='MORNING', 'btn btn-default': vm.selectedTimeOfDine!=='MORNING'}">早</button>
+				<button type="button" ng-click="vm.changeTimeOfDine('NOON')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NOON', 'btn btn-default': vm.selectedTimeOfDine!=='NOON'}">午</button>
+				<button type="button" ng-click="vm.changeTimeOfDine('NIGHT')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NIGHT', 'btn btn-default': vm.selectedTimeOfDine!=='NIGHT'}">晚</button>
+			</div>
+			<button type="button" class="btn btn-default" ng-click="vm.onTestClicked()">Test</button>
+		</div>
+		
+		<div ng-if="vm.selectedPrintType==='DINE'" ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
+			<div ng-if="$even" class="row">
+				<dine-table-print class="col-xs-6" dine-table-group="dineTableGroup" selected-day="vm.selectedDay"></dine-table-print>
+				<dine-table-print class="col-xs-6" ng-if="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]"
+				dine-table-group="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]" selected-day="vm.selectedDay"></dine-table-print>
+			</div>
+		</div>
+
+		<div ng-if="vm.selectedPrintType==='DINE' && false" ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
+			<table class="table table-condensed table-striped">
+				<tr><span style="color:#e32;font-size:110%">第 {{dineTableGroup.tableNumber}} 枱</span></tr>
+				<tr style="border-bottom: 2px solid black;">
+					<col width="10%">
+					<col width="15%">
+					<col width="15%">
+					<col width="10%">
+					<col width="15%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<th></th>
+					<th>姓名</th>
+					<th>性別</th>
+					<th>組別</th>
+					<th>晚</th>
+					<th>早</th>
+					<th>午</th>
+				</tr>
+				<tr ng-repeat="participant in dineTableGroup.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
+					<td>{{$index+1}}</td>
+					<td>{{participant.name}}</td>
+					<td>{{participant.gender | GenderFilter}}</td>
+					<td>{{participant.groupNumber | GroupDisplayFilter}}</td>
+					<td>
+						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
+						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'NIGHT', participant.dineAvailabilitys)"></i>
+					</td>
+					<td>
+						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)"></i>
+						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'MORNING', participant.dineAvailabilitys)"></i>
+					</td>
+					<td>
+						<i class="glyphicon glyphicon-ok" ng-if="vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)"></i>
+						<i class="glyphicon glyphicon-remove" ng-if="!vm.showAvailability(vm.selectedDay, 'NOON', participant.dineAvailabilitys)"></i>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div ng-if="vm.selectedPrintType==='GROUP'"
+		ng-repeat="groupAssignmentPlan in vm.groupAssignmentPlans | GroupAssignmentFilter:vm.selectedCamp | ToArray | orderBy:'groupNumber'">
+			<table class="table table-condensed table-striped">
+				<tr><span style="color:#e32;font-size:110%">第 {{groupAssignmentPlan.groupNumber}} 組</span></tr>
+				<tr style="border-bottom: 2px solid black;">
+					<col width="10%">
+					<col width="15%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<col width="10%">
+					<th></th>
+					<th>姓名</th>
+					<th>{{vm.resolveDate(1)}}</th>
+					<th>{{vm.resolveDate(2)}}</th>
+					<th>{{vm.resolveDate(3)}}</th>
+					<th>{{vm.resolveDate(4)}}</th>
+				</tr>
+				<tr ng-repeat="participant in groupAssignmentPlan.participants | orderBy:'sundaySchoolClass' | GroupMentorOnTop">
+					<td>{{$index+1}}</td>
+					<td>{{participant.name}}</td>
+					<td>{{vm.getTableNumberForParticularDine(1, participant.dineAvailabilitys)}}</td>
+					<td>{{vm.getTableNumberForParticularDine(2, participant.dineAvailabilitys)}}</td>
+					<td>{{vm.getTableNumberForParticularDine(3, participant.dineAvailabilitys)}}</td>
+					<td>{{vm.getTableNumberForParticularDine(4, participant.dineAvailabilitys)}}</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div ng-if="vm.selectedPrintType==='STATISTICS'">
+			<table class="table table-condensed table-striped">
+				<tr style="border-bottom: 2px solid black;">
+					<col width="20%">
+					<col width="20%">
+					<col width="20%">
+					<col width="20%">
+					<col width="20%">
+					<th>枱號</th>
+					<th>{{vm.resolveDate(1) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
+					<th>{{vm.resolveDate(2) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
+					<th>{{vm.resolveDate(3) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
+					<th>{{vm.resolveDate(4) + vm.resolveTimeOfDine(vm.selectedTimeOfDine)}}</th>
+				</tr>
+				<tr ng-repeat="statistics in vm.getSelectedDineStatistics() | orderBy:'tableNumber'">
+					<td>{{statistics.tableNumber}}</td>
+					<td>{{statistics.day1Count | CustomNumberFilter}}</td>
+					<td>{{statistics.day2Count | CustomNumberFilter}}</td>
+					<td>{{statistics.day3Count | CustomNumberFilter}}</td>
+					<td>{{statistics.day4Count | CustomNumberFilter}}</td>
+				</tr>
+				<tr>
+					<td>總數</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day1Count')}}</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day2Count')}}</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day3Count')}}</td>
+					<td>{{vm.countDayTotal(vm.getSelectedDineStatistics(), 'day4Count')}}</td>
+				</tr>
+			</table>
+		</div>
+		
+	</div>
+	
+	<br>
+</div>
