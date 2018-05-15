@@ -3,22 +3,21 @@ package org.ctyc.mgt.model.summercamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccommodationContact {
+public class ContactGroup {
 
+	private String groupCode;
 	private List<ParticipantContact> participantContacts;
-	private List<ContactGroup> contactGroups;
-
+	
+	public String getGroupCode() {
+		return groupCode;
+	}
+	public void setGroupCode(String groupCode) {
+		this.groupCode = groupCode;
+	}
 	public List<ParticipantContact> getParticipantContacts() {
 		if (this.participantContacts == null){
 			this.participantContacts = new ArrayList<>();
 		}
 		return participantContacts;
-	}
-
-	public List<ContactGroup> getContactGroups() {
-		if (this.contactGroups == null){
-			this.contactGroups = new ArrayList<>();
-		}
-		return contactGroups;
 	}
 }

@@ -1,0 +1,5 @@
+http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=12
+
+http://forestkwan.no-ip.org:8080/CTYCManagement/#/DineAssignment
+
+admin/ctycAug08

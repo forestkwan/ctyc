@@ -4,7 +4,7 @@ public class ParticipantContact {
 
 	private String name;
 	private int groupNumber;
-	private int sequenceNumber;
+	private String sequenceCode;
 	private String accommodationName;
 	private String accommodationDay;
 	private String remark;
@@ -24,11 +24,11 @@ public class ParticipantContact {
 	public void setGroupNumber(int groupNumber) {
 		this.groupNumber = groupNumber;
 	}
-	public int getSequenceNumber() {
-		return sequenceNumber;
+	public String getSequenceCode() {
+		return sequenceCode;
 	}
-	public void setSequenceNumber(int sequenceNumber) {
-		this.sequenceNumber = sequenceNumber;
+	public void setSequenceCode(String sequenceCode) {
+		this.sequenceCode = sequenceCode;
 	}
 	public String getAccommodationName() {
 		return accommodationName;

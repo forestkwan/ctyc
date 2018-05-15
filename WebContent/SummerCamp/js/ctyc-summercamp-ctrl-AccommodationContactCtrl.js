@@ -12,6 +12,8 @@
 		
 		var vm = this;
 		
+		vm.accommodationContact = {};
+		
 		vm.showAvailability = showAvailability;
 		vm.onTestClicked = onTestClicked;
 		
@@ -44,28 +46,9 @@
 				headers: { 'Content-Type' : 'application/json' }
 			};
 			
-//			$http({
-//		        method : "POST",
-//		        url : 'accommodationcontact',
-//		        data : {
-//		        	camp : 'A'
-//		        }
-//		    },
-//		    {
-//	        	camp : 'A'
-//	        }).then(function success(response) {
-//		    	
-//		    	console.log('Success');
-//		    	
-//		    }, function error(response) {
-//		    	
-//		    	console.log('Fail');
-//		    	
-//		    });
-			
 			$http.get(url, data, config).then(function success(response) {
 				
-				var accommocationContact = response.data;
+				vm.accommodationContact = response.data;
 				
 			}, function error(response) {
 				

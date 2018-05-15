@@ -2,6 +2,7 @@ package org.ctyc.mgt.summercamp.accommodation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.model.summercamp.ParticipantContact;
@@ -9,13 +10,13 @@ import org.springframework.util.CollectionUtils;
 
 public class ParticipantContactMapper {
 	
-	public Collection<ParticipantContact> mapToParticipantContacts(Collection<Participant> participants){
+	public List<ParticipantContact> mapToParticipantContacts(Collection<Participant> participants){
 		
 		if (CollectionUtils.isEmpty(participants)){
 			return new ArrayList<>();
 		}
 		
-		Collection<ParticipantContact> participantContacts = new ArrayList<>();
+		List<ParticipantContact> participantContacts = new ArrayList<>();
 		
 		for (Participant participant : participants){
 			participantContacts.add(mapToParticipantContact(participant));
