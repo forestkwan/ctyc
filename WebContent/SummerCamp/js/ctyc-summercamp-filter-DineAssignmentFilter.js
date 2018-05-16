@@ -117,7 +117,7 @@
 	function groupDisplayFilter(){
 		return function(data){
 			if (!_.isNumber(data)){
-				return data;
+				data = parseInt(data);
 			}
 			
 			switch (data) {

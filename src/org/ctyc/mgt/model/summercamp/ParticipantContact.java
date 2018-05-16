@@ -1,5 +1,7 @@
 package org.ctyc.mgt.model.summercamp;
 
+import java.util.Comparator;
+
 public class ParticipantContact {
 
 	private String name;
@@ -11,7 +13,28 @@ public class ParticipantContact {
 	private boolean goTogether;
 	private boolean leaveTogether;
 	private String contact;
+	private boolean groupMentor;
 	
+	public static Comparator<ParticipantContact> getSequenceCodeComparator(){
+		
+		Comparator<ParticipantContact> comparator = new Comparator<ParticipantContact>(){
+
+			@Override
+			public int compare(ParticipantContact o1, ParticipantContact o2) {
+				if ("*".equals(o1.getSequenceCode()) || "*".equals(o2.getSequenceCode())){
+					return o1.getSequenceCode().compareTo(o2.getSequenceCode());
+				}
+				
+				Integer sequenceNum1 = Integer.parseInt(o1.getSequenceCode());
+				Integer sequenceNum2 = Integer.parseInt(o2.getSequenceCode());
+				return sequenceNum1.compareTo(sequenceNum2);
+			}
+			
+		};
+		
+		return comparator;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -65,5 +88,11 @@ public class ParticipantContact {
 	}
 	public void setContact(String contact) {
 		this.contact = contact;
+	}
+	public boolean isGroupMentor() {
+		return groupMentor;
+	}
+	public void setGroupMentor(boolean groupMentor) {
+		this.groupMentor = groupMentor;
 	}
 }

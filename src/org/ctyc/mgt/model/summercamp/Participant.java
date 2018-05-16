@@ -13,7 +13,14 @@ public class Participant extends Believer {
 	private int groupNumber;
 	private boolean isGroupMentor;
 	private Set<DineAvailability> dineAvailabilitys;
+	private Set<AccommodationAvailability> accommodationAvailabilitys;
 	private Integer specialGroup;
+	private String personalContact;
+	private String parentContact;
+	private String accommodation;
+	private String campRemark;
+	private boolean goTogether;
+	private boolean leaveTogether;
 
 	public Participant() {
 
@@ -49,11 +56,66 @@ public class Participant extends Believer {
 
 	public Set<DineAvailability> getDineAvailabilitys() {
 		if (this.dineAvailabilitys == null){
-			this.dineAvailabilitys = new HashSet<DineAvailability>();
+			this.dineAvailabilitys = new HashSet<>();
 		}
 		return dineAvailabilitys;
 	}
 	
+	public Set<AccommodationAvailability> getAccommodationAvailabilitys() {
+		if (this.accommodationAvailabilitys == null){
+			this.accommodationAvailabilitys = new HashSet<>();
+		}
+		return accommodationAvailabilitys;
+	}
+
+	public String getPersonalContact() {
+		return personalContact;
+	}
+
+	public void setPersonalContact(String personalContact) {
+		this.personalContact = personalContact;
+	}
+
+	public String getParentContact() {
+		return parentContact;
+	}
+
+	public void setParentContact(String parentContact) {
+		this.parentContact = parentContact;
+	}
+
+	public String getAccommodation() {
+		return accommodation;
+	}
+
+	public void setAccommodation(String accommodation) {
+		this.accommodation = accommodation;
+	}
+
+	public String getCampRemark() {
+		return campRemark;
+	}
+
+	public void setCampRemark(String campRemark) {
+		this.campRemark = campRemark;
+	}
+
+	public boolean isGoTogether() {
+		return goTogether;
+	}
+
+	public void setGoTogether(boolean goTogether) {
+		this.goTogether = goTogether;
+	}
+
+	public boolean isLeaveTogether() {
+		return leaveTogether;
+	}
+
+	public void setLeaveTogether(boolean leaveTogether) {
+		this.leaveTogether = leaveTogether;
+	}
+
 	public void setDineTableNumber(int numberOfDay, String timeOfDay, int tableNumber){
 		for (DineAvailability dineAvailability : this.getDineAvailabilitys()){
 			if (dineAvailability.getNumberOfDay() == numberOfDay &&
@@ -90,6 +152,28 @@ public class Participant extends Believer {
 		}
 		
 		return count;
+	}
+	
+	public boolean isFullCamp(){
+		
+		for (AccommodationAvailability availability : this.accommodationAvailabilitys){
+			
+			if (!availability.isJoin()){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public AccommodationAvailability getAccommodationAvailability(int numberOfDay){
+		
+		for (AccommodationAvailability availability : this.accommodationAvailabilitys){
+			
+			if (availability.getNumberOfDay() == numberOfDay){
+				return availability;
+			}
+		}
+		return null;
 	}
 	
 	public boolean isSpecialParticipant(){

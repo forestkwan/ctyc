@@ -6,43 +6,17 @@
 	<div>
 		<div class="form-group no-print">
 			<label class="inline">顯示方式:</label>
-			<div class="btn-group" role="group">
-				<button type="button" ng-click="vm.changePrintType('DINE')" ng-class="{'btn btn-default active': vm.selectedPrintType==='DINE', 'btn btn-default': vm.selectedPrintType!=='DINE'}">按每餐</button>
-				<button type="button" ng-click="vm.changePrintType('GROUP')" ng-class="{'btn btn-default active': vm.selectedPrintType==='GROUP', 'btn btn-default': vm.selectedPrintType!=='GROUP'}">按組別</button>
-				<button type="button" ng-click="vm.changePrintType('STATISTICS')" ng-class="{'btn btn-default active': vm.selectedPrintType==='STATISTICS', 'btn btn-default': vm.selectedPrintType!=='STATISTICS'}">統計</button>
-			</div>
-			<label class="inline">Camp:</label>
-			<div class="btn-group" role="group">
-				<button type="button" ng-click="vm.changeCampSite('A')" ng-class="{'btn btn-default active': vm.selectedCamp==='A', 'btn btn-default': vm.selectedCamp!=='A'}">A</button>
-				<button type="button" ng-click="vm.changeCampSite('B')" ng-class="{'btn btn-default active': vm.selectedCamp==='B', 'btn btn-default': vm.selectedCamp!=='B'}">B</button>
-			</div>
-			<label class="inline" ng-if="vm.selectedPrintType==='DINE'">Day:</label>
-			<div class="btn-group" role="group" ng-if="vm.selectedPrintType==='DINE'">
-				<button type="button" ng-click="vm.changeDineDay(1)" ng-class="{'btn btn-default active': vm.selectedDay===1, 'btn btn-default': vm.selectedDay!==1}">1</button>
-				<button type="button" ng-click="vm.changeDineDay(2)" ng-class="{'btn btn-default active': vm.selectedDay===2, 'btn btn-default': vm.selectedDay!==2}">2</button>
-				<button type="button" ng-click="vm.changeDineDay(3)" ng-class="{'btn btn-default active': vm.selectedDay===3, 'btn btn-default': vm.selectedDay!==3}">3</button>
-				<button type="button" ng-click="vm.changeDineDay(4)" ng-class="{'btn btn-default active': vm.selectedDay===4, 'btn btn-default': vm.selectedDay!==4}">4</button>
-			</div>
-			<label class="inline" ng-if="vm.selectedPrintType==='STATISTICS'">Day:</label>
-			<div class="btn-group" role="group" ng-if="vm.selectedPrintType==='STATISTICS'">
-				<button type="button" ng-click="vm.changeTimeOfDine('MORNING')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='MORNING', 'btn btn-default': vm.selectedTimeOfDine!=='MORNING'}">早</button>
-				<button type="button" ng-click="vm.changeTimeOfDine('NOON')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NOON', 'btn btn-default': vm.selectedTimeOfDine!=='NOON'}">午</button>
-				<button type="button" ng-click="vm.changeTimeOfDine('NIGHT')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NIGHT', 'btn btn-default': vm.selectedTimeOfDine!=='NIGHT'}">晚</button>
-			</div>
+			<button type="button" class="btn btn-default" ng-click="vm.onCampAClicked()">Camp A</button>
+			<button type="button" class="btn btn-default" ng-click="vm.onCampBClicked()">Camp B</button>
 			<button type="button" class="btn btn-default" ng-click="vm.onTestClicked()">Test</button>
-		</div>
-		
-		<div ng-if="vm.selectedPrintType==='DINE'" ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
-			<div ng-if="$even" class="row">
-				<dine-table-print class="col-xs-6" dine-table-group="dineTableGroup" selected-day="vm.selectedDay"></dine-table-print>
-				<dine-table-print class="col-xs-6" ng-if="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]"
-				dine-table-group="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]" selected-day="vm.selectedDay"></dine-table-print>
-			</div>
 		</div>
 
 		<div ng-repeat="contactGroup in vm.accommodationContact.contactGroups">
 			<table class="table table-condensed table-striped">
-				<tr><span style="color:#e32;font-size:110%">第 {{contactGroup.groupCode}} 枱</span></tr>
+				<tr>
+					<span style="color:#e32;font-size:110%">{{contactGroup.groupCode | GroupDisplayFilter}}</span>
+					（導師: {{contactGroup.mentorCount}}  學⽣: {{contactGroup.nonMentorCount}}）
+				</tr>
 				<tr style="border-bottom: 2px solid black;">
 					<col width="5%">
 					<col width="10%">
@@ -62,13 +36,19 @@
 					<th>聯絡</th>
 				</tr>
 				<tr ng-repeat="participantContact in contactGroup.participantContacts">
-					<td>{{$index+1}}</td>
+					<td>{{participantContact.sequenceCode}}</td>
 					<td>{{participantContact.name}}</td>
 					<td>{{participantContact.accommodationName}}</td>
 					<td>{{participantContact.accommodationDay}}</td>
 					<td>{{participantContact.remark}}</td>
-					<td>{{participantContact.goTogether}}</td>
-					<td>{{participantContact.leaveTogether}}</td>
+					<td>
+						<div ng-if="participantContact.goTogether">✓</div>
+						<div ng-if="!participantContact.goTogether">X</div>
+					</td>
+					<td>
+						<div ng-if="participantContact.leaveTogether">✓</div>
+						<div ng-if="!participantContact.leaveTogether">X</div>
+					</td>
 					<td>{{participantContact.contact}}</td>
 				</tr>
 			</table>

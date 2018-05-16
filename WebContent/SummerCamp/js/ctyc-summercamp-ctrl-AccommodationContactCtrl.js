@@ -14,28 +14,13 @@
 		
 		vm.accommodationContact = {};
 		
-		vm.showAvailability = showAvailability;
+		vm.onCampAClicked = onCampAClicked;
+		vm.onCampBClicked = onCampBClicked;
 		vm.onTestClicked = onTestClicked;
 		
 		////////////////////////////
 		
-		function showAvailability(numberOfDay, timeOfDay, dineAvailabilitys){
-			var targetDineAvailability = null;
-			for (var i=0; i<dineAvailabilitys.length; i++){
-				if (dineAvailabilitys[i].numberOfDay === numberOfDay &&
-						dineAvailabilitys[i].timeOfDay === timeOfDay){
-					targetDineAvailability = dineAvailabilitys[i];
-				}
-			}
-			
-			if (targetDineAvailability !== null){
-				return targetDineAvailability.join;
-			}
-			
-			return false;
-		}
-		
-		function onTestClicked(){
+		function onCampAClicked(){
 			
 			var url = 'accommodationcontact?camp=A';
 			var data = {
@@ -55,6 +40,32 @@
 				console.log('Fail');
 			
 			});
+		}
+		
+		function onCampBClicked(){
+			
+			var url = 'accommodationcontact?camp=B';
+			var data = {
+				data : {camp : 'B'}	
+			};
+			var config = {
+				dataType: 'json',
+				headers: { 'Content-Type' : 'application/json' }
+			};
+			
+			$http.get(url, data, config).then(function success(response) {
+				
+				vm.accommodationContact = response.data;
+				
+			}, function error(response) {
+				
+				console.log('Fail');
+			
+			});
+		}
+		
+		function onTestClicked(){
+			console.log('Test');
 		}
 	}
 })();

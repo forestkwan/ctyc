@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.Gender;
+import org.ctyc.mgt.model.summercamp.AccommodationAvailability;
 import org.ctyc.mgt.model.summercamp.DineAvailability;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
@@ -91,6 +92,21 @@ public class CsvReader {
 					
 				}
 				
+				if (StringUtils.isNotBlank(tokens[14])){
+					String contact = tokens[14].replace("\"", "");
+					contact = contact.replaceAll("\\家長[ ]*：*:*[ ]*", "家長：");
+					contact = contact.replaceAll("\\(*", "");
+					contact = contact.replaceAll("\\)*", "");
+					participant.setPersonalContact(contact);
+				}
+				
+				if (StringUtils.isNotBlank(tokens[15])){
+					String remark = tokens[15].replace("\"", "");
+					remark = remark.replaceAll("\\\\r\\\\n", "");
+					
+					participant.setCampRemark(remark);
+				}
+				
 				if (StringUtils.isNotBlank(tokens[16])){
 					boolean isDine = (StringUtils.equals(tokens[16].replace("\"", ""), "1")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(1, DineTimeSlot.TimeOfDay.NIGHT.toString(), isDine));
@@ -149,6 +165,36 @@ public class CsvReader {
 				if (StringUtils.isNotBlank(tokens[27])){
 					boolean isDine = (StringUtils.equals(tokens[27].replace("\"", ""), "1")) ? true : false;
 					participant.getDineAvailabilitys().add(new DineAvailability(4, DineTimeSlot.TimeOfDay.NOON.toString(), isDine));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[28])){
+					boolean isJoin = (StringUtils.equals(tokens[28].replace("\"", ""), "1")) ? true : false;
+					participant.getAccommodationAvailabilitys().add(new AccommodationAvailability(1, isJoin));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[29])){
+					boolean isJoin = (StringUtils.equals(tokens[29].replace("\"", ""), "1")) ? true : false;
+					participant.getAccommodationAvailabilitys().add(new AccommodationAvailability(2, isJoin));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[30])){
+					boolean isJoin = (StringUtils.equals(tokens[30].replace("\"", ""), "1")) ? true : false;
+					participant.getAccommodationAvailabilitys().add(new AccommodationAvailability(3, isJoin));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[31])){
+					boolean isJoin = (StringUtils.equals(tokens[31].replace("\"", ""), "1")) ? true : false;
+					participant.getAccommodationAvailabilitys().add(new AccommodationAvailability(4, isJoin));
+				}
+				
+				if (StringUtils.isNotBlank(tokens[32])){
+					boolean isGoTogether = (StringUtils.equals(tokens[32].replace("\"", ""), "1")) ? true : false;
+					participant.setGoTogether(isGoTogether);
+				}
+				
+				if (StringUtils.isNotBlank(tokens[33])){
+					boolean isLeaveTogether = (StringUtils.equals(tokens[33].replace("\"", ""), "1")) ? true : false;
+					participant.setLeaveTogether(isLeaveTogether);
 				}
 				
 				if (StringUtils.isNotBlank(tokens[34])){

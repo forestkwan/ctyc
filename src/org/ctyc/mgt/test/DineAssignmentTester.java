@@ -15,10 +15,10 @@ import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
 import org.ctyc.mgt.utils.FileUtils;
 
-public class DineAssignmentTester extends TestCase {
+public class DineAssignmentTester {
 	
 	public DineAssignmentTester(String arg0){
-		super(arg0);
+//		super(arg0);
 	}
 
 	public void testDineAssignment(){
