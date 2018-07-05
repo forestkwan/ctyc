@@ -127,9 +127,9 @@ public class SummerCampService {
 				try {
 					URL url = null;
 					if (campName.equals("A")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=12");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=14");
 					} else if (campName.equals("B")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=13");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=15");
 					}
 					
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
