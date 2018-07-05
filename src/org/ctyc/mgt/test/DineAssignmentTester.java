@@ -3,8 +3,6 @@ package org.ctyc.mgt.test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.TestCase;
-
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
@@ -40,7 +38,7 @@ public class DineAssignmentTester {
 //		constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 //		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 		
-		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager("A", 1, campSite, 8, costFunctions, constraintFunctions, 1);
+		DineAssignmentManager dineAssignmentManager = new DineAssignmentManager("A", 1, campSite, costFunctions, constraintFunctions, 1);
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();

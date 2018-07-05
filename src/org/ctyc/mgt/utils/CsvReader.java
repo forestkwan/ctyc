@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ctyc.mgt.model.FamilyGroup;
 import org.ctyc.mgt.model.Gender;
 import org.ctyc.mgt.model.summercamp.AccommodationAvailability;
+import org.ctyc.mgt.model.summercamp.CampName;
 import org.ctyc.mgt.model.summercamp.DineAvailability;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.Participant;
@@ -200,6 +201,12 @@ public class CsvReader {
 				if (StringUtils.isNotBlank(tokens[34])){
 					Integer specialGroup = Integer.parseInt(tokens[34].replace("grp-", "").replace("\"", ""));
 					participant.setSpecialGroup(specialGroup);
+				}
+				
+				if ((participant.getGroupNumber() % 2) == 0){
+					participant.setAccommodationCamp(CampName.METHODIST);
+				}else {
+					participant.setAccommodationCamp(CampName.RECREATION);
 				}
 				
 				participants.add(participant);

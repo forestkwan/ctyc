@@ -20,7 +20,7 @@ public class TestObjectGenerator {
 		
 		Collection<CanteenTable> canteenTables = new ArrayList<CanteenTable>();
 		for (int i=0; i<totalNoOfTables; i++){
-			CanteenTable canteenTable = new CanteenTable(i+1, tableCapacity);
+			CanteenTable canteenTable = new CanteenTable(i+1, tableCapacity, "");
 			canteenTables.add(canteenTable);
 		}
 		

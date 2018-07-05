@@ -173,9 +173,7 @@ public class SummerCampService {
 			constraintFunctions.add(new MentorInTableCostFunction(1, 1));
 			constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 			
-			String[] testCampNames = {"A"};
 			for (String campName : campNames){
-//			for (String campName : testCampNames){
 				
 				CampSite campSite = this.campSiteMap.get(campName);
 				if (campSite == null){
@@ -192,7 +190,7 @@ public class SummerCampService {
 				for (Integer executedDay : executedDays){
 					
 					DineAssignmentManager dineAssignmentManager =
-							new DineAssignmentManager(campName, executedDay, campSite, 8, costFunctions, constraintFunctions, executedDay);
+							new DineAssignmentManager(campName, executedDay, campSite, costFunctions, constraintFunctions, executedDay);
 					dineAssignmentManager.doAssignment();
 					DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();
 					
@@ -337,8 +335,9 @@ public class SummerCampService {
 			
 			int tableNumber = Integer.valueOf(dineTableMap.get("number").toString());
 			int capacity = Integer.valueOf(dineTableMap.get("capacity").toString());
+			String location = dineTableMap.get("location").toString();
 			
-			CanteenTable canteenTable = new CanteenTable(tableNumber, capacity);
+			CanteenTable canteenTable = new CanteenTable(tableNumber, capacity, location);
 			campSite.getCanteenTables().add(canteenTable);
 		}
 		
@@ -402,7 +401,6 @@ public class SummerCampService {
 		String campName = data.get("camp").toString();
 		int day = Integer.parseInt(data.get("day").toString());
 		
-		int tableCapacity = Integer.valueOf(data.get("tableCapacity").toString());
 		int seed = Integer.valueOf(data.get("seed").toString());
 //		Map<String, Object> constraintsMap = (Map<String, Object>)data.get("constraints");
 		
@@ -425,7 +423,7 @@ public class SummerCampService {
 		constraintFunctions.add(new FamilyGroupCostFunction(1, 1));
 		
 		DineAssignmentManager dineAssignmentManager =
-				new DineAssignmentManager(campName, day, campSite, tableCapacity, costFunctions, constraintFunctions, seed);
+				new DineAssignmentManager(campName, day, campSite, costFunctions, constraintFunctions, seed);
 		
 		dineAssignmentManager.doAssignment();
 		DineAssignmentPlan dineAssignmentPlan = dineAssignmentManager.getAssignmentPlan();

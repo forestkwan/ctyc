@@ -10,6 +10,7 @@
 		var vm = this;
 		
 		vm.getTableName = getTableName;
+		vm.getTableCampName = getTableCampName;
 		vm.onParticipantDrop = onParticipantDrop;
 		vm.dropSuccessHandler = dropSuccessHandler;
 		vm.displayAlertClass = displayAlertClass;
@@ -21,6 +22,10 @@
 		
 		function getTableName(){
 			return vm.dineTableData.tableNumber;
+		}
+		
+		function getTableCampName(){
+			return vm.dineTableData.campName;
 		}
 		
 		function onParticipantDrop($event, $data, participants){

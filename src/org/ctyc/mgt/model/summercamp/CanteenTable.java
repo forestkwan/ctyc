@@ -8,10 +8,12 @@ public class CanteenTable implements Serializable{
 	
 	private int number;
 	private int capacity;
-	
-	public CanteenTable(int number, int capacity){
+	private String location;
+
+	public CanteenTable(int number, int capacity, String location){
 		this.number = number;
 		this.capacity = capacity;
+		this.location = location;
 	}
 	
 	public int getNumber() {
@@ -20,5 +22,13 @@ public class CanteenTable implements Serializable{
 	
 	public int getCapacity() {
 		return capacity;
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 }

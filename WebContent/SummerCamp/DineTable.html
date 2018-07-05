@@ -1,7 +1,7 @@
 <div class="panel panel-default">
 	<div class="panel-body">
 		<div class="dine-table-panel">
-			<label>Table {{vm.getTableName()}}</label>
+			<label>Table {{vm.getTableName()}}  ({{vm.getTableCampName()}})</label>
 			<div class="row">
 				<div class="col-xs-6" ng-if="vm.filter.genderBalance" ng-class="vm.displayAlertClass(vm.getCost('GENDER_BALANCE'))">
 					<p>男女比例平衡: {{vm.getCost('GENDER_BALANCE') | number : 2}}</p>

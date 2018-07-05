@@ -17,7 +17,8 @@ public class Participant extends Believer {
 	private Integer specialGroup;
 	private String personalContact;
 	private String parentContact;
-	private String accommodation;
+	private CampName accommodationCamp;
+	private String accommodationRoom;
 	private String campRemark;
 	private boolean goTogether;
 	private boolean leaveTogether;
@@ -83,13 +84,21 @@ public class Participant extends Believer {
 	public void setParentContact(String parentContact) {
 		this.parentContact = parentContact;
 	}
-
-	public String getAccommodation() {
-		return accommodation;
+	
+	public CampName getAccommodationCamp() {
+		return accommodationCamp;
 	}
 
-	public void setAccommodation(String accommodation) {
-		this.accommodation = accommodation;
+	public void setAccommodationCamp(CampName accommodationCamp) {
+		this.accommodationCamp = accommodationCamp;
+	}
+
+	public String getAccommodationRoom() {
+		return accommodationRoom;
+	}
+
+	public void setAccommodationRoom(String accommodationRoom) {
+		this.accommodationRoom = accommodationRoom;
 	}
 
 	public String getCampRemark() {

@@ -17,7 +17,8 @@ public class DineTableGroup implements Serializable{
 	private double cost;
 	private Map<String, Double> evaluationResultMap;
 	private Integer specialGroup;
-
+	private CampName campName;
+	
 	public int getTableNumber() {
 		return tableNumber;
 	}
@@ -51,6 +52,14 @@ public class DineTableGroup implements Serializable{
 	
 	public boolean isForSpecialGroup(){
 		return (this.specialGroup != null && this.specialGroup > 0);
+	}
+	
+	public CampName getCampName() {
+		return campName;
+	}
+
+	public void setCampName(CampName campName) {
+		this.campName = campName;
 	}
 	
 	public int getNoOfGroupMentor(){
