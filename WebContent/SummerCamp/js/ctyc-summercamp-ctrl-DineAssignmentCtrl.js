@@ -25,6 +25,7 @@
 		vm.websocketStatus = true;
 		vm.selectedPrintType = 'DINE';
 		vm.selectedCamp = 'A';
+		vm.selectedCampLocation = 'METHODIST';
 		vm.selectedTimeOfDine = 'NIGHT';
 		vm.selectedDay = 1;
 		vm.dineAssignmentPlans = [];
@@ -40,6 +41,7 @@
 		
 		vm.changePrintType = changePrintType;
 		vm.changeCampSite = changeCampSite;
+		vm.changeCampLocation = changeCampLocation;
 		vm.changeDineDay = changeDineDay;
 		vm.changeTimeOfDine = changeTimeOfDine;
 		vm.getSelectedDineAssignmentPlan = getSelectedDineAssignmentPlan;
@@ -160,6 +162,10 @@
 			vm.selectedCamp = selectedCamp;
 		}
 		
+		function changeCampLocation(selectedCampLocation){
+			vm.selectedCampLocation = selectedCampLocation;
+		}
+		
 		function changeDineDay(selectedDay){
 			vm.selectedDay = selectedDay;
 		}
@@ -170,8 +176,8 @@
 		
 		function getSelectedDineAssignmentPlan(){
 			for (var i=0; i<vm.dineAssignmentPlans.length; i++){
-				if (vm.dineAssignmentPlans[i].campName === vm.selectedCamp &&
-						vm.dineAssignmentPlans[i].day === vm.selectedDay){
+				if (vm.dineAssignmentPlans[i].campName === vm.selectedCamp
+						&& vm.dineAssignmentPlans[i].day === vm.selectedDay){
 					return vm.dineAssignmentPlans[i];
 				}
 			}
@@ -193,6 +199,7 @@
 				
 				dineTableGroups.push({
 						tableNumber : dineTableGroup.tableNumber,
+						campName : dineTableGroup.campName,
 						participants : participants
 				});
 			}
@@ -231,6 +238,7 @@
 				
 				dineTableGroups.push({
 						tableNumber : dineTableGroup.tableNumber,
+						campName : dineTableGroup.campName,
 						participants : participants
 				});
 			}

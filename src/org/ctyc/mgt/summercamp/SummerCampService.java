@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.ctyc.mgt.model.summercamp.CampName;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
@@ -367,10 +368,12 @@ public class SummerCampService {
 		
 		for (Map<String, Object> dineTableGroupsData : dineTableGroupsDataList){
 			Integer tableNumber = Integer.valueOf(dineTableGroupsData.get("tableNumber").toString());
+			CampName campLocation = CampName.valueOf(dineTableGroupsData.get("campName").toString());
 			List<Map<String, Object>> participantDataList = (List<Map<String, Object>>) dineTableGroupsData.get("participants");
 			
 			DineTableGroup dineTableGroup = new DineTableGroup();
 			dineTableGroup.setTableNumber(tableNumber);
+			dineTableGroup.setCampName(campLocation);
 			
 			for (Map<String, Object> participantData : participantDataList){
 				Participant participant = this.participantMap.get(participantData.get("id").toString());
@@ -492,10 +495,12 @@ public class SummerCampService {
 		
 		for (Map<String, Object> dineTableGroupsData : dineTableGroupsDataList){
 			Integer tableNumber = Integer.valueOf(dineTableGroupsData.get("tableNumber").toString());
+			CampName campLocation = CampName.valueOf(dineTableGroupsData.get("campName").toString());
 			List<Map<String, Object>> participantDataList = (List<Map<String, Object>>) dineTableGroupsData.get("participants");
 			
 			DineTableGroup dineTableGroup = new DineTableGroup();
 			dineTableGroup.setTableNumber(tableNumber);
+			dineTableGroup.setCampName(campLocation);
 			
 			for (Map<String, Object> participantData : participantDataList){
 				Participant participant = this.participantMap.get(participantData.get("id").toString());
