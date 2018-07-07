@@ -300,15 +300,15 @@
 		
 		function displayPrintHeader(){
 			if (vm.selectedPrintType === 'DINE'){
-				return '2015夏令會' + vm.selectedCamp + '  膳食安排（按枱號）';
+				return '2018夏令會' + vm.selectedCamp + '  膳食安排（按枱號）';
 			}
 			
 			if (vm.selectedPrintType === 'GROUP'){
-				return '2015夏令會' + vm.selectedCamp + ' 膳食座位安排（按組別）';
+				return '2018夏令會' + vm.selectedCamp + ' 膳食座位安排（按組別）';
 			}
 			
 			if (vm.selectedPrintType === 'STATISTICS'){
-				return '2015夏令會' + vm.selectedCamp + ' 膳食統計';
+				return '2018夏令會' + vm.selectedCamp + ' 膳食統計';
 			}
 		}
 		

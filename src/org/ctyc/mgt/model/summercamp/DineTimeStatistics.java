@@ -26,7 +26,11 @@ public class DineTimeStatistics {
 		return dineTableStatisticsList;
 	}
 	
-	public void setDineTableStatistics(int tableNumber, int numberOfDay, int participantCount){
+	public void setDineTableStatistics(
+			int tableNumber,
+			int numberOfDay,
+			int participantCount,
+			CampName campName){
 		
 		DineTableStatistics tempDineTableStatistics = null;
 		
@@ -40,7 +44,7 @@ public class DineTimeStatistics {
 		
 		// If not found, create a new one and add to the list
 		if (tempDineTableStatistics == null){
-			tempDineTableStatistics = new DineTableStatistics(tableNumber);
+			tempDineTableStatistics = new DineTableStatistics(tableNumber, campName);
 			this.getDineTableStatisticsList().add(tempDineTableStatistics);
 		}
 		

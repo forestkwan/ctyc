@@ -617,7 +617,8 @@ public class SummerCampService {
 				tempDineTableStatistics.setDineTableStatistics(
 						dineTableGroup.getTableNumber(),
 						dineAssignmentPlan.getDay(),
-						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString()));
+						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString()),
+						dineTableGroup.getCampName());
 				
 				// Count the number of participant at Morning for that table
 				tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.MORNING.toString());
@@ -629,7 +630,8 @@ public class SummerCampService {
 				tempDineTableStatistics.setDineTableStatistics(
 						dineTableGroup.getTableNumber(),
 						dineAssignmentPlan.getDay(),
-						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.MORNING.toString()));
+						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.MORNING.toString()),
+						dineTableGroup.getCampName());
 				
 				// Count the number of participant at Noon for that table
 				tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.NOON.toString());
@@ -641,7 +643,8 @@ public class SummerCampService {
 				tempDineTableStatistics.setDineTableStatistics(
 						dineTableGroup.getTableNumber(),
 						dineAssignmentPlan.getDay(),
-						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NOON.toString()));
+						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NOON.toString()),
+						dineTableGroup.getCampName());
 			}
 		}
 		

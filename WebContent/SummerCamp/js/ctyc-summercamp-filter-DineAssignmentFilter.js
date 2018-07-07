@@ -1,6 +1,7 @@
 (function(){
 	angular.module('ctyc-summercamp')
 	.filter('GenderFilter', genderFilter)
+	.filter('CampNameFilter', campNameFilter)
 	.filter('GroupAssignmentFilter', groupAssignmentFilter)
 	.filter('CustomNumberFilter', customNumberFilter)
 	.filter('GroupMentorOnTop', groupMentorOnTop)
@@ -18,6 +19,19 @@
 				if (data === 'MALE'){
 					return '男';
 				}
+			}
+		};
+	}
+	
+	campNameFilter.$inject = [];
+	
+	function campNameFilter(data){
+		return function(data){
+			if (data === 'METHODIST'){
+				return '衛理園';
+			}
+			if (data === 'RECREATION'){
+				return '康樂營';
 			}
 		};
 	}

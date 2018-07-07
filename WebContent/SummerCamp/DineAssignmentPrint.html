@@ -29,13 +29,29 @@
 				<button type="button" ng-click="vm.changeTimeOfDine('NOON')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NOON', 'btn btn-default': vm.selectedTimeOfDine!=='NOON'}">午</button>
 				<button type="button" ng-click="vm.changeTimeOfDine('NIGHT')" ng-class="{'btn btn-default active': vm.selectedTimeOfDine==='NIGHT', 'btn btn-default': vm.selectedTimeOfDine!=='NIGHT'}">晚</button>
 			</div>
+			<div ng-if="vm.selectedPrintType==='DINE'">
+				<label class="inline">Location:</label>
+				<div class="btn-group" role="group" aria-label="...">
+					<button type="button" ng-click="vm.changeCampLocation('METHODIST')" ng-class="{'btn btn-default active': vm.selectedCampLocation==='METHODIST', 'btn btn-default': vm.selectedCampLocation!=='METHODIST'}">衛理園</button>
+					<button type="button" ng-click="vm.changeCampLocation('RECREATION')" ng-class="{'btn btn-default active': vm.selectedCampLocation==='RECREATION', 'btn btn-default': vm.selectedCampLocation!=='RECREATION'}">康樂營</button>
+				</div>
+			</div>
 		</div>
 		
 		<div ng-if="vm.selectedPrintType==='DINE'" ng-repeat="dineTableGroup in vm.getSelectedDineAssignmentPlan().dineTableGroups">
 			<div ng-if="$even" class="row">
-				<dine-table-print class="col-xs-6" dine-table-group="dineTableGroup" selected-day="vm.selectedDay"></dine-table-print>
-				<dine-table-print class="col-xs-6" ng-if="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]"
-				dine-table-group="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]" selected-day="vm.selectedDay"></dine-table-print>
+				<dine-table-print
+					ng-if="dineTableGroup.campName === vm.selectedCampLocation"
+					class="col-xs-6"
+					dine-table-group="dineTableGroup"
+					selected-day="vm.selectedDay">
+				</dine-table-print>
+				<dine-table-print
+					ng-if="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1] && vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1].campName === vm.selectedCampLocation"
+					class="col-xs-6" 
+					dine-table-group="vm.getSelectedDineAssignmentPlan().dineTableGroups[$index + 1]"
+					selected-day="vm.selectedDay">
+				</dine-table-print>
 			</div>
 		</div>
 

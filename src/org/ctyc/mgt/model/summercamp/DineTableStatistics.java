@@ -3,14 +3,16 @@ package org.ctyc.mgt.model.summercamp;
 public class DineTableStatistics {
 	
 	private int tableNumber;
+	private CampName campName;
 	private int day1Count;
 	private int day2Count;
 	private int day3Count;
 	private int day4Count;
 	
-	public DineTableStatistics(int tableNumber) {
+	public DineTableStatistics(int tableNumber, CampName campName) {
 		super();
 		this.tableNumber = tableNumber;
+		this.campName = campName;
 		this.day1Count = -1;
 		this.day2Count = -1;
 		this.day3Count = -1;
@@ -22,6 +24,12 @@ public class DineTableStatistics {
 	}
 	public void setTableNumber(int tableNumber) {
 		this.tableNumber = tableNumber;
+	}
+	public CampName getCampName() {
+		return campName;
+	}
+	public void setCampName(CampName campName) {
+		this.campName = campName;
 	}
 	public int getDay1Count() {
 		return day1Count;
