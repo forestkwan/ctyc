@@ -12,9 +12,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.ctyc.mgt.model.summercamp.CampDineStatistics;
 import org.ctyc.mgt.model.summercamp.CampName;
 import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
@@ -22,6 +25,7 @@ import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
 import org.ctyc.mgt.model.summercamp.DineTimeStatistics;
 import org.ctyc.mgt.model.summercamp.Participant;
+import org.ctyc.mgt.model.summercamp.StatisticsSummary;
 import org.ctyc.mgt.summercamp.costfunction.AbstractCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.FamilyGroupCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.GenderBalanceCostFunction;
@@ -589,66 +593,117 @@ public class SummerCampService {
 		return groupAssignmentPlanMap;
 	}
 	
-	private Map<String, Map<String, DineTimeStatistics>> generateDineAssignmentStatistics() {
+	private StatisticsSummary generateDineAssignmentStatistics() {
 		
 		if (this.dineAssignmentPlanList == null){
 			return null;
 		}
 		
-		Map<String, Map<String, DineTimeStatistics>> campDineTableStatistics = new HashMap<String, Map<String, DineTimeStatistics>>();
-		for (DineAssignmentPlan dineAssignmentPlan : this.dineAssignmentPlanList){
+		StatisticsSummary statSummary = new StatisticsSummary();
+		
+		Collection<DineAssignmentPlan> campAAssignmentPlans = this.dineAssignmentPlanList.stream()
+				.filter(plan -> "A".equalsIgnoreCase(plan.getCampName())).collect(Collectors.toList());
+		
+		statSummary.getCampDineStatisticsMap().put("A", this.aggregateCampDineStatistics(campAAssignmentPlans));
+		
+		Collection<DineAssignmentPlan> campBAssignmentPlans = this.dineAssignmentPlanList.stream()
+				.filter(plan -> "B".equalsIgnoreCase(plan.getCampName())).collect(Collectors.toList());
+		
+		statSummary.getCampDineStatisticsMap().put("B", this.aggregateCampDineStatistics(campBAssignmentPlans));
+		
+		return statSummary;
+	}
+
+	private CampDineStatistics aggregateCampDineStatistics(Collection<DineAssignmentPlan> campAssignmentPlans) {
+		
+		CampDineStatistics campDineStatistics = new CampDineStatistics();
+		Map<CampName, Map<String, DineTimeStatistics>> campDineTimeStatisticsMap = campDineStatistics.getCampDineTimeStatisticsMap();
+		
+		Map<Integer, Collection<DineTableGroup>> methodistDayNumDineTablesMap = this.convertToCampDayNumDineTablesMap(CampName.METHODIST, campAssignmentPlans);
+		Map<String, DineTimeStatistics> methodistDineTimeStatistics = this.aggregateDineTimeStatistics(methodistDayNumDineTablesMap);
+		campDineTimeStatisticsMap.put(CampName.METHODIST, methodistDineTimeStatistics);
+		
+		
+		Map<Integer, Collection<DineTableGroup>> recreationDayNumDineTablesMap = this.convertToCampDayNumDineTablesMap(CampName.RECREATION, campAssignmentPlans);
+		Map<String, DineTimeStatistics> recreationDineTimeStatistics = this.aggregateDineTimeStatistics(recreationDayNumDineTablesMap);
+		campDineTimeStatisticsMap.put(CampName.RECREATION, recreationDineTimeStatistics);
+		
+		return campDineStatistics;
+	}
+
+	private Map<Integer, Collection<DineTableGroup>> convertToCampDayNumDineTablesMap(
+			CampName campName,
+			Collection<DineAssignmentPlan> campAssignmentPlans) {
+		
+		Map<Integer, Collection<DineTableGroup>> campDayNumDineTablesMap = new HashMap<>();
+		
+		for (DineAssignmentPlan campAssignmentPlan : campAssignmentPlans){
 			
-			String campName = dineAssignmentPlan.getCampName();
-			Map<String, DineTimeStatistics> tempDineTimeStatistics = campDineTableStatistics.get(campName);
-			if (tempDineTimeStatistics == null){
-				tempDineTimeStatistics = new HashMap<String, DineTimeStatistics>();
-				campDineTableStatistics.put(campName, tempDineTimeStatistics);
-			}
+			int dayNum = campAssignmentPlan.getDay();
 			
-			for (DineTableGroup dineTableGroup : dineAssignmentPlan.getDineTableGroups()){
+			Collection<DineTableGroup> dineTables = campAssignmentPlan.getDineTableGroups().stream()
+					.filter(table -> table.getCampName() == campName).collect(Collectors.toList());
+			
+			campDayNumDineTablesMap.put(dayNum, dineTables);
+		}
+		
+		return campDayNumDineTablesMap;
+	}
+	
+	private Map<String, DineTimeStatistics> aggregateDineTimeStatistics(
+			Map<Integer, Collection<DineTableGroup>> dayNumDineTablesMap) {
+		
+		Map<String, DineTimeStatistics> dineTimeStatisticsMap = new HashMap<>();
+		
+		for (Entry<Integer, Collection<DineTableGroup>> entry : dayNumDineTablesMap.entrySet()){
+			
+			int dayNum = entry.getKey();
+			Collection<DineTableGroup> dineTables = entry.getValue();
+			
+			for (DineTableGroup dineTableGroup : dineTables){
 				
 				// Count the number of participant at Night for that table
-				DineTimeStatistics tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.NIGHT.toString());
+				DineTimeStatistics tempDineTableStatistics = dineTimeStatisticsMap.get(DineTimeSlot.TimeOfDay.NIGHT.toString());
 				if (tempDineTableStatistics == null){
 					tempDineTableStatistics = new DineTimeStatistics(DineTimeSlot.TimeOfDay.NIGHT.toString());
-					tempDineTimeStatistics.put(DineTimeSlot.TimeOfDay.NIGHT.toString(), tempDineTableStatistics);
+					dineTimeStatisticsMap.put(DineTimeSlot.TimeOfDay.NIGHT.toString(), tempDineTableStatistics);
 				}
 
 				tempDineTableStatistics.setDineTableStatistics(
 						dineTableGroup.getTableNumber(),
-						dineAssignmentPlan.getDay(),
-						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NIGHT.toString()),
+						dayNum,
+						dineTableGroup.countParticipantForParticularDine(dayNum, DineTimeSlot.TimeOfDay.NIGHT.toString()),
 						dineTableGroup.getCampName());
 				
 				// Count the number of participant at Morning for that table
-				tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.MORNING.toString());
+				tempDineTableStatistics = dineTimeStatisticsMap.get(DineTimeSlot.TimeOfDay.MORNING.toString());
 				if (tempDineTableStatistics == null){
 					tempDineTableStatistics = new DineTimeStatistics(DineTimeSlot.TimeOfDay.MORNING.toString());
-					tempDineTimeStatistics.put(DineTimeSlot.TimeOfDay.MORNING.toString(), tempDineTableStatistics);
+					dineTimeStatisticsMap.put(DineTimeSlot.TimeOfDay.MORNING.toString(), tempDineTableStatistics);
 				}
 
 				tempDineTableStatistics.setDineTableStatistics(
 						dineTableGroup.getTableNumber(),
-						dineAssignmentPlan.getDay(),
-						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.MORNING.toString()),
+						dayNum,
+						dineTableGroup.countParticipantForParticularDine(dayNum, DineTimeSlot.TimeOfDay.MORNING.toString()),
 						dineTableGroup.getCampName());
 				
 				// Count the number of participant at Noon for that table
-				tempDineTableStatistics = tempDineTimeStatistics.get(DineTimeSlot.TimeOfDay.NOON.toString());
+				tempDineTableStatistics = dineTimeStatisticsMap.get(DineTimeSlot.TimeOfDay.NOON.toString());
 				if (tempDineTableStatistics == null){
 					tempDineTableStatistics = new DineTimeStatistics(DineTimeSlot.TimeOfDay.NOON.toString());
-					tempDineTimeStatistics.put(DineTimeSlot.TimeOfDay.NOON.toString(), tempDineTableStatistics);
+					dineTimeStatisticsMap.put(DineTimeSlot.TimeOfDay.NOON.toString(), tempDineTableStatistics);
 				}
 
 				tempDineTableStatistics.setDineTableStatistics(
 						dineTableGroup.getTableNumber(),
-						dineAssignmentPlan.getDay(),
-						dineTableGroup.countParticipantForParticularDine(dineAssignmentPlan.getDay(), DineTimeSlot.TimeOfDay.NOON.toString()),
+						dayNum,
+						dineTableGroup.countParticipantForParticularDine(dayNum, DineTimeSlot.TimeOfDay.NOON.toString()),
 						dineTableGroup.getCampName());
 			}
 		}
 		
-		return campDineTableStatistics;
+		return dineTimeStatisticsMap;
 	}
 	
 }

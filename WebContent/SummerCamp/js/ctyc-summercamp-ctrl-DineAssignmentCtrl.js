@@ -313,8 +313,11 @@
 		}
 		
 		function getSelectedDineStatistics(){
-			var statistics = vm.dineAssignmentStatistics[vm.selectedCamp][vm.selectedTimeOfDine].dineTableStatisticsList;
-			return statistics;
+			
+			var campStat = vm.dineAssignmentStatistics.campDineStatisticsMap[vm.selectedCamp];
+			var campLocationStat = campStat.campDineTimeStatisticsMap[vm.selectedCampLocation];
+			var timeOfDayStat = campLocationStat[vm.selectedTimeOfDine];
+			return timeOfDayStat.dineTableStatisticsList;
 		}
 		
 		function countDayTotal(dineStatistics, att){	

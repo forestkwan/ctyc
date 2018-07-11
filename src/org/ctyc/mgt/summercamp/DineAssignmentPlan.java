@@ -15,7 +15,7 @@ public class DineAssignmentPlan implements Serializable {
 	private double cost;
 	private String campName;
 	private int day;
-	private Collection<DineTableGroup> plan;
+	private Collection<DineTableGroup> dineTableGroups;
 	
 	public DineAssignmentPlan(String campName, int day){
 		this.campName = campName;
@@ -40,10 +40,10 @@ public class DineAssignmentPlan implements Serializable {
 	}
 
 	public Collection<DineTableGroup> getDineTableGroups(){
-		if (this.plan == null){
-			this.plan = new ArrayList<DineTableGroup>();
+		if (this.dineTableGroups == null){
+			this.dineTableGroups = new ArrayList<DineTableGroup>();
 		}
-		return this.plan;
+		return this.dineTableGroups;
 	}
 
 }
