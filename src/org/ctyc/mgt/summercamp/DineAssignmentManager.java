@@ -37,9 +37,6 @@ public class DineAssignmentManager {
 	private DineAssignmentPlan plan;
 	private DineAssignmentEvaluator evaluator;
 	
-	private Collection<DineTableGroup> specialDineTableGroups;
-	private Collection<DineTableGroup> normalDineTableGroups;
-	
 	// Input Object
 	private CampSite campSite;
 	private Collection<Participant> participants;
@@ -69,7 +66,7 @@ public class DineAssignmentManager {
 		}
 		
 		this.campTableCapacityMap = new HashMap<CampName, Integer>();
-		this.campTableCapacityMap.put(CampName.METHODIST, 10);
+		this.campTableCapacityMap.put(CampName.METHODIST, 11);
 		this.campTableCapacityMap.put(CampName.RECREATION, 8);
 		
 		this.evaluator = new DineAssignmentEvaluator(costFunctions, constraintFunctions);
@@ -154,7 +151,9 @@ public class DineAssignmentManager {
 		this.plan.getDineTableGroups().addAll(recreationDineTableGroups);
 	}
 	
-	private List<DineTableGroup> assignParticipantToDineTableGroup(Collection<Participant> unassignedParticipants, CampName campName){
+	private List<DineTableGroup> assignParticipantToDineTableGroup(
+			Collection<Participant> unassignedParticipants,
+			CampName campName){
 		
 		int tableCapacity = this.campTableCapacityMap.get(campName);
 		
@@ -189,28 +188,28 @@ public class DineAssignmentManager {
 		assignPreassignedAssignmentAndFamily(unassignedParticipants, assignedParticipants, allDineTableGroups);
 		printOutAssignmentStatus("After preassigning special group", unassignedParticipants, assignedParticipants);
 		
-		this.specialDineTableGroups = this.getSpecialDineTables(allDineTableGroups, unassignedParticipants, tableCapacity);
+		Collection<DineTableGroup> specialDineTableGroups = this.getSpecialDineTables(allDineTableGroups, unassignedParticipants, tableCapacity);
 		
 		printOutAssignmentStatus("Before assigning special group family", unassignedParticipants, assignedParticipants);
-		assignFamilyGroupToSpecialGroupTable(unassignedParticipants, assignedParticipants, this.specialDineTableGroups, tableCapacity);
+		assignFamilyGroupToSpecialGroupTable(unassignedParticipants, assignedParticipants, specialDineTableGroups, tableCapacity);
 		printOutAssignmentStatus("After assigning special group family", unassignedParticipants, assignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignSpecialGroupToTable(unassignedParticipants, assignedParticipants, this.specialDineTableGroups, tableCapacity);
+		assignSpecialGroupToTable(unassignedParticipants, assignedParticipants, specialDineTableGroups, tableCapacity);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
-		this.normalDineTableGroups = allDineTableGroups.subList(0, allDineTableGroups.size() - this.specialDineTableGroups.size());
+		Collection<DineTableGroup> normalDineTableGroups = allDineTableGroups.subList(0, allDineTableGroups.size() - specialDineTableGroups.size());
 		
 		printOutAssignmentStatus("Before assigning normal group family", unassignedParticipants, assignedParticipants);
-		assignFamilyGroupToTable(unassignedParticipants, assignedParticipants, this.normalDineTableGroups, tableCapacity);
+		assignFamilyGroupToTable(unassignedParticipants, assignedParticipants, normalDineTableGroups, tableCapacity);
 		printOutAssignmentStatus("After assigning normal group family", unassignedParticipants, assignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignParticipantToTable(unassignedParticipants, assignedParticipants, this.specialDineTableGroups, tableCapacity);
+		assignParticipantToTable(unassignedParticipants, assignedParticipants, specialDineTableGroups, tableCapacity);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		printOutAssignmentStatus("Before assigning special group participants", unassignedParticipants, assignedParticipants);
-		assignParticipantToTable(unassignedParticipants, assignedParticipants, this.normalDineTableGroups, tableCapacity);
+		assignParticipantToTable(unassignedParticipants, assignedParticipants, normalDineTableGroups, tableCapacity);
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		/* Assign unassigned Participants to any table with empty seat regardless of their type */
@@ -801,6 +800,8 @@ public class DineAssignmentManager {
 			familyGroupMap.put(participant.getFamilyGroup().getFamilyId(), participant.getFamilyGroup());
 		}
 		
+		System.out.printf("Unassigned:%d, Assigned:%d\n", unassignedParticipants.size(), assignedParticipants.size());
+		
 		for (Entry<String, FamilyGroup> entry : familyGroupMap.entrySet()){
 			FamilyGroup familyGroup = entry.getValue();
 			
@@ -852,8 +853,14 @@ public class DineAssignmentManager {
 			}
 		}
 		
+		System.out.printf("Unassigned:%d, Assigned:%d\n", unassignedParticipants.size(), assignedParticipants.size());
+		
 		unassignedParticipants.removeAll(operatedParticipants);
+		
+		System.out.printf("Unassigned:%d, Assigned:%d\n", unassignedParticipants.size(), assignedParticipants.size());
 		assignedParticipants.addAll(operatedParticipants);
+		
+		System.out.printf("Unassigned:%d, Assigned:%d\n", unassignedParticipants.size(), assignedParticipants.size());
 	}
 	
 	private void assignParticipantToTable(
@@ -1073,6 +1080,10 @@ public class DineAssignmentManager {
 		countedParticipants.retainAll(unassignedParticipants);
 		System.out.printf("Special Participant Count: %d\n", countedParticipants.size());
 		
+		if (countedParticipants.size() == 0){
+			return new ArrayList<DineTableGroup>();
+		}
+		
 		int unassignedSpecialParticipantCount = countedParticipants.size();
 		List<DineTableGroup> specialDineTables = new ArrayList<DineTableGroup>();
 		
@@ -1220,7 +1231,11 @@ public class DineAssignmentManager {
 		Collections.sort(sortedParticipants, new ParticipantIdComparator());
 		
 		for (Participant participant : sortedParticipants){
-			System.out.printf("[ID:%s][Name:%s][GroupNumber:%d]\n", participant.getId(), participant.getName(), participant.getGroupNumber());
+			System.out.printf("[ID:%s][Name:%s][GroupNumber:%d][FamilyGroup:%s]\n",
+					participant.getId(),
+					participant.getName(),
+					participant.getGroupNumber(),
+					(participant.getFamilyGroup() == null) ? "" : participant.getFamilyGroup().getFamilyId());
 		}
 	}
 	

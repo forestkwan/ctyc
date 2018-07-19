@@ -1,5 +1,5 @@
 package org.ctyc.mgt.model.summercamp;
 
 public enum CampName {
-	METHODIST, RECREATION
+	METHODIST, RECREATION, UNASSIGN
 }

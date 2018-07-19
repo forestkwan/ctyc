@@ -32,7 +32,7 @@ public class ParticipantContactMapper {
 		ParticipantContact contact = new ParticipantContact();
 		
 		contact.setName(participant.getName());
-		contact.setAccommodationName("愛暉營⼀樓Rm.107");
+		contact.setAccommodationName(participant.getAccommodationRoom());
 		contact.setAccommodationDay(this.deduceToAccommodationDayLabel(participant));
 		contact.setContact(participant.getPersonalContact());
 		contact.setGoTogether(participant.isGoTogether());

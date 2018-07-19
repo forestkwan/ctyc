@@ -93,6 +93,11 @@ public class CsvReader {
 					
 				}
 				
+				if (StringUtils.isNotBlank(tokens[12])){
+					String accommodationRoom = tokens[12].replace("\"", "");
+					participant.setAccommodationRoom(accommodationRoom);
+				}
+				
 				if (StringUtils.isNotBlank(tokens[14])){
 					String contact = tokens[14].replace("\"", "");
 					contact = contact.replaceAll("\\家長[ ]*：*:*[ ]*", "家長：");
@@ -203,11 +208,7 @@ public class CsvReader {
 					participant.setSpecialGroup(specialGroup);
 				}
 				
-				if ((participant.getGroupNumber() % 2) == 0){
-					participant.setAccommodationCamp(CampName.METHODIST);
-				}else {
-					participant.setAccommodationCamp(CampName.RECREATION);
-				}
+				participant = setAccommodationCamp(participant);
 				
 				participants.add(participant);
 			}
@@ -229,6 +230,22 @@ public class CsvReader {
 		return participants;
 	}
 	
+	private static Participant setAccommodationCamp(Participant participant) {
+		
+		if (StringUtils.isBlank(participant.getAccommodationRoom())){
+			participant.setAccommodationCamp(CampName.METHODIST);
+			return participant;
+		}
+		
+		if (participant.getAccommodationRoom().contains("衛")){
+			participant.setAccommodationCamp(CampName.METHODIST);
+		} else {
+			participant.setAccommodationCamp(CampName.RECREATION);
+		}
+		
+		return participant;
+	}
+
 	public static Map<String, Integer> readPreassignedTable(InputStream inputStream) {
 		BufferedReader bufferedReader = null;
 		String line = "";
@@ -248,9 +265,15 @@ public class CsvReader {
 				}
 				String id = tokens[1].replace("\"", "");
 				
-				if (StringUtils.isNotBlank(tokens[36]) && StringUtils.isNumeric(tokens[36].replace("\"", ""))){
-					Integer preassignedTableNumebr = Integer.parseInt(tokens[36].replace("\"", ""));
-					result.put(id, preassignedTableNumebr);
+				if (StringUtils.isNotBlank(tokens[36])){
+					
+					String token = tokens[36].replace("\"", "");
+					token = token.replaceAll("[^\\d.]", "");
+					
+					if (StringUtils.isNumeric(token)){
+						Integer preassignedTableNumebr = Integer.parseInt(token);
+						result.put(id, preassignedTableNumebr);						
+					}
 				}
 				
 			}

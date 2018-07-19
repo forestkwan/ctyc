@@ -315,8 +315,20 @@
 		function getSelectedDineStatistics(){
 			
 			var campStat = vm.dineAssignmentStatistics.campDineStatisticsMap[vm.selectedCamp];
+			if (_.isEmpty(campStat)){
+				return [];
+			}
+
 			var campLocationStat = campStat.campDineTimeStatisticsMap[vm.selectedCampLocation];
+			if (_.isEmpty(campLocationStat)){
+				return [];
+			}
+			
 			var timeOfDayStat = campLocationStat[vm.selectedTimeOfDine];
+			if (_.isEmpty(timeOfDayStat)){
+				return [];
+			}
+			
 			return timeOfDayStat.dineTableStatisticsList;
 		}
 		
