@@ -4,19 +4,22 @@
 	
 	service.$inject = 
 		['$modal',
+		 '$http',
 		 'ctyc-svc-SocketSvc',
 		 'MESSAGE_TYPE',
 		 'notify'];
 	
 	function service(
 			$modal,
+			$http,
 			SocketSvc,
 			MESSAGE_TYPE,
 			notify){
 	
 		return {
 			autoDineAssignment : autoDineAssignment,
-			reloadData : reloadData
+			reloadData : reloadData,
+			exportAllAssignment : exportAllAssignment
 			};
 		
 		function autoDineAssignment(camp, day){
@@ -45,6 +48,21 @@
 		function reloadData(){
 			SocketSvc.sendMessage(MESSAGE_TYPE.RELOAD_DATA, {});
 			notify('Reload Data in progress...');
+		}
+		
+		function exportAllAssignment(){
+			
+			notify('Exporting Assignment...');
+			$http({
+				method : 'GET',
+				url : '/CTYCManagement/exportAssignment'
+			}).then(function successCallback(response) {
+				var downloadLink = document.getElementById('download');
+				downloadLink.href = response.data;
+				downloadLink.click();
+			}, function errorCallback(response) {
+				notify('Fail to export.');
+			});
 		}
 	};
 })();

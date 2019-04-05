@@ -22,12 +22,16 @@
 			<button class="btn btn-default" type="button" ng-click="vm.calculateCost()" ng-disabled="vm.isLoading">Calculate Cost</button>
 			<button class="btn btn-default" type="button" ng-click="vm.reloadData()" ng-disabled="vm.isLoading">Reload Data</button>
 			<button class="btn btn-default" type="button" ng-click="vm.openPrintTemplate()" ng-disabled="vm.isLoading">Print</button>
+			<button class="btn btn-default" type="button" ng-click="vm.exportAllAssignment()" ng-disabled="vm.isLoading">Export Assignment</button>
+			<div class="btn-group" role="group" aria-label="...">
+				<button type="button" ng-click="vm.autoSaveClicked()" ng-class="{'btn btn-default active': vm.isAutoSave===true, 'btn btn-default': vm.isAutoSave===false}">Auto Save</button>
+			</div>
 		</div>
 		<div>
 			<label class="inline">Location:</label>
 			<div class="btn-group" role="group" aria-label="...">
 				<button type="button" ng-click="vm.changeCampLocation('METHODIST')" ng-class="{'btn btn-default active': vm.selectedCampLocation==='METHODIST', 'btn btn-default': vm.selectedCampLocation!=='METHODIST'}">衛理園</button>
-				<button type="button" ng-click="vm.changeCampLocation('RECREATION')" ng-class="{'btn btn-default active': vm.selectedCampLocation==='RECREATION', 'btn btn-default': vm.selectedCampLocation!=='RECREATION'}">康樂營</button>
+				<button type="button" ng-click="vm.changeCampLocation('RECREATION')" ng-class="{'btn btn-default active': vm.selectedCampLocation==='RECREATION', 'btn btn-default': vm.selectedCampLocation!=='RECREATION'}">遊樂場</button>
 			</div>
 		</div>
 		<div><h4>連線:&nbsp<i class="fa fa-power-off" ng-class="vm.getConnectionClass()"></i></h4><div>
@@ -65,4 +69,6 @@
 	</div>
 	
 	<br>
+	
+	<a href="" download id="download" hidden></a>
 </div>

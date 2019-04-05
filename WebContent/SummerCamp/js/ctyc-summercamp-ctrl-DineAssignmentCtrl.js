@@ -22,6 +22,7 @@
 	
 		var vm = this;
 		
+		vm.isAutoSave = false;
 		vm.websocketStatus = true;
 		vm.selectedPrintType = 'DINE';
 		vm.selectedCamp = 'A';
@@ -58,6 +59,8 @@
 		vm.resolveTimeOfDine = resolveTimeOfDine;
 		vm.reloadData = reloadData;
 		vm.getConnectionClass = getConnectionClass;
+		vm.autoSaveClicked = autoSaveClicked;
+		vm.exportAllAssignment = exportAllAssignment;
 		
 		init();
 		
@@ -71,8 +74,10 @@
 //			notify('Data loading...');
 			
 			$scope.$on('DINE_ASSIGNMENT_CHANGE', function(event, data){
-				calculateCost();
-				saveAssignment();
+				if (vm.isAutoSave){
+					calculateCost();
+					saveAssignment();					
+				}
 			});
 			
 			$scope.$on('websocket-message', function(event, jsonMessage){
@@ -394,6 +399,14 @@
 			}
 			
 			return "red";
+		}
+		
+		function autoSaveClicked(){
+			vm.isAutoSave = !vm.isAutoSave;
+		}
+		
+		function exportAllAssignment(){
+			DineAssignmentSvc.exportAllAssignment();
 		}
 	};
 })();
