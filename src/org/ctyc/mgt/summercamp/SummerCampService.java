@@ -23,6 +23,7 @@ import org.ctyc.mgt.model.summercamp.CampSite;
 import org.ctyc.mgt.model.summercamp.CanteenTable;
 import org.ctyc.mgt.model.summercamp.DineTableGroup;
 import org.ctyc.mgt.model.summercamp.DineTimeSlot;
+import org.ctyc.mgt.model.summercamp.DineTimeSlot.TimeOfDay;
 import org.ctyc.mgt.model.summercamp.DineTimeStatistics;
 import org.ctyc.mgt.model.summercamp.Participant;
 import org.ctyc.mgt.model.summercamp.StatisticsSummary;
@@ -33,6 +34,7 @@ import org.ctyc.mgt.summercamp.costfunction.MentorInTableCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.SameGroupCostFunction;
 import org.ctyc.mgt.summercamp.costfunction.SameSundayClassCostFunction;
 import org.ctyc.mgt.utils.CsvReader;
+import org.ctyc.mgt.utils.DineTableGroupUtils;
 import org.ctyc.mgt.utils.FileUtils;
 import org.ctyc.mgt.websocket.Message;
 
@@ -57,10 +59,10 @@ public class SummerCampService {
 	private static String DELETE_AND_RELOAD_DATA_COMPLETE = "DELETE_AND_RELOAD_DATA_COMPLETE";
 	
 	private static String CAMP_SITE_PATH = "CTYCSave/CampSite.txt";
-	private static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
-	private static String SAVE_HOME;
+	public static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
+	public static String SAVE_HOME;
 	
-	private static String[] campNames = {"A", "B"};
+	private static String[] campNames = {/*"A", */"B"};
 	
 	private static SummerCampService instance = null;
 	private Map<String, CampSite> campSiteMap = null;
@@ -271,6 +273,36 @@ public class SummerCampService {
 			instance = new SummerCampService();
 		}
 		return instance;
+	}
+	
+	public void addNewTable(
+			String campSiteCode,
+			CampName campName,
+			TimeOfDay timeOfDine,
+			Integer day){
+		
+		if (this.campSiteMap == null){
+			return;
+		}
+		
+		DineAssignmentPlan targetDineTablePlan = this.dineAssignmentPlanList.stream()
+				.filter(x -> x.getCampName().equalsIgnoreCase(campSiteCode))
+				.filter(x -> x.getDay() == day)
+				.findAny().get();
+		
+		if (targetDineTablePlan == null){
+			return;
+		}
+		
+		List<DineTableGroup> tables = (List<DineTableGroup>)targetDineTablePlan.getDineTableGroups();
+		int lastTableIndex = DineTableGroupUtils.findLastTableIndex(tables, campName);
+		
+		DineTableGroup newTable = new DineTableGroup();
+		newTable.setCampName(campName);
+		newTable.setTableNumber(tables.get(lastTableIndex).getTableNumber() + 1);
+		tables.add(lastTableIndex + 1, newTable);
+		
+		this.saveCampSiteToFile();
 	}
 	
 	/*

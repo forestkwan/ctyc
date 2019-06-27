@@ -19,7 +19,8 @@
 		return {
 			autoDineAssignment : autoDineAssignment,
 			reloadData : reloadData,
-			exportAllAssignment : exportAllAssignment
+			exportAllAssignment : exportAllAssignment,
+			addNewTable : addNewTable
 			};
 		
 		function autoDineAssignment(camp, day){
@@ -63,6 +64,22 @@
 			}, function errorCallback(response) {
 				notify('Fail to export.');
 			});
+		}
+		
+		function addNewTable(newTableInfo, callBackFn){
+			
+			notify('Adding New Table...');
+			$http({
+				method : 'POST',
+				url : '/CTYCManagement/addNewTable',
+				params : newTableInfo
+			}).then(function successCallback(response) {
+				notify('Add new table');
+				callBackFn();
+			}, function errorCallback(response) {
+				notify('Fail to add new table.');
+			});
+			
 		}
 	};
 })();

@@ -61,6 +61,7 @@
 		vm.getConnectionClass = getConnectionClass;
 		vm.autoSaveClicked = autoSaveClicked;
 		vm.exportAllAssignment = exportAllAssignment;
+		vm.addNewTable = addNewTable;
 		
 		init();
 		
@@ -407,6 +408,23 @@
 		
 		function exportAllAssignment(){
 			DineAssignmentSvc.exportAllAssignment();
+		}
+		
+		function addNewTable(dineTableGroups){
+			
+			console.log('Add New Table');
+			
+			var newTableInfo = {
+					camp : vm.selectedCamp,
+					campLocation : vm.selectedCampLocation,
+					timeOfDine : vm.selectedTimeOfDine,
+					day : vm.selectedDay
+			};
+			
+			DineAssignmentSvc.addNewTable(newTableInfo, function(){
+				SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});
+			});
+			
 		}
 	};
 })();

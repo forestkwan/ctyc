@@ -66,8 +66,8 @@ public class DineAssignmentManager {
 		}
 		
 		this.campTableCapacityMap = new HashMap<CampName, Integer>();
-		this.campTableCapacityMap.put(CampName.METHODIST, 11);
-		this.campTableCapacityMap.put(CampName.RECREATION, 8);
+		this.campTableCapacityMap.put(CampName.METHODIST, 10);
+		this.campTableCapacityMap.put(CampName.RECREATION, 7);
 		
 		this.evaluator = new DineAssignmentEvaluator(costFunctions, constraintFunctions);
 	}
@@ -218,6 +218,7 @@ public class DineAssignmentManager {
 		printOutAssignmentStatus("After assigning special group participants", unassignedParticipants, assignedParticipants);
 		
 		listOutParticipants(assignedParticipants);
+		listOutDineTablesWithName(allDineTableGroups);
 		
 		return allDineTableGroups;
 	}
@@ -1250,6 +1251,26 @@ public class DineAssignmentManager {
 					dineTableGroup.getParticipants().size(),
 					dineTableGroup.countMale(),
 					dineTableGroup.countFemale());
+		}
+	}
+	
+	private void listOutDineTablesWithName(Collection<DineTableGroup> dineTableGroups) {
+		if (CollectionUtils.isEmpty(dineTableGroups)){
+			return;
+		}
+		
+		for (DineTableGroup dineTableGroup : dineTableGroups){
+			System.out.printf("[Table Number:%d][Participant:%d][Male:%d][Female:%d][",
+					dineTableGroup.getTableNumber(),
+					dineTableGroup.getParticipants().size(),
+					dineTableGroup.countMale(),
+					dineTableGroup.countFemale());
+			
+			for (Participant participant : dineTableGroup.getParticipants()){
+				System.out.print(participant.getName() + ", ");
+			}
+			
+			System.out.println("]");
 		}
 	}
 }
