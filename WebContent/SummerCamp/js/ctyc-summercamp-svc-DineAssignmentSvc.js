@@ -20,7 +20,8 @@
 			autoDineAssignment : autoDineAssignment,
 			reloadData : reloadData,
 			exportAllAssignment : exportAllAssignment,
-			addNewTable : addNewTable
+			addNewTable : addNewTable,
+			removeLastTable : removeLastTable
 			};
 		
 		function autoDineAssignment(camp, day){
@@ -78,6 +79,22 @@
 				callBackFn();
 			}, function errorCallback(response) {
 				notify('Fail to add new table.');
+			});
+			
+		}
+		
+		function removeLastTable(lastTableInfo, callBackFn){
+			
+			notify('Removing Last Table...');
+			$http({
+				method : 'POST',
+				url : '/CTYCManagement/removeLastTable',
+				params : lastTableInfo
+			}).then(function successCallback(response) {
+				notify('Removing Last table');
+				callBackFn();
+			}, function errorCallback(response) {
+				notify('Fail to remove last table.');
 			});
 			
 		}

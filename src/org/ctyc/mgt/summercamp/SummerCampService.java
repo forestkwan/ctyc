@@ -62,7 +62,7 @@ public class SummerCampService {
 	public static String DINE_ASSIGNMENT_PLAN_PATH = "CTYCSave/DineAssignmentPlan.txt";
 	public static String SAVE_HOME;
 	
-	private static String[] campNames = {/*"A", */"B"};
+	private static String[] campNames = {"A", "B"};
 	
 	private static SummerCampService instance = null;
 	private Map<String, CampSite> campSiteMap = null;
@@ -134,9 +134,9 @@ public class SummerCampService {
 				try {
 					URL url = null;
 					if (campName.equals("A")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=14");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=16");
 					} else if (campName.equals("B")) {
-						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=15");
+						url = new URL("http://www.ctyc.org.hk/summer/enrollments/export.csv?campid=17");
 					}
 					
 					campSite.getParticipants().addAll(CsvReader.readParticipantCsvFromStream(url.openStream()));
@@ -301,6 +301,36 @@ public class SummerCampService {
 		newTable.setCampName(campName);
 		newTable.setTableNumber(tables.get(lastTableIndex).getTableNumber() + 1);
 		tables.add(lastTableIndex + 1, newTable);
+		
+		this.saveCampSiteToFile();
+	}
+	
+	public void removeLastTable(
+			String campSiteCode,
+			CampName campName,
+			TimeOfDay timeOfDine,
+			Integer day){
+		
+		if (this.campSiteMap == null){
+			return;
+		}
+		
+		DineAssignmentPlan targetDineTablePlan = this.dineAssignmentPlanList.stream()
+				.filter(x -> x.getCampName().equalsIgnoreCase(campSiteCode))
+				.filter(x -> x.getDay() == day)
+				.findAny().get();
+		
+		if (targetDineTablePlan == null){
+			return;
+		}
+		
+		List<DineTableGroup> tables = (List<DineTableGroup>)targetDineTablePlan.getDineTableGroups();
+		int lastTableIndex = DineTableGroupUtils.findLastTableIndex(tables, campName);
+		
+		DineTableGroup newTable = new DineTableGroup();
+		newTable.setCampName(campName);
+		newTable.setTableNumber(tables.get(lastTableIndex).getTableNumber() + 1);
+		tables.remove(lastTableIndex);
 		
 		this.saveCampSiteToFile();
 	}

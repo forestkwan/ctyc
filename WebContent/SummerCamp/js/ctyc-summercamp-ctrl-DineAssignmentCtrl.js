@@ -62,6 +62,8 @@
 		vm.autoSaveClicked = autoSaveClicked;
 		vm.exportAllAssignment = exportAllAssignment;
 		vm.addNewTable = addNewTable;
+		vm.removeLastTable = removeLastTable;
+		vm.isLastTableEmpty = isLastTableEmpty;
 		
 		init();
 		
@@ -425,6 +427,40 @@
 				SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});
 			});
 			
+		}
+		
+		function removeLastTable(dineTableGroups){
+			
+			if (!_.isEmpty(dineTableGroups) || !isLastTableEmpty()){
+				return;
+			}
+			
+			console.log('Remove Last Table');
+			
+			var lastTableInfo = {
+					camp : vm.selectedCamp,
+					campLocation : vm.selectedCampLocation,
+					timeOfDine : vm.selectedTimeOfDine,
+					day : vm.selectedDay
+			};
+			
+			DineAssignmentSvc.removeLastTable(lastTableInfo, function(){
+				SocketSvc.sendMessage(MESSAGE_TYPE.GET_DINE_ASSIGNMENT, {});
+			});
+			
+		}
+		
+		function isLastTableEmpty(){
+			
+			var lastTableCandidates = _.filter(vm.getSelectedDineAssignmentPlan().dineTableGroups, {'campName' : vm.selectedCampLocation});
+			if (_.isEmpty(lastTableCandidates)){
+				return false;
+			}
+			
+			lastTableCandidates = _.orderBy(lastTableCandidates, ['tableNumber'], ['desc']);
+			var lastTable = lastTableCandidates[0];
+			
+			return _.isEmpty(lastTable.participants);
 		}
 	};
 })();

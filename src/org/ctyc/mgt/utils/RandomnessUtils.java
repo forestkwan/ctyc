@@ -3,6 +3,7 @@ package org.ctyc.mgt.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -94,10 +95,13 @@ public class RandomnessUtils {
 			return participants;
 		}
 		
+		List<Participant> participantList = new ArrayList<>(participants);
+		int listSize = participantList.size();
+		
 		Collection<Participant> resultParticipants = new HashSet<Participant>();
 		do {
 			
-			int index = randomObj.nextInt(participants.size());
+			/*int index = randomObj.nextInt(participants.size());
 			
 			int i = 0;
 			for(Participant participant : participants)
@@ -107,7 +111,10 @@ public class RandomnessUtils {
 					break;
 				}
 				i++;
-			}
+			}*/
+			
+			int index = randomObj.nextInt(listSize);
+			resultParticipants.add(participantList.get(index));
 			
 		}while (resultParticipants.size() < numberOfPick);
 		
